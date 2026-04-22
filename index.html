@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Ishaan Samantray — Biological Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=6">
+</head>
+<body data-theme="dark">
+
+<!-- ============ CURSOR ORBS ============ -->
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- ============ GRID BACKDROP ============ -->
+<div class="grid-bg" aria-hidden="true"></div>
+<div class="noise" aria-hidden="true"></div>
+
+<!-- ============ TOP BAR ============ -->
+<header class="topbar">
+  <div class="topbar-left">
+    <span class="dot dot-red"></span>
+    <span class="dot dot-amber"></span>
+    <span class="dot dot-green"></span>
+    <span class="topbar-path">~/ishaan-samantray/portfolio.sh</span>
+  </div>
+  <div class="topbar-right">
+    <span class="status" id="statusClock">--:--:--</span>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+      <span class="theme-toggle-track">
+        <span class="theme-toggle-thumb"></span>
+      </span>
+      <span class="theme-toggle-label" id="themeLabel">DARK</span>
+    </button>
+  </div>
+</header>
+
+<!-- ============ SIDE NAV (tabs) ============ -->
+<nav class="sidenav" aria-label="Section navigation">
+  <ol>
+    <li><a href="#home" data-nav="home"><span class="nav-num">00</span><span class="nav-label">home</span></a></li>
+    <li><a href="#about" data-nav="about"><span class="nav-num">01</span><span class="nav-label">about</span></a></li>
+    <li><a href="#experience" data-nav="experience"><span class="nav-num">02</span><span class="nav-label">experience</span></a></li>
+    <li><a href="#projects" data-nav="projects"><span class="nav-num">03</span><span class="nav-label">projects</span></a></li>
+    <li><a href="#startups" data-nav="startups"><span class="nav-num">04</span><span class="nav-label">startups</span></a></li>
+    <li><a href="#publications" data-nav="publications"><span class="nav-num">05</span><span class="nav-label">publications</span></a></li>
+    <li><a href="#awards" data-nav="awards"><span class="nav-num">06</span><span class="nav-label">awards</span></a></li>
+    <li><a href="#resume" data-nav="resume"><span class="nav-num">07</span><span class="nav-label">resume</span></a></li>
+    <li><a href="#contact" data-nav="contact"><span class="nav-num">08</span><span class="nav-label">contact</span></a></li>
+  </ol>
+</nav>
+
+<main>
+
+  <!-- ============ HOME / HERO ============ -->
+  <section id="home" class="hero" data-screen-label="home">
+    <div class="hero-inner">
+      <div class="hero-meta">
+        <span class="tag">// online</span>
+        <span class="meta-line">lat 42.4534°N  ·  lon 76.4735°W  ·  ithaca, ny</span>
+      </div>
+
+      <div class="hero-prompt">
+        <span class="prompt-user">ishaan@cornell</span><span class="prompt-colon">:</span><span class="prompt-path">~</span><span class="prompt-dollar">$</span>
+        <span id="heroCmd" class="prompt-cmd"></span><span class="caret">▍</span>
+      </div>
+
+      <h1 class="hero-name" id="heroName" aria-label="Ishaan Samantray">
+        <span class="hn-line"><span class="hn-word" data-w="ISHAAN">ISHAAN</span></span>
+        <span class="hn-line"><span class="hn-word" data-w="SAMANTRAY">SAMANTRAY</span></span>
+      </h1>
+
+      <div class="hero-sub">
+        <div class="hero-sub-line"><span class="bullet">▸</span> Cornell University — Biological Engineer, minoring in Computer Science &amp; Business.</div>
+        <div class="hero-sub-line"><span class="bullet">▸</span> Building at the intersection of wet-lab research, software, and medical devices.</div>
+      </div>
+
+      <div class="hero-cta">
+        <a href="#projects" class="btn btn-primary" data-cursor="link">
+          <span>view_projects</span><span class="arr">→</span>
+        </a>
+        <a href="assets/IshaanSamantray-Resume.pdf" target="_blank" rel="noopener" class="btn btn-ghost" data-cursor="link">
+          <span>open_resume.pdf</span><span class="arr">↗</span>
+        </a>
+        <a href="mailto:is455@cornell.edu" class="btn btn-ghost" data-cursor="link">
+          <span>send_mail</span><span class="arr">✉</span>
+        </a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat"><span class="stat-num">5+</span><span class="stat-label">research internships</span></div>
+        <div class="stat"><span class="stat-num">2</span><span class="stat-label">peer-reviewed pubs</span></div>
+        <div class="stat"><span class="stat-num">10k+</span><span class="stat-label">students reached</span></div>
+        <div class="stat"><span class="stat-num">$2.5k</span><span class="stat-label">in research grants</span></div>
+      </div>
+    </div>
+
+    <div class="scroll-hint">scroll ↓ or press <kbd>j</kbd></div>
+  </section>
+
+  <!-- ============ ABOUT ============ -->
+  <section id="about" class="section" data-screen-label="about">
+    <div class="section-head">
+      <span class="section-num">01 /</span>
+      <h2 class="section-title">about_me.md</h2>
+      <span class="section-rule"></span>
+    </div>
+
+    <div class="about-grid">
+      <div class="about-photo">
+        <div class="photo-frame" id="photoFrame">
+          <div class="photo-placeholder">
+            <span class="ph-text">[ your_photo.jpg ]</span>
+            <span class="ph-sub">drop a photo in <code>assets/profile.jpg</code></span>
+          </div>
+          <img id="profileImg" src="assets/profile.jpg?v=1" alt="Ishaan Samantray">
+          <div class="photo-overlay"></div>
+        </div>
+        <div class="photo-caption">
+          <div>▸ potomac, md → ithaca, ny</div>
+          <div>▸ b.s. biological eng. '29</div>
+        </div>
+      </div>
+
+      <div class="about-copy">
+        <p class="lede">
+          I'm a biological engineer at Cornell working where wet lab meets code.
+          My research spans retinal disease AI, malaria vaccine genetics,
+          and craniofacial tissue engineering.
+        </p>
+
+        <p>
+          Outside the lab, I co-founded <a href="https://kids4code.org/teachers" target="_blank" rel="noopener">Kids For Code</a>, a global nonprofit that's reached <b>10,000+ students across 37 states and 11 countries</b>. On campus I build biogas reactors with <a href="https://aguaclara.cornell.edu/Team" target="_blank" rel="noopener">AguaClara</a> and run financial models with <a href="#experience" data-nav="experience">Impact Investing at Cornell</a>.
+        </p>
+
+        <div class="stack">
+          <div class="stack-row">
+            <span class="stack-label">code</span>
+            <div class="stack-chips">
+              <span class="chip">Python</span><span class="chip">Java</span><span class="chip">JavaScript</span>
+              <span class="chip">C++</span><span class="chip">Next.js</span><span class="chip">FastAPI</span>
+              <span class="chip">Node.js</span><span class="chip">Redis</span><span class="chip">MongoDB</span>
+            </div>
+          </div>
+          <div class="stack-row">
+            <span class="stack-label">lab</span>
+            <div class="stack-chips">
+              <span class="chip">Western Blot</span><span class="chip">PCR</span>
+              <span class="chip">RPE Cell Culture</span><span class="chip">Image Segmentation</span>
+              <span class="chip">ChimeraX</span><span class="chip">ProCoDA</span><span class="chip">CAD</span>
+            </div>
+          </div>
+          <div class="stack-row">
+            <span class="stack-label">biz</span>
+            <div class="stack-chips">
+              <span class="chip">DCF Modeling</span><span class="chip">HubSpot CRM</span>
+              <span class="chip">Excel</span><span class="chip">Financial Analysis</span>
+            </div>
+          </div>
+          <div class="stack-row">
+            <span class="stack-label">off_hours</span>
+            <div class="stack-chips ghost">
+              <span class="chip">tennis</span><span class="chip">skiing</span>
+              <span class="chip">boxing</span><span class="chip">restaurants</span>
+              <span class="chip">urban exploring</span><span class="chip">spanish</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ EXPERIENCE ============ -->
+  <section id="experience" class="section" data-screen-label="experience">
+    <div class="section-head">
+      <span class="section-num">02 /</span>
+      <h2 class="section-title">experience.log</h2>
+      <span class="section-rule"></span>
+    </div>
+
+    <div class="timeline" id="timeline">
+      <!-- rows injected by JS -->
+    </div>
+  </section>
+
+  <!-- ============ PROJECTS ============ -->
+  <section id="projects" class="section" data-screen-label="projects">
+    <div class="section-head">
+      <span class="section-num">03 /</span>
+      <h2 class="section-title">projects/</h2>
+      <span class="section-rule"></span>
+      <span class="section-count" id="projectCount"></span>
+    </div>
+
+    <div class="projects-grid" id="projectsGrid"></div>
+  </section>
+
+  <!-- ============ STARTUPS ============ -->
+  <section id="startups" class="section" data-screen-label="startups">
+    <div class="section-head">
+      <span class="section-num">04 /</span>
+      <h2 class="section-title">startups/</h2>
+      <span class="section-rule"></span>
+      <span class="section-count">[building]</span>
+    </div>
+
+    <div class="startups" id="startupsList"></div>
+  </section>
+
+  <!-- ============ PUBLICATIONS ============ -->
+  <section id="publications" class="section" data-screen-label="publications">
+    <div class="section-head">
+      <span class="section-num">05 /</span>
+      <h2 class="section-title">publications.bib</h2>
+      <span class="section-rule"></span>
+    </div>
+
+    <div class="pubs" id="pubsList"></div>
+  </section>
+
+  <!-- ============ AWARDS ============ -->
+  <section id="awards" class="section" data-screen-label="awards">
+    <div class="section-head">
+      <span class="section-num">06 /</span>
+      <h2 class="section-title">awards.json</h2>
+      <span class="section-rule"></span>
+    </div>
+
+    <div class="awards-grid" id="awardsGrid"></div>
+  </section>
+
+  <!-- ============ RESUME ============ -->
+  <section id="resume" class="section" data-screen-label="resume">
+    <div class="section-head">
+      <span class="section-num">07 /</span>
+      <h2 class="section-title">resume.pdf</h2>
+      <span class="section-rule"></span>
+      <a href="assets/IshaanSamantray-Resume.pdf" download class="section-action" data-cursor="link">download ↓</a>
+    </div>
+
+    <div class="resume-frame">
+      <div class="resume-bar">
+        <span class="dot dot-red"></span>
+        <span class="dot dot-amber"></span>
+        <span class="dot dot-green"></span>
+        <span class="resume-filename">IshaanSamantray-Resume.pdf — 1 page</span>
+        <a href="assets/IshaanSamantray-Resume.pdf" target="_blank" class="resume-open">open in new tab ↗</a>
+      </div>
+      <div class="resume-viewer" id="resumeViewer">
+        <canvas id="resumeCanvas"></canvas>
+        <div class="resume-fallback">
+          <p>Can't display PDF inline — <a href="assets/IshaanSamantray-Resume.pdf" target="_blank" rel="noopener">open it in a new tab ↗</a> or <a href="assets/IshaanSamantray-Resume.pdf" download>download ↓</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CONTACT ============ -->
+  <section id="contact" class="section" data-screen-label="contact">
+    <div class="section-head">
+      <span class="section-num">08 /</span>
+      <h2 class="section-title">contact.sh</h2>
+      <span class="section-rule"></span>
+    </div>
+
+    <div class="contact">
+      <div class="contact-line">
+        <span class="prompt-dollar">$</span>
+        <span class="contact-cmd">echo "let's build something."</span>
+      </div>
+
+      <h3 class="contact-h">Reach out. I read every message.</h3>
+
+      <div class="contact-grid">
+        <a class="contact-card" href="mailto:is455@cornell.edu" data-cursor="link">
+          <span class="cc-label">cornell</span>
+          <span class="cc-val">is455@cornell.edu</span>
+          <span class="cc-arrow">→</span>
+        </a>
+        <a class="contact-card" href="mailto:ishaansamantray@gmail.com" data-cursor="link">
+          <span class="cc-label">personal</span>
+          <span class="cc-val">ishaansamantray@gmail.com</span>
+          <span class="cc-arrow">→</span>
+        </a>
+        <a class="contact-card" href="tel:+12404012839" data-cursor="link">
+          <span class="cc-label">phone</span>
+          <span class="cc-val">240 · 401 · 2839</span>
+          <span class="cc-arrow">→</span>
+        </a>
+        <a class="contact-card" href="https://www.linkedin.com/in/ishaan-samantray1/" target="_blank" rel="noopener" data-cursor="link">
+          <span class="cc-label">linkedin</span>
+          <span class="cc-val">/in/ishaan-samantray1</span>
+          <span class="cc-arrow">↗</span>
+        </a>
+        <a class="contact-card" href="https://www.instagram.com/ishaan.s06/" target="_blank" rel="noopener" data-cursor="link">
+          <span class="cc-label">instagram</span>
+          <span class="cc-val">@ishaan.s06</span>
+          <span class="cc-arrow">↗</span>
+        </a>
+        <a class="contact-card" href="assets/IshaanSamantray-Resume.pdf" target="_blank" rel="noopener" data-cursor="link">
+          <span class="cc-label">resume</span>
+          <span class="cc-val">IshaanSamantray-Resume.pdf</span>
+          <span class="cc-arrow">↗</span>
+        </a>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div>© 2026 Ishaan Samantray · built by hand in HTML &amp; JS</div>
+      <div class="footer-right">
+        <span id="visitorLine">— loading session —</span>
+      </div>
+    </footer>
+  </section>
+
+</main>
+
+<!-- ============ PROJECT HOVER PREVIEW ============ -->
+<div class="hover-preview" id="hoverPreview" aria-hidden="true"></div>
+
+<script src="data.js?v=7"></script>
+<script src="app.js?v=5"></script>
+</body>
+</html>

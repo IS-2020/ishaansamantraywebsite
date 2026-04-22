@@ -1,0 +1,321 @@
+/* ============================================================
+   DATA: experience, projects, publications, awards
+   ============================================================ */
+
+window.EXPERIENCE = [
+  {
+    date: "Feb 2026 — Present",
+    org: "Impact Investing at Cornell",
+    role: "Analyst · Associate Development Program",
+    logo: "assets/logos/iic.png",
+    logoText: "IIC",
+    logoColor: "#B31B1B",
+    desc: "Running valuation models and sustainable-finance case work. Training toward Mirova Global Asset Management. Leading advertising for new-member fundraising.",
+    location: "Ithaca, NY",
+    links: [{label: "site ↗", href: "https://www.impactinvestingcornell.com/"}]
+  },
+  {
+    date: "Dec 2025 — Present",
+    org: "Medimint",
+    role: "Business Analyst & Software Engineering Intern",
+    logo: "assets/logos/medimint.png",
+    logoText: "M",
+    logoColor: "#0EA5E9",
+    desc: "Built the front-end for an incident-report tool with Jira integration and a FastAPI-based SSN identity verification service. Supported closure of an $8M contract with Penn Medicine and a MedStar Health pilot.",
+    location: "Washington, D.C.",
+    links: [{label: "medimint.health ↗", href: "https://www.medimint.health/"}]
+  },
+  {
+    date: "Nov 2025 — Present",
+    org: "AguaClara — Richardson Lab of Applied Microbiology",
+    role: "Project Team Member · UASB subteam",
+    logo: "assets/logos/aguaclara.png",
+    logoText: "AC",
+    logoColor: "#2E7D32",
+    desc: "Designing a pilot-scale pressurized gas collection chamber for a gravity-powered anaerobic sludge blanket reactor, instrumented with ProCoDA pressure sensors. Leading fabrication for deployment in Puerto Rico & Honduras (Winter 2026).",
+    location: "Ithaca, NY",
+    links: [{label: "team →", href: "https://aguaclara.cornell.edu/Team"}]
+  },
+  {
+    date: "Jun 2024 — Aug 2024",
+    org: "AstraZeneca",
+    role: "Business Development Intern",
+    logo: "assets/logos/astrazeneca.png",
+    desc: "Shadowed wet-lab research, clinical operations, and business development across the drug-development lifecycle. Observed pharmaceutical R&D strategy and cross-functional decision making across commercial, clinical, and research pipelines.",
+    location: "Gaithersburg, MD",
+    links: [{label: "astrazeneca.com ↗", href: "https://www.astrazeneca.com/"}]
+  },
+  {
+    date: "Dec 2023 — May 2025",
+    org: "NIH — National Eye Institute",
+    role: "Research Intern · Bharti Lab (Dr. Sharma)",
+    logo: "assets/logos/nih-nei.png",
+    desc: "Wet-lab research on age-related macular degeneration. Ran western blots, image segmentation, and independent RPE cell culture. Contributed coding & imaging analysis to LipidUNet — an AI model for retinal disease.",
+    location: "Bethesda, MD",
+    links: [
+      {label: "LipidUNet ↗", href: "https://github.com/NIH-NEI/LipidUnet"},
+      {label: "PubMed ↗", href: "https://pubmed.ncbi.nlm.nih.gov/37578220/"}
+    ]
+  },
+  {
+    date: "Aug 2023 — May 2024",
+    org: "Sanaria Inc.",
+    role: "Research Intern",
+    logo: "assets/logos/sanaria.png",
+    desc: "Genetic mapping of Anopheles mosquito lines for the PfSPZ malaria vaccine. Developed Splinkerette PCR genotyping assays and sequencing protocols to characterize transgenic lines. Co-authored peer-reviewed publication.",
+    location: "Rockville, MD",
+    links: [
+      {label: "sanaria.com ↗", href: "https://sanaria.com/"},
+      {label: "PubMed ↗", href: "https://pubmed.ncbi.nlm.nih.gov/40321780/"}
+    ]
+  },
+  {
+    date: "Summer 2023",
+    org: "Johns Hopkins — LabCOTE",
+    role: "Research Intern · Dr. Warren Grayson",
+    logo: "assets/logos/johnshopkins.png",
+    desc: "At the Lab for Craniofacial and Orthopaedic Tissue Engineering. Designed implants & scaffolds for medical testing, worked with multiple 3D printing tools, and prototyped a universal surgical jig for rapid stem-cell extraction paired with a biodegradable scaffold for craniofacial defects.",
+    location: "Baltimore, MD",
+    links: [{label: "grayson lab ↗", href: "https://engineering.jhu.edu/faculty/warren-grayson/"}]
+  },
+  {
+    date: "Sep 2021 — Jun 2025",
+    org: "Kids For Code",
+    role: "Co-Founder & Co-President",
+    logo: "assets/logos/kids4code.png",
+    logoText: "K4C",
+    logoColor: "#7C3AED",
+    desc: "Global student-run nonprofit teaching coding to K–12 students. Managed 100+ instructors, expanded programs to <strong>10,000+ students across 37 states & 11 countries</strong>. Generated 10k+ registrations, scripted + edited 31 videos, and grew the YouTube channel to <strong>1.46K subscribers and 101,649+ views</strong> with a cross-platform community on Instagram.",
+    location: "Potomac, MD",
+    links: [
+      {label: "site ↗", href: "https://kids4code.org/teachers"},
+      {label: "youtube ↗", href: "https://www.youtube.com/@kidsforcode"},
+      {label: "instagram ↗", href: "https://www.instagram.com/kidsforcode/"},
+      {label: "press ↗", href: "https://www.thechurchillobserver.com/observations/2024/06/08/local-club-cracks-the-code-for-helping-the-community/"}
+    ]
+  },
+  {
+    date: "Jul 2021 — Jan 2026",
+    org: "Spidersmart",
+    role: "Assistant Manager & Tutor",
+    logo: "assets/logos/spidersmart.png",
+    logoText: "SM",
+    logoColor: "#DC2626",
+    desc: "Tutored and mentored 175+ K–10 students in SAT/ACT, math, reading, history, writing, debate, and biology. Designed custom instruction plans and managed day-to-day operations.",
+    location: "Rockville, MD",
+    links: [{label: "spidersmart.com ↗", href: "https://www.spidersmart.com/"}]
+  },
+];
+
+window.PROJECTS = [
+  {
+    index: "P.01",
+    title: "LipidUNet",
+    org: "NIH · National Eye Institute",
+    tags: ["AI/ML", "imaging", "featured"],
+    featured: true,
+    desc: "Deep-learning segmentation of lipid deposits in RPE flatmount images. Contributed coding and imaging analysis at the Bharti Lab — publication forthcoming.",
+    links: [
+      {label: "github ↗", href: "https://github.com/NIH-NEI/LipidUnet"},
+      {label: "pubmed ↗", href: "https://pubmed.ncbi.nlm.nih.gov/37578220/"}
+    ],
+    preview: { label: "code · repo", img: "assets/logos/nih-nei.png", meta: "Python · U-Net · medical imaging" }
+  },
+  {
+    index: "P.02",
+    title: "AstraZeneca Business Development",
+    org: "AstraZeneca · Gaithersburg",
+    tags: ["industry", "strategy", "featured"],
+    featured: true,
+    desc: "Shadowed R&D strategy, pipeline progression, and cross-functional decision making across commercial, clinical, and research project pipelines.",
+    links: [],
+    preview: { label: "internship", img: "assets/logos/astrazeneca.png", meta: "Summer 2024 · pharma · drug dev lifecycle" }
+  },
+  {
+    index: "P.03",
+    title: "Kids For Code",
+    org: "Global nonprofit · co-founded",
+    tags: ["nonprofit", "founded", "featured"],
+    featured: true,
+    desc: "Student-run coding nonprofit. 10,000+ students reached across 37 states and 11 countries. 100+ instructors, 10k+ registrations, 1.46K YouTube subscribers, 101,649+ views.",
+    links: [
+      {label: "kids4code.org ↗", href: "https://kids4code.org/teachers"},
+      {label: "youtube ↗", href: "https://www.youtube.com/@kidsforcode"},
+      {label: "instagram ↗", href: "https://www.instagram.com/kidsforcode/"},
+      {label: "press ↗", href: "https://www.thechurchillobserver.com/observations/2024/06/08/local-club-cracks-the-code-for-helping-the-community/"}
+    ],
+    preview: { label: "founded · 2021", img: "assets/logos/kids4code.png", meta: "10k+ students · 37 states · 11 countries · 101k views" }
+  },
+  {
+    index: "P.04",
+    title: "AguaClara UASB Reactor",
+    org: "Cornell · Richardson Lab",
+    tags: ["hardware", "env-eng", "featured"],
+    featured: true,
+    desc: "Gravity-powered anaerobic sludge blanket reactor for at-home wastewater treatment. Designing a pilot-scale pressurized gas chamber with ProCoDA pressure sensors. Deployment: Puerto Rico & Honduras, Winter 2026.",
+    links: [{label: "aguaclara.cornell.edu ↗", href: "https://aguaclara.cornell.edu/Team"}],
+    preview: { label: "hardware · active", img: "assets/logos/aguaclara.png", meta: "UASB · biogas · field deployment" }
+  },
+  {
+    index: "P.05",
+    title: "Medimint — Incident Reporting",
+    org: "Medimint · Washington D.C.",
+    tags: ["software", "fintech/health", "featured"],
+    featured: true,
+    desc: "Built front-end for incident-report software with Jira integration. Developed an SSN-based identity verification API. Supported an $8M contract with Penn Medicine and a MedStar Health pilot.",
+    links: [],
+    preview: { label: "product · live", img: "assets/logos/medimint.png", meta: "Next.js · FastAPI · health-tech" }
+  },
+  {
+    index: "P.06",
+    title: "Surgical Jig for Stem-Cell Extraction",
+    org: "Johns Hopkins · LabCOTE",
+    tags: ["device", "tissue-eng"],
+    desc: "Universal surgical jig paired with a biodegradable scaffold, designed for rapid stem-cell extraction and insertion into craniofacial defects.",
+    links: [],
+    preview: { label: "device · prototype", img: "assets/logos/johnshopkins.png", meta: "CAD · 3D printing · craniofacial repair" }
+  },
+  {
+    index: "P.07",
+    title: "Nitrogen Storm Drain",
+    org: "Battelle Climate Challenge · Finalist",
+    tags: ["env-eng", "climate", "awarded"],
+    desc: "Battelle Climate Change Challenge finalist — $1,500 grant. Storm-drain intervention designed to capture and remediate excess nitrogen runoff.",
+    links: [{label: "battelle gallery ↗", href: "https://www.futureengineers.org/battelleclimatechallenge/gallery/61285"}],
+    preview: { label: "award · $1.5k grant", img: null, meta: "Climate · water quality · 2023" }
+  },
+  {
+    index: "P.08",
+    title: "Transgenic Mosquito Mapping",
+    org: "Sanaria · PfSPZ vaccine",
+    tags: ["wet-lab", "genetics", "published"],
+    desc: "Splinkerette PCR + sequencing assays to identify and characterize transgenic Anopheles lines for the PfSPZ malaria vaccine. Co-authored peer-reviewed publication.",
+    links: [{label: "pubmed ↗", href: "https://pubmed.ncbi.nlm.nih.gov/40321780/"}],
+    preview: { label: "published · 2025", img: "assets/logos/sanaria.png", meta: "malaria · mosquito genetics" }
+  }
+];
+
+window.PUBLICATIONS = [
+  {
+    cite: "[01] PMID: 40321780 · 2025",
+    title: "Genetic characterization of transgenic Anopheles stephensi lines used in PfSPZ vaccine development",
+    authors: "…, <em>Samantray I.</em>, et al.",
+    venue: "Peer-reviewed · Sanaria Inc.",
+    href: "https://pubmed.ncbi.nlm.nih.gov/40321780/"
+  },
+  {
+    cite: "[02] PMID: 37578220",
+    title: "LipidUNet — a deep-learning pipeline for segmenting lipid deposits in retinal pigment epithelium imaging",
+    authors: "NIH-NEI Bharti Lab · contributing author",
+    venue: "Peer-reviewed · National Eye Institute",
+    href: "https://pubmed.ncbi.nlm.nih.gov/37578220/"
+  },
+  {
+    cite: "[03] GMU · JSSR",
+    title: "George Mason University — Journal of Student-Scientists' Research (article 4225)",
+    authors: "<em>Samantray I.</em>",
+    venue: "Undergraduate research journal · 2024",
+    href: "https://journals.gmu.edu/jssr/article/view/4225"
+  }
+];
+
+window.AWARDS = [
+  {
+    year: "2024",
+    badge: "1st",
+    title: "1st Place Biology — Montgomery Science Fair",
+    desc: "AstraZeneca Exceptional Award for malaria vaccine work at Sanaria Inc."
+  },
+  {
+    year: "2023",
+    badge: "$1.5k",
+    title: "Battelle Climate Change Finalist",
+    desc: "Nitrogen Storm Drain — Winner of $1,500 grant.",
+    link: "https://www.futureengineers.org/battelleclimatechallenge/gallery/61285"
+  },
+  {
+    year: "2023",
+    badge: "1·3·6",
+    title: "Science Olympiad Regionals",
+    desc: "Placed 1st, 3rd, and 6th across events. Qualified for State competition."
+  },
+  {
+    year: "2023",
+    title: "JSHS Regional Qualifier",
+    desc: "Junior Science and Humanities Symposium — ALS extension & microneedle patch."
+  },
+  {
+    year: "2022 · 2023",
+    title: "MIT THINK Participant",
+    desc: "Integrated optimization & classification framework for remote explosive detection on high-dimensional, imbalanced data."
+  },
+  {
+    year: "2022",
+    title: "Montgomery Science Fair Sweep",
+    desc: "ASM Materials Education Foundation Award, NOAA Award, US Stockholm Junior Water Prize, EPA Encouragement Award."
+  },
+  {
+    year: "2021",
+    badge: "$1k",
+    title: "eCYBERMISSION State Winner",
+    desc: "Led a three-person team on a drug-repurposing solution for WET AMD (macular degeneration) — $1,000 bond."
+  },
+  {
+    year: "2021 · 2022",
+    title: "Explorovision Participant Award",
+    desc: "ALS research — astrocyte phenotype conversion with chemokine and cytokine inhibitors in the CNS."
+  },
+  {
+    year: "2020",
+    title: "United We Learn Contest",
+    desc: "MCPS school-notes recognition for contest placement.",
+    link: "https://bethesdamagazine.com/2020/05/26/school-notes-mcps-lgbtq-forum-on-wednesday/"
+  }
+];
+
+window.STARTUPS = [
+  {
+    name: "Aegis",
+    status: "stealth",
+    logo: "assets/logos/aegis.png",
+    tagline: "AI-powered school safety platform for county school districts.",
+    desc: "Replaces 8 fragmented safety vendors with a single intelligence layer. Gives administrators one defensible probability score when a threat call comes in.",
+    features: [
+      { title: "Swatting triage engine", detail: "Monte Carlo–backed probability score in <90s to distinguish hoaxes from credible threats." },
+      { title: "BTAM engine", detail: "Behavioral threat assessment & management — WAVR-21 framework, at-risk student tracking, intervention timelines." },
+      { title: "Camera AI detection", detail: "Real-time video analysis across up to 30 feeds per school — flags anomalies automatically." },
+      { title: "Emergency broadcast", detail: "One-click mass notifications to staff and parents with scenario-specific AI-generated messaging." },
+      { title: "Panic button system", detail: "Staff-worn hardware with live event tracking, ack workflows, and incident report generation." },
+      { title: "Online monitoring", detail: "Flags concerning student activity across social platforms before it escalates." },
+      { title: "Legal audit trail", detail: "Full compliance logging for every decision made during an incident." },
+      { title: "Live incident feed", detail: "District-wide real-time event stream for superintendent-level oversight across all schools." }
+    ],
+    metric: { big: "$300K+", label: "annual vendor consolidation / large county system" },
+    pipeline: "pilot development · targeting districts like MCPS"
+  }
+];
+
+// Append CS projects to PROJECTS
+window.PROJECTS.push(
+  {
+    index: "P.09",
+    title: "Ara — Co-Pilot",
+    org: "Ara Hackathon",
+    tags: ["cs", "hackathon", "AI"],
+    desc: "Co-pilot tool built for the Ara Hackathon. AI agent that helps users navigate and automate workflows in the Ara ecosystem.",
+    links: [{ label: "github ↗", href: "https://github.com/devteamaegis/ara-copilot" }],
+    preview: { label: "hackathon · 2025", img: "assets/logos/ara.png", meta: "AI co-pilot · workflow automation" }
+  },
+  {
+    index: "P.10",
+    title: "Encore Tickets — Redesign",
+    org: "Encore Tickets",
+    tags: ["cs", "redesign", "web"],
+    desc: "Full-stack redesign of the Encore Tickets platform — modernized UI, refactored booking flow, improved ticketing experience.",
+    links: [
+      { label: "live site ↗", href: "https://encoretix.com/" },
+      { label: "github ↗", href: "https://github.com/devteamaegis/encore-tickets" }
+    ],
+    preview: { label: "redesign · shipped", img: "assets/logos/encore.png", meta: "Next.js · full-stack · DC ticketing" }
+  }
+);
