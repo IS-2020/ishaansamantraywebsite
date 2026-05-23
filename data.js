@@ -4,6 +4,32 @@
 
 window.EXPERIENCE = [
   {
+    date: "May 2026 — Present",
+    org: "Vaxon Space",
+    role: "Engineering Intern · Propulsion & Bus Design",
+    logo: "assets/logos/vaxon.png",
+    logoText: "VS",
+    logoColor: "#6ea8ff",
+    desc: "Working directly with <strong>Dr. Stephen Shepard</strong> (CEO) and <strong>Dr. Charles Lipscomb</strong> on VLEO satellite architecture. Applying DSMC knowledge to propulsion modeling, analyzing the AO-resistant air-breathing thruster integration from Vaxon's DARPA-backed strategic partner (best-in-class VLEO performance), contributing to data center use-case analysis, satellite bus design, and CAD work.",
+    location: "Remote / San Francisco, CA",
+    links: [
+      { label: "vaxonspace.com ↗", href: "https://vaxonspace.com/" },
+      { label: "Dr. Shepard ↗", href: "https://www.linkedin.com/in/stevenpshepard/" },
+      { label: "company ↗", href: "https://www.linkedin.com/company/vaxon-space/posts/?feedView=all" }
+    ]
+  },
+  {
+    date: "Apr 2026 — Present",
+    org: "Map Collective",
+    role: "Contractor — AI & Business Development",
+    logo: "assets/logos/mapcollective.png",
+    logoText: "MC",
+    logoColor: "#7cf29a",
+    desc: "Reporting to CEO Tara Gupta (Forbes 30 Under 30). Built DoD Tradewinds OTA submissions for the GRID platform — a federated agentic AI system for multi-tier supply chain graph reconstruction under adversarial/incomplete data. Produced dual-use AI architecture decks, economic modeling for a DARPA-adjacent submission, and initiated a GSA MAS contract modification (47QRAA23D0011, SIN 541620). Driving cross-platform content strategy (TikTok, LinkedIn, Instagram) and expanding the Bill of Lading data pipeline.",
+    location: "Washington, DC",
+    links: []
+  },
+  {
     date: "Feb 2026 — Present",
     org: "Impact Investing at Cornell",
     role: "Analyst · Associate Development Program",
@@ -296,6 +322,92 @@ window.STARTUPS = [
 ];
 
 // Append CS projects to PROJECTS
+window.NEWS = [
+  {
+    id: "vaxon",
+    accentClass: "now-card-accent-vaxon",
+    org: "Vaxon Space",
+    role: "Engineering Intern · Propulsion & Bus Design",
+    date: "May 2026 — Present",
+    badge: "new",
+    headline: "Joining Vaxon Space — VLEO Propulsion & Satellite Bus",
+    summary: "Vaxon Space is building next-generation Very Low Earth Orbit (VLEO) satellite systems. I'll be working with <strong>Dr. Stephen Shepard</strong> (CEO, ex-DARPA) and <strong>Dr. Charles Lipscomb</strong> on propulsion modeling, oxygen-resistant thruster integration, satellite bus architecture, and CAD — starting with the data center use-case as a first deliverable.",
+    bullets: [
+      { strong: "AO-resistant air-breathing thruster:", text: " Vaxon holds a strategic partnership with a DARPA-backed engine supplier developing an atomic-oxygen-resistant, air-breathing flight thruster with best-in-class VLEO performance numbers." },
+      { strong: "DSMC modeling:", text: " applying Direct Simulation Monte Carlo methods to characterize rarefied-gas flow at VLEO altitudes — bridging continuum and molecular flow regimes." },
+      { strong: "Satellite bus design:", text: " contributing to structural + systems layout (EPS, ADCS, C&DH, TCS, COMM, Payload Bay) informed by the propulsion integration constraints." },
+      { strong: "Data center use-case:", text: " first project — analyzing Vaxon's VLEO platform as infrastructure for low-latency global compute delivery." },
+      { strong: "How it started:", text: " Dr. Shepard and I happened to sit next to each other on a flight. One conversation about DSMC turned into an internship offer by landing." }
+    ],
+    photo: {
+      src: "assets/vaxon/plane-meeting.jpg",
+      caption: "Sitting next to Dr. Stephen Shepard (CEO, Vaxon Space) on the flight — the conversation that started the internship."
+    },
+    diagram: {
+      src: "assets/vaxon/spacecraft-diagram.png",
+      label: "Vaxon VLEO spacecraft architecture — intake → compressor → plenum → flow control → thruster"
+    },
+    links: [
+      { label: "vaxonspace.com ↗", href: "https://vaxonspace.com/", cls: "now-card-link" },
+      { label: "Dr. Shepard (LinkedIn) ↗", href: "https://www.linkedin.com/in/stevenpshepard/", cls: "now-card-link" },
+      { label: "Vaxon LinkedIn ↗", href: "https://www.linkedin.com/company/vaxon-space/posts/?feedView=all", cls: "now-card-link" },
+      { label: "live site (WIP) ↗", href: "https://vaxon-space.vercel.app/", cls: "now-card-link" }
+    ],
+    tags: ["VLEO", "Propulsion", "DSMC", "Astrodynamics", "CAD", "Satellite Bus", "Air-breathing Thruster"]
+  },
+  {
+    id: "mapcollective",
+    accentClass: "now-card-accent-map",
+    org: "Map Collective",
+    role: "Contractor — AI & Business Development",
+    date: "Apr 2026 — Present",
+    badge: "new",
+    headline: "Contracting at Map Collective — Agentic AI × Federal Contracting",
+    summary: "Reporting directly to CEO <strong>Tara Gupta</strong> (Forbes 30 Under 30) to drive AI product submissions, federal contracting strategy, and growth at Map Collective — a venture-backed supply chain intelligence company whose Vortex AI platform fills a 60% data gap across 9-tier global supply chains.",
+    bullets: [
+      { strong: "DoD Tradewinds OTA submissions:", text: " built government contract applications for Map Collective's GRID platform — a federated agentic AI system for multi-tier supply chain graph reconstruction under adversarial and incomplete data." },
+      { strong: "Dual-use AI architecture:", text: " produced technical pitch decks covering federated inference flows applied to both commercial supply chain visibility and defense-grade information fusion." },
+      { strong: "DARPA-adjacent economic modeling:", text: " developed quantitative deliverables modeling resource supply/demand dynamics (water, critical minerals, energy) as inputs to AI-driven planning systems." },
+      { strong: "GSA MAS contract modification:", text: " initiated modification process for Contract 47QRAA23D0011 (SIN 541620) to position the company for a live federal RFQ (Environmental Support Services, due May 29, 2026)." },
+      { strong: "Growth & pipeline:", text: " cross-platform content strategy (TikTok, LinkedIn, Instagram), Bill of Lading data pipeline expansion, and first-pass slide decks across two active Tradewinds solicitations." }
+    ],
+    links: [],
+    tags: ["Agentic AI", "Supply Chain Intelligence", "Federal Contracting (GSA / DoD)", "Tradewinds / OTA", "Dual-Use AI", "Business Development", "Economic Modeling", "Data Fusion"]
+  }
+];
+
+window.HACKATHONS = [
+  {
+    id: "yc-call-my-agent",
+    event: "YC Call My Agent Hackathon",
+    organizer: "Y Combinator × AgentPhone",
+    date: "May 17, 2025",
+    location: "San Francisco, CA",
+    eventHref: "https://agentphone.ai/callmyagent",
+    project: "Kairos",
+    tagline: "Live AI command center for anonymous school threat reporting & triage.",
+    desc: "Built <strong>Kairos</strong> in a single day — a live AI command center that accepts school threat tips via SMS and phone calls, runs them through a multi-agent pipeline using Anthropic Claude and Gemini Live, and triages each report in 8.2 seconds on average. The pipeline integrates Anthropic, Gemini, AgentPhone, AgentMail, Supermemory, Twilio, and Supabase into a real-time dashboard showing live threat feeds, heatmaps, escalation status, and multilingual call support.",
+    metrics: [
+      { val: "8.2s",       label: "avg triage time" },
+      { val: "$0.03",      label: "cost per tip" },
+      { val: "1 day",      label: "built in" },
+      { val: "$0.15–0.35", label: "billed per tip" }
+    ],
+    stack: ["Anthropic Claude", "Gemini Live", "AgentPhone", "AgentMail", "Supermemory", "Twilio", "Supabase", "Next.js"],
+    links: [
+      { label: "hackathon ↗", href: "https://agentphone.ai/callmyagent" },
+      { label: "github ↗",    href: "https://github.com/devteamaegis/threat-vector" },
+      { label: "youtube ↗",   href: "https://www.youtube.com/watch?v=6oZcUjKFwf4" },
+      { label: "live site ↗", href: "https://threat-vector.vercel.app" }
+    ],
+    photos: [
+      { src: "assets/hackathon/h1.jpg", caption: "at the YC × AgentPhone Call My Agent Hackathon · SF" },
+      { src: "assets/hackathon/h2.jpg", caption: "deep in the build · Cornell squad" },
+      { src: "assets/hackathon/h3.jpg", caption: "kairos threat graph visualization · live" }
+    ]
+  }
+];
+
 window.PROJECTS.push(
   {
     index: "P.09",
