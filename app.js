@@ -52,6 +52,78 @@
     }
   });
 
+  /* ---------- RENDER NOW / NEWS PANEL ---------- */
+  const nowCards = document.getElementById('nowCards');
+  if (nowCards && window.NEWS) {
+    window.NEWS.forEach(n => {
+      const bullets = n.bullets.map(b =>
+        `<li><strong>${b.strong}</strong>${b.text}</li>`
+      ).join('');
+      const links = n.links.map(l =>
+        `<a class="${l.cls}" href="${l.href}" target="_blank" rel="noopener">${l.label}</a>`
+      ).join('');
+      const tags = n.tags.map(t => `<span class="now-map-tag">${t}</span>`).join('');
+
+      let bodyHTML = '';
+      if (n.id === 'vaxon') {
+        const photoHTML = n.photo
+          ? `<div class="now-vaxon-photo">
+               <img src="${n.photo.src}" alt="${n.photo.caption}"
+                    onerror="this.src=''; this.closest('.now-vaxon-photo').style.display='none'">
+               <div class="now-vaxon-photo-cap">${n.photo.caption}</div>
+             </div>`
+          : '';
+        const diagramHTML = n.diagram
+          ? `<div class="now-diagram">
+               <img src="${n.diagram.src}" alt="${n.diagram.label}"
+                    onerror="this.src=''; this.closest('.now-diagram').style.display='none'">
+               <div class="now-diagram-label">${n.diagram.label}</div>
+             </div>`
+          : '';
+        bodyHTML = `
+          <div class="now-vaxon-body">
+            <div class="now-vaxon-text">
+              <h4>${n.headline}</h4>
+              <p>${n.summary}</p>
+              <ul class="now-bullets">${bullets}</ul>
+              <div class="now-map-tags">${tags}</div>
+              ${links ? `<div class="now-card-links">${links}</div>` : ''}
+            </div>
+            <div class="now-vaxon-photo-wrap">
+              ${photoHTML}
+              ${diagramHTML}
+            </div>
+          </div>`;
+      } else {
+        bodyHTML = `
+          <div class="now-map-body">
+            <p>${n.summary}</p>
+            <ul class="now-bullets">${bullets}</ul>
+            <div class="now-map-tags">${tags}</div>
+            ${links ? `<div class="now-card-links">${links}</div>` : ''}
+          </div>`;
+      }
+
+      const card = document.createElement('div');
+      card.className = `now-card ${n.accentClass}`;
+      card.innerHTML = `
+        <div class="now-card-inner">
+          <div class="now-card-top">
+            <div>
+              <div class="now-card-org">${n.org}</div>
+              <div class="now-card-role">${n.role}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span class="now-badge-new">${n.badge}</span>
+              <span class="now-card-date">${n.date}</span>
+            </div>
+          </div>
+          ${bodyHTML}
+        </div>`;
+      nowCards.appendChild(card);
+    });
+  }
+
   /* ---------- RENDER EXPERIENCE ---------- */
   const tl = $('#timeline');
   window.EXPERIENCE.forEach((x, i) => {
@@ -169,6 +241,117 @@
       startupsEl.appendChild(el);
     });
   }
+  /* ---------- RENDER HACKATHONS ---------- */
+  const hackEl = document.getElementById('hackathonsList');
+  if (hackEl && window.HACKATHONS) {
+    window.HACKATHONS.forEach((h, hi) => {
+      const metrics = h.metrics.map(m => `
+        <div class="hk-metric">
+          <div class="hk-metric-val">${m.val}</div>
+          <div class="hk-metric-label">${m.label}</div>
+        </div>
+      `).join('');
+      const stack = h.stack.map(s => `<span class="chip">${s}</span>`).join('');
+      const links = h.links.map(l => `<a class="hk-link" href="${l.href}" target="_blank" rel="noopener">${l.label}</a>`).join('');
+      const photos = h.photos.map((p, pi) => `
+        <div class="hk-photo" data-idx="${pi}" data-hackidx="${hi}" style="--pi:${pi}">
+          <img src="${p.src}" alt="${p.caption}" loading="lazy" onerror="this.closest('.hk-photo').classList.add('hk-photo-missing')">
+          <div class="hk-photo-cap">${p.caption}</div>
+          <div class="hk-photo-zoom">⤢</div>
+        </div>
+      `).join('');
+
+      const card = document.createElement('div');
+      card.className = 'hackathon reveal-el';
+      card.style.setProperty('--i', hi);
+      card.innerHTML = `
+        <div class="hk-header">
+          <div class="hk-badge-wrap">
+            <span class="hk-yc-badge">Y</span>
+            <div class="hk-event-info">
+              <div class="hk-event-name">${h.event}</div>
+              <div class="hk-event-meta">
+                <span class="hk-loc">⊙ ${h.location}</span>
+                <span class="hk-sep">·</span>
+                <span class="hk-date">${h.date}</span>
+                <span class="hk-sep">·</span>
+                <a class="hk-org-link" href="${h.eventHref}" target="_blank" rel="noopener">${h.organizer} ↗</a>
+              </div>
+            </div>
+          </div>
+          <div class="hk-status"><span class="hk-dot"></span> participant</div>
+        </div>
+
+        <div class="hk-project-name">${h.project}</div>
+        <p class="hk-tagline">${h.tagline}</p>
+
+        <div class="hk-metrics">${metrics}</div>
+
+        <p class="hk-desc">${h.desc}</p>
+
+        <div class="hk-stack">${stack}</div>
+
+        <div class="hk-photos" id="hkPhotos${hi}">${photos}</div>
+
+        <div class="hk-foot">
+          <div class="hk-links">${links}</div>
+          <span class="hk-built">// built in 1 day · sf 2025</span>
+        </div>
+      `;
+      hackEl.appendChild(card);
+    });
+
+    // photo lightbox
+    const lb = document.createElement('div');
+    lb.id = 'hkLightbox';
+    lb.className = 'hk-lightbox';
+    lb.innerHTML = `
+      <div class="hk-lb-bg"></div>
+      <button class="hk-lb-close">✕</button>
+      <button class="hk-lb-prev">‹</button>
+      <button class="hk-lb-next">›</button>
+      <div class="hk-lb-inner">
+        <img class="hk-lb-img" src="" alt="">
+        <div class="hk-lb-cap"></div>
+        <div class="hk-lb-counter"></div>
+      </div>
+    `;
+    document.body.appendChild(lb);
+
+    let lbPhotos = [], lbIdx = 0;
+    const openLb = (photos, idx) => {
+      lbPhotos = photos; lbIdx = idx;
+      showLb();
+      lb.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    };
+    const closeLb = () => { lb.classList.remove('open'); document.body.style.overflow = ''; };
+    const showLb = () => {
+      lb.querySelector('.hk-lb-img').src = lbPhotos[lbIdx].src;
+      lb.querySelector('.hk-lb-img').alt = lbPhotos[lbIdx].caption;
+      lb.querySelector('.hk-lb-cap').textContent = lbPhotos[lbIdx].caption;
+      lb.querySelector('.hk-lb-counter').textContent = `${lbIdx + 1} / ${lbPhotos.length}`;
+    };
+    lb.querySelector('.hk-lb-close').addEventListener('click', closeLb);
+    lb.querySelector('.hk-lb-bg').addEventListener('click', closeLb);
+    lb.querySelector('.hk-lb-prev').addEventListener('click', () => { lbIdx = (lbIdx - 1 + lbPhotos.length) % lbPhotos.length; showLb(); });
+    lb.querySelector('.hk-lb-next').addEventListener('click', () => { lbIdx = (lbIdx + 1) % lbPhotos.length; showLb(); });
+    document.addEventListener('keydown', (e) => {
+      if (!lb.classList.contains('open')) return;
+      if (e.key === 'Escape') closeLb();
+      if (e.key === 'ArrowLeft') { lbIdx = (lbIdx - 1 + lbPhotos.length) % lbPhotos.length; showLb(); }
+      if (e.key === 'ArrowRight') { lbIdx = (lbIdx + 1) % lbPhotos.length; showLb(); }
+    });
+
+    document.querySelectorAll('.hk-photo').forEach(el => {
+      el.addEventListener('click', () => {
+        const hi = parseInt(el.dataset.hackidx);
+        const pi = parseInt(el.dataset.idx);
+        openLb(window.HACKATHONS[hi].photos, pi);
+      });
+    });
+  }
+
   /* ---------- RENDER PUBLICATIONS ---------- */
   const pubs = $('#pubsList');
   window.PUBLICATIONS.forEach((p, i) => {
