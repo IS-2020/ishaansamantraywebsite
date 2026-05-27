@@ -50,11 +50,99 @@
     <li><a href="#publications" data-nav="publications"><span class="nav-num">06</span><span class="nav-label">publications</span></a></li>
     <li><a href="#awards" data-nav="awards"><span class="nav-num">07</span><span class="nav-label">awards</span></a></li>
     <li><a href="#resume" data-nav="resume"><span class="nav-num">08</span><span class="nav-label">resume</span></a></li>
-    <li><a href="#contact" data-nav="contact"><span class="nav-num">09</span><span class="nav-label">contact</span></a></li>
+    <li><a href="#photos" data-nav="photos"><span class="nav-num">09</span><span class="nav-label">photos/</span></a></li>
+    <li><a href="#contact" data-nav="contact"><span class="nav-num">10</span><span class="nav-label">contact</span></a></li>
   </ol>
 </nav>
 
 <main>
+
+  <!-- ============ SPACE GAME INTRO ============ -->
+  <section id="game" class="space-intro">
+    <canvas id="spaceCanvas"></canvas>
+
+    <!-- start overlay -->
+    <div class="sg-overlay" id="sgOverlay">
+      <div class="sg-card">
+        <div class="sg-prompt-line">
+          <span class="prompt-user">ishaan@cornell</span><span class="prompt-colon">:</span><span class="prompt-path">~</span><span class="prompt-dollar">$</span>
+          <span class="sg-cmd">./navigate_space.sh</span><span class="caret">▍</span>
+        </div>
+        <h2 class="sg-title">navigate_space<span class="sg-title-ext">.exe</span></h2>
+        <p class="sg-desc">
+          <span class="comment">// dodge asteroids. fly through rings for +5 pts.</span><br>
+          <span class="comment">// mouse or WASD to steer — space/shift to boost.</span>
+        </p>
+        <button class="sg-launch-btn" id="sgLaunch">
+          <span class="arr">▶</span> launch()
+        </button>
+        <div class="sg-skip-line">
+          <a href="#home" class="sg-skip">skip → enter_portfolio()</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- HUD -->
+    <div class="sg-hud" id="sgHud" style="display:none">
+      <div class="sg-hud-left">
+        <span class="sg-hud-label">shields</span>
+        <span class="sg-hud-val" id="sgLives">███</span>
+      </div>
+      <div class="sg-hud-right">
+        <span class="sg-hud-label">score</span>
+        <span class="sg-hud-val sg-hud-score" id="sgScore">000</span>
+      </div>
+    </div>
+
+    <!-- Controls hint -->
+    <div class="sg-controls" id="sgControls" style="display:none">
+      <span class="sg-ctrl">mouse <span class="sg-ctrl-val">aim</span></span>
+      <span class="sg-ctrl">wasd <span class="sg-ctrl-val">move</span></span>
+      <span class="sg-ctrl">space <span class="sg-ctrl-val">boost</span></span>
+    </div>
+
+    <!-- Boost badge -->
+    <div class="sg-boost-badge" id="sgBoostBadge" style="opacity:0">⚡ BOOST</div>
+
+    <!-- Scroll hint -->
+    <div class="sg-scroll-hint" id="sgScrollHint" style="display:none">
+      <a href="#home">↓ scroll to portfolio</a>
+    </div>
+
+    <!-- Hit flash -->
+    <div class="sg-hit-flash" id="sgHitFlash"></div>
+
+    <!-- Game over -->
+    <div class="sg-overlay sg-gameover-overlay" id="sgGameOver" style="display:none">
+      <div class="sg-card">
+        <div class="sg-status-err">// ship_destroyed.log</div>
+        <div class="sg-final-score" id="sgFinalScore">000</div>
+        <div class="sg-hud-label sg-final-label">final_score</div>
+        <div class="sg-hud-label" id="sgHighScoreLabel" style="margin-bottom:24px;color:var(--accent-2)"></div>
+        <div class="sg-gameover-btns">
+          <button class="sg-launch-btn" id="sgRetry"><span class="arr">▶</span> retry()</button>
+          <button class="sg-enter-btn" id="sgDebrief">→ enter_portfolio()</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MISSION DEBRIEF ============ -->
+  <div class="sg-debrief-overlay" id="sgDebriefOverlay" style="display:none" aria-hidden="true">
+    <div class="sg-debrief-card">
+      <div class="sg-debrief-header">
+        <span class="sg-debrief-dot sg-debrief-dot-red"></span>
+        <span class="sg-debrief-dot sg-debrief-dot-amber"></span>
+        <span class="sg-debrief-dot sg-debrief-dot-green"></span>
+        <span class="sg-debrief-filename">mission_debrief.sh — executing</span>
+      </div>
+      <div class="sg-debrief-body" id="sgDebriefBody"></div>
+      <div class="sg-debrief-footer" id="sgDebriefFooter" style="display:none">
+        <div class="sg-debrief-granted">▶ CLEARANCE GRANTED</div>
+        <div class="sg-debrief-sub">initializing portfolio...</div>
+      </div>
+    </div>
+  </div>
 
   <!-- ============ HOME / HERO ============ -->
   <section id="home" class="hero" data-screen-label="home">
@@ -281,6 +369,41 @@
     </div>
   </section>
 
+  <!-- ============ PHOTOS ============ -->
+  <section id="photos" class="section" data-screen-label="photos">
+    <div class="section-head">
+      <span class="section-num">09 /</span>
+      <h2 class="section-title">photos/</h2>
+      <span class="section-rule"></span>
+      <span class="section-count" id="photoCount"></span>
+    </div>
+
+    <!-- Category filter bar -->
+    <div class="gallery-filters" id="galleryFilters" role="tablist" aria-label="Photo categories">
+      <!-- injected by gallery-app.js -->
+    </div>
+
+    <!-- Masonry grid -->
+    <div class="gallery-grid" id="galleryGrid">
+      <!-- injected by gallery-app.js -->
+    </div>
+
+    <!-- Empty state -->
+    <div class="gallery-empty" id="galleryEmpty" style="display:none">
+      <div class="gallery-empty-prompt">
+        <span class="prompt-dollar">$</span>
+        <span class="gallery-empty-cmd">ls uploads/photos/</span>
+      </div>
+      <div class="gallery-empty-out">// no photos yet — add some with ./scripts/add-photo.sh</div>
+    </div>
+
+    <!-- Upload hint (shown at bottom of gallery) -->
+    <div class="gallery-hint" id="galleryHint" style="display:none">
+      <span class="comment">// to add a photo: </span>
+      <code>./scripts/add-photo.sh uploads/photos/img.jpg "lab" "caption here"</code>
+    </div>
+  </section>
+
   <!-- ============ CONTACT ============ -->
   <section id="contact" class="section" data-screen-label="contact">
     <div class="section-head">
@@ -345,6 +468,9 @@
 <div class="hover-preview" id="hoverPreview" aria-hidden="true"></div>
 
 <script src="data.js?v=8"></script>
+<script src="gallery.js"></script>
 <script src="app.js?v=6"></script>
+<script src="gallery-app.js"></script>
+<script type="module" src="space-game.js"></script>
 </body>
 </html>
