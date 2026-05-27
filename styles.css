@@ -1688,11 +1688,19 @@ main {
    ============================================================ */
 
 .space-intro {
-  position: relative;
-  width: 100%;
+  position: fixed;
+  inset: 0;
+  width: 100vw;
   height: 100vh;
   overflow: hidden;
   background: #0a0b0d;
+  z-index: 200;
+}
+
+/* hide chrome behind the game */
+body.game-active .sidenav,
+body.game-active .theme-toggle {
+  display: none !important;
 }
 
 #spaceCanvas {

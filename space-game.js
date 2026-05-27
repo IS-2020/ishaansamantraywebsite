@@ -157,11 +157,29 @@ function initGame() {
   const controlsEl  = $('sgControls')
   const skipEl      = $('sgSkip')
 
+  // Cover full viewport, hide sidenav/toggle
+  document.body.classList.add('game-active')
+
   let cleanupFn  = null
   let gamePhase  = 'idle' // idle → playing → respawning → warping → done
 
   // Show controls hint after 2s
   setTimeout(() => { if (controlsEl) controlsEl.classList.add('sg-controls-show') }, 2000)
+
+  // Skip link — dismiss game immediately
+  if (skipEl) {
+    skipEl.addEventListener('click', e => {
+      e.preventDefault()
+      document.body.classList.remove('game-active')
+      const section = document.getElementById('game')
+      if (section) { section.style.transition = 'opacity 0.4s'; section.style.opacity = '0' }
+      setTimeout(() => {
+        if (section) section.style.display = 'none'
+        const hero = document.getElementById('home')
+        if (hero) hero.scrollIntoView({ behavior: 'smooth' })
+      }, 450)
+    })
+  }
 
   // ── Start immediately ──────────────────────────────────────────────────────
   startRound()
@@ -220,7 +238,7 @@ function initGame() {
     nebGeo.setAttribute('position', new THREE.BufferAttribute(np, 3))
     nebGeo.setAttribute('color',    new THREE.BufferAttribute(nc, 3))
     scene.add(new THREE.Points(nebGeo, new THREE.PointsMaterial({
-      size: 3, vertexColors: true, transparent: true, opacity: 0.28, sizeAttenuation: true,
+      size: 0.7, vertexColors: true, transparent: true, opacity: 0.18, sizeAttenuation: true,
     })))
 
     // ── Ship ───────────────────────────────────────────────────────────────
@@ -309,6 +327,7 @@ function initGame() {
           section.style.opacity    = '0'
         }
         setTimeout(() => {
+          document.body.classList.remove('game-active')
           if (section) section.style.display = 'none'
           const hero = document.getElementById('home')
           if (hero) hero.scrollIntoView({ behavior: 'smooth' })
