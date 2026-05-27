@@ -1701,104 +1701,7 @@ main {
   height: 100%;
 }
 
-/* ── Overlay (start + gameover) ── */
-.sg-overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(10, 11, 13, 0.82);
-  transition: opacity 0.35s ease, transform 0.35s ease;
-}
-
-.sg-card {
-  max-width: 480px;
-  width: 90%;
-  padding: 40px 36px;
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-lg);
-  background: rgba(15, 17, 20, 0.92);
-  font-family: var(--mono);
-}
-
-.sg-prompt-line {
-  font-size: 12px;
-  margin-bottom: 20px;
-  opacity: 0.7;
-}
-
-.sg-cmd {
-  color: var(--ink-dim);
-  margin-left: 4px;
-}
-
-.sg-title {
-  font-size: clamp(28px, 5vw, 44px);
-  font-weight: 700;
-  color: var(--ink);
-  letter-spacing: -0.03em;
-  margin-bottom: 14px;
-  line-height: 1.1;
-}
-
-.sg-title-ext {
-  color: var(--accent);
-}
-
-.sg-desc {
-  font-size: 12px;
-  line-height: 1.7;
-  color: var(--ink-faint);
-  margin-bottom: 32px;
-}
-
-.sg-desc .comment {
-  color: var(--ink-faint);
-}
-
-.sg-launch-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 24px;
-  background: var(--accent);
-  color: #0a0b0d;
-  border: none;
-  border-radius: var(--radius);
-  font-family: var(--mono);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s, transform 0.12s;
-  letter-spacing: 0.01em;
-}
-
-.sg-launch-btn:hover {
-  background: #9ffab2;
-  transform: translateY(-1px);
-}
-
-.sg-launch-btn:active {
-  transform: translateY(0);
-}
-
-.sg-skip-line {
-  margin-top: 18px;
-  font-size: 11px;
-}
-
-.sg-skip {
-  color: var(--ink-faint);
-  text-decoration: none;
-  transition: color 0.15s;
-}
-
-.sg-skip:hover {
-  color: var(--ink-dim);
-}
-
-/* ── HUD ── */
+/* ── HUD (3-column) ── */
 .sg-hud {
   position: absolute;
   top: 0;
@@ -1812,11 +1715,14 @@ main {
   font-family: var(--mono);
 }
 
-.sg-hud-left,
-.sg-hud-right {
+.sg-hud-col {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
+}
+
+.sg-hud-center {
+  align-items: center;
 }
 
 .sg-hud-right {
@@ -1831,15 +1737,89 @@ main {
 }
 
 .sg-hud-val {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--accent);
   letter-spacing: 0.05em;
   transition: color 0.2s;
 }
 
-.sg-hud-score.ring-flash {
-  color: var(--accent-2);
+/* ── Kill tracker ── */
+.sg-kills {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.sg-kill-box {
+  font-size: 20px;
+  color: var(--ink-faint);
+  transition: color 0.15s, text-shadow 0.15s;
+  line-height: 1;
+}
+
+.sg-kill-box.filled {
+  color: var(--accent);
+  text-shadow: 0 0 8px var(--accent);
+}
+
+/* ── Screen flash overlay ── */
+.sg-flash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.12s ease-out;
+  z-index: 20;
+}
+
+.sg-flash-hit {
+  background: var(--red);
+  opacity: 0.28;
+  transition: opacity 0.08s ease-out;
+}
+
+.sg-flash-kill {
+  background: var(--accent);
+  opacity: 0.18;
+  transition: opacity 0.12s ease-out;
+}
+
+.sg-flash-green {
+  background: var(--accent);
+  opacity: 0.35;
+  transition: opacity 0.4s ease-in;
+}
+
+.sg-flash-white {
+  background: #ffffff;
+  opacity: 0.9;
+  transition: opacity 0.25s ease-in;
+}
+
+/* ── Center announcement ── */
+.sg-announcement {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--mono);
+  font-size: clamp(18px, 3.5vw, 28px);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  text-shadow: 0 0 20px var(--accent);
+  transition: opacity 0.25s ease;
+  z-index: 15;
+  white-space: nowrap;
+}
+
+.sg-announcement-show {
+  opacity: 1;
 }
 
 /* ── Controls hint ── */
@@ -1856,6 +1836,12 @@ main {
   color: var(--ink-faint);
   letter-spacing: 0.08em;
   white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.sg-controls-show {
+  opacity: 1;
 }
 
 .sg-ctrl-val {
@@ -1863,94 +1849,28 @@ main {
   margin-left: 2px;
 }
 
-/* ── Boost badge ── */
-.sg-boost-badge {
-  position: absolute;
-  bottom: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.22em;
-  color: var(--accent-2);
-  pointer-events: none;
-  transition: opacity 0.15s;
-}
-
-/* ── Scroll hint ── */
-.sg-scroll-hint {
+/* ── Skip link ── */
+.sg-skip-link {
   position: absolute;
   bottom: 22px;
-  left: 50%;
-  transform: translateX(-50%);
+  right: 28px;
   font-family: var(--mono);
   font-size: 11px;
   letter-spacing: 0.1em;
-  white-space: nowrap;
-}
-
-.sg-scroll-hint a {
   color: var(--ink-faint);
   text-decoration: none;
+  pointer-events: auto;
   transition: color 0.15s;
+  opacity: 0;
+  animation: sg-fadein 0.5s ease 2.5s forwards;
 }
 
-.sg-scroll-hint a:hover {
+.sg-skip-link:hover {
   color: var(--accent);
 }
 
-/* ── Game over ── */
-.sg-gameover-overlay {
-  background: rgba(10, 11, 13, 0.88);
-}
-
-.sg-status-err {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.15em;
-  color: var(--red);
-  margin-bottom: 20px;
-}
-
-.sg-final-score {
-  font-family: var(--mono);
-  font-size: clamp(52px, 12vw, 80px);
-  font-weight: 700;
-  color: var(--accent);
-  letter-spacing: -0.04em;
-  line-height: 1;
-  margin-bottom: 6px;
-}
-
-.sg-final-label {
-  margin-bottom: 36px;
-  display: block;
-}
-
-.sg-gameover-btns {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.sg-enter-btn {
-  display: inline-flex;
-  align-items: center;
-  padding: 10px 20px;
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius);
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--ink-dim);
-  text-decoration: none;
-  transition: border-color 0.15s, color 0.15s;
-  letter-spacing: 0.01em;
-}
-
-.sg-enter-btn:hover {
-  border-color: var(--accent);
-  color: var(--accent);
+@keyframes sg-fadein {
+  to { opacity: 1; }
 }
 
 /* light theme overrides */
@@ -1958,25 +1878,9 @@ main {
   background: #f5f5f3;
 }
 
-[data-theme="light"] .sg-overlay,
-[data-theme="light"] .sg-gameover-overlay {
-  background: rgba(245, 245, 243, 0.85);
-}
-
-[data-theme="light"] .sg-card {
-  background: rgba(255, 255, 255, 0.94);
-  border-color: #d0d0cc;
-}
-
-/* ── Hit flash ── */
-.sg-hit-flash {
-  position: absolute;
-  inset: 0;
-  background: var(--red);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.22s ease-out;
-  z-index: 10;
+[data-theme="light"] .sg-announcement {
+  color: var(--accent);
+  text-shadow: 0 0 20px var(--accent);
 }
 
 /* ── Mission debrief overlay ── */
