@@ -1,187 +1,189 @@
-// space-game.js — shoot 3 asteroids → warp → portfolio
+// space-game.js — modern space shooter · ishaansamantray.com
+// Shoot 3 asteroids → warp → portfolio
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.168.0/build/three.module.js'
 
-// ── Config ────────────────────────────────────────────────────────────────────
-const TARGET_KILLS    = 3
-const BASE_SPEED      = 0.20
-const BOOST_SPEED     = 0.55
-const ASTEROID_COUNT  = 14
-const BULLET_SPEED    = 4.5
-const GREEN           = 0x7cf29a
-const AMBER           = 0xffb454
+// ── Config ─────────────────────────────────────────────────────────────────────
+const TARGET_KILLS   = 3
+const ASTEROID_COUNT = 7
+const BULLET_SPEED   = 6
+const SHIP_FOLLOW    = 0.10   // lerp factor — how snappily ship tracks mouse
+const C_GREEN        = 0x7cf29a
+const C_AMBER        = 0xffb454
+const C_BG           = 0x030508  // deep space
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// ── Helpers ────────────────────────────────────────────────────────────────────
 const $ = id => document.getElementById(id)
-const livesBar = n => '█'.repeat(Math.max(0, n)) + '░'.repeat(Math.max(0, 3 - n))
+const livesBar = n => '█'.repeat(Math.max(0,n)) + '░'.repeat(Math.max(0,3-n))
 
-function announce(text, color = 'var(--accent)', duration = 1800) {
+function announce(text, color = 'var(--accent)', ms = 1800) {
   const el = $('sgAnnouncement')
   if (!el) return
-  el.textContent = text
-  el.style.color = color
+  el.textContent = text; el.style.color = color
   el.classList.add('sg-announcement-show')
   clearTimeout(el._t)
-  el._t = setTimeout(() => el.classList.remove('sg-announcement-show'), duration)
+  el._t = setTimeout(() => el.classList.remove('sg-announcement-show'), ms)
 }
 
-function updateKillBoxes(kills) {
+function updateKillBoxes(n) {
   for (let i = 0; i < TARGET_KILLS; i++) {
-    const box = $(`sgKill${i}`)
-    if (!box) continue
-    if (i < kills) {
-      box.textContent = '■'
-      box.classList.add('filled')
-    } else {
-      box.textContent = '□'
-      box.classList.remove('filled')
-    }
+    const b = $(`sgKill${i}`)
+    if (!b) continue
+    b.textContent = i < n ? '■' : '□'
+    b.classList.toggle('filled', i < n)
   }
 }
 
-// ── Ship ──────────────────────────────────────────────────────────────────────
+// ── Circular glow sprite (stars look round, not square) ────────────────────────
+function makeGlowTex() {
+  const c = document.createElement('canvas'); c.width = c.height = 64
+  const ctx = c.getContext('2d')
+  const g = ctx.createRadialGradient(32,32,0,32,32,32)
+  g.addColorStop(0,   'rgba(255,255,255,1)')
+  g.addColorStop(0.25,'rgba(255,255,255,0.8)')
+  g.addColorStop(0.6, 'rgba(255,255,255,0.15)')
+  g.addColorStop(1,   'rgba(255,255,255,0)')
+  ctx.fillStyle = g; ctx.fillRect(0,0,64,64)
+  return new THREE.CanvasTexture(c)
+}
+
+// ── Ship (clean angular fighter) ───────────────────────────────────────────────
 function buildShip() {
   const g = new THREE.Group()
-  const bodyMat   = new THREE.MeshStandardMaterial({ color: 0x0a120a, metalness: 0.9, roughness: 0.15 })
-  const accentMat = new THREE.MeshStandardMaterial({ color: 0x1a2a1a, metalness: 0.5, roughness: 0.3, emissive: GREEN, emissiveIntensity: 0.25 })
-  const glassMat  = new THREE.MeshStandardMaterial({ color: GREEN, transparent: true, opacity: 0.45, roughness: 0.05 })
-  const engineMat = new THREE.MeshStandardMaterial({ color: GREEN, emissive: GREEN, emissiveIntensity: 3 })
+  const hull  = new THREE.MeshStandardMaterial({ color: 0x0b1a0f, metalness: 0.85, roughness: 0.15 })
+  const emGrn = new THREE.MeshStandardMaterial({ color: C_GREEN, emissive: C_GREEN, emissiveIntensity: 2.5 })
+  const glass = new THREE.MeshStandardMaterial({ color: C_GREEN, transparent: true, opacity: 0.28, roughness: 0.05 })
 
-  const fuse = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.32, 2.0, 8), bodyMat)
-  fuse.rotation.x = Math.PI / 2; g.add(fuse)
+  // Hull — hexagonal tapered body
+  const body = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.26, 1.75, 6), hull)
+  body.rotation.x = Math.PI / 2; g.add(body)
 
-  const nose = new THREE.Mesh(new THREE.ConeGeometry(0.11, 0.65, 8), accentMat)
-  nose.rotation.x = Math.PI / 2; nose.position.z = 1.32; g.add(nose)
+  // Nose
+  const nose = new THREE.Mesh(new THREE.ConeGeometry(0.07, 0.58, 6),
+    new THREE.MeshStandardMaterial({ color: 0x15281b, metalness: 0.9, roughness: 0.08 }))
+  nose.rotation.x = Math.PI / 2; nose.position.z = 1.16; g.add(nose)
 
-  const cockpit = new THREE.Mesh(
-    new THREE.SphereGeometry(0.16, 10, 6, 0, Math.PI * 2, 0, Math.PI * 0.55), glassMat,
-  )
-  cockpit.rotation.x = -Math.PI / 2; cockpit.position.set(0, 0.1, 0.48); g.add(cockpit)
+  // Cockpit dome (half-sphere)
+  const dome = new THREE.Mesh(
+    new THREE.SphereGeometry(0.14, 10, 6, 0, Math.PI * 2, 0, Math.PI * 0.5), glass)
+  dome.rotation.x = -Math.PI / 2; dome.position.set(0, 0.08, 0.38); g.add(dome)
 
-  const makeWing = flip => {
-    const v = new Float32Array([0, 0, -0.1, flip * 1.7, -0.04, -0.65, flip * 0.35, 0, 0.55])
+  // Wings — swept triangles with tip lights
+  ;[-1, 1].forEach(s => {
+    const v = new Float32Array([0,0,0.28, s*1.55,-0.06,-0.45, s*0.22,0,0.18])
     const geo = new THREE.BufferGeometry()
     geo.setAttribute('position', new THREE.BufferAttribute(v, 3))
     geo.computeVertexNormals()
-    return new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
-      color: 0x080f08, metalness: 0.9, roughness: 0.2, side: THREE.DoubleSide,
-    }))
-  }
-  g.add(makeWing(-1)); g.add(makeWing(1))
-
-  const wlGeo = new THREE.BoxGeometry(0.06, 0.2, 0.42)
-  ;[-1.38, 1.38].forEach((x, i) => {
-    const wl = new THREE.Mesh(wlGeo, accentMat); wl.position.set(x, 0, -0.5)
-    wl.rotation.z = i === 0 ? -0.25 : 0.25; g.add(wl)
+    g.add(new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
+      color: 0x0a1810, metalness: 0.8, roughness: 0.25, side: THREE.DoubleSide,
+    })))
+    const tip = new THREE.Mesh(new THREE.SphereGeometry(0.038, 5, 5), emGrn)
+    tip.position.set(s * 1.52, -0.06, -0.43); g.add(tip)
   })
 
-  const podGeo   = new THREE.CylinderGeometry(0.09, 0.13, 0.55, 8)
-  const flameGeo = new THREE.CircleGeometry(0.09, 8)
-  ;[-0.42, 0.42].forEach(x => {
-    const pod = new THREE.Mesh(podGeo, bodyMat.clone())
-    pod.rotation.x = Math.PI / 2; pod.position.set(x, 0, -0.88); g.add(pod)
-    const flame = new THREE.Mesh(flameGeo, engineMat.clone())
-    flame.position.set(x, 0, -1.17); g.add(flame)
-  })
-  const cf = new THREE.Mesh(new THREE.CircleGeometry(0.13, 8), engineMat.clone())
-  cf.position.set(0, 0, -1.04); g.add(cf)
+  // Engine nozzle glow circle
+  g.add(Object.assign(
+    new THREE.Mesh(new THREE.CircleGeometry(0.075, 10), new THREE.MeshBasicMaterial({ color: C_GREEN })),
+    { position: new THREE.Vector3(0, 0, -0.88) }
+  ))
+
   return g
 }
 
-// ── Asteroid ──────────────────────────────────────────────────────────────────
+// ── Asteroid (physics object) ──────────────────────────────────────────────────
 function buildAsteroid(size) {
-  const geo = new THREE.IcosahedronGeometry(size, 1)
+  const geo = new THREE.IcosahedronGeometry(size, 2)
   const pos = geo.attributes.position
   for (let i = 0; i < pos.count; i++) {
-    pos.setXYZ(i,
-      pos.getX(i) * (0.75 + Math.random() * 0.5),
-      pos.getY(i) * (0.75 + Math.random() * 0.5),
-      pos.getZ(i) * (0.75 + Math.random() * 0.5),
-    )
+    const s = 0.6 + Math.random() * 0.8
+    pos.setXYZ(i, pos.getX(i)*s, pos.getY(i)*s, pos.getZ(i)*s)
   }
   geo.computeVertexNormals()
-  const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
-    color: new THREE.Color().setHSL(0.33, 0.05, 0.14 + Math.random() * 0.1),
-    roughness: 0.9, metalness: 0.1,
+  const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
+    color: new THREE.Color().setHSL(0.07 + Math.random()*0.06, 0.1+Math.random()*0.08, 0.18+Math.random()*0.14),
+    roughness: 0.92, metalness: 0.06,
   }))
-  mesh.userData.rotSpeed = new THREE.Vector3(
-    (Math.random() - 0.5) * 0.04,
-    (Math.random() - 0.5) * 0.04,
-    (Math.random() - 0.5) * 0.04,
-  )
-  mesh.userData.hitRadius = size * 0.9
-  mesh.userData.alive     = true
-  return mesh
+  m.userData.vel    = new THREE.Vector3((Math.random()-.5)*.05,(Math.random()-.5)*.03, 0.06+Math.random()*.09)
+  m.userData.rotVel = new THREE.Vector3((Math.random()-.5)*.028,(Math.random()-.5)*.028,(Math.random()-.5)*.018)
+  m.userData.hitR   = size * 0.85
+  m.userData.size   = size
+  m.userData.alive  = true
+  return m
 }
 
-// ── Bullet ────────────────────────────────────────────────────────────────────
+function resetAsteroid(a) {
+  const angle = Math.random() * Math.PI * 2, r = 3.5 + Math.random() * 4
+  a.position.set(Math.cos(angle)*r*1.6, Math.sin(angle)*r*0.9, -40 - Math.random()*50)
+  a.userData.vel.set((Math.random()-.5)*.05,(Math.random()-.5)*.03, 0.06+Math.random()*.09)
+  a.userData.alive = true; a.visible = true
+}
+
+// ── Bullet ─────────────────────────────────────────────────────────────────────
 function buildBullet(x, y) {
-  const geo = new THREE.SphereGeometry(0.06, 6, 6)
-  const mat = new THREE.MeshStandardMaterial({ color: GREEN, emissive: GREEN, emissiveIntensity: 6 })
-  const mesh = new THREE.Mesh(geo, mat)
-  mesh.position.set(x, y, 0.5)
-  const light = new THREE.PointLight(GREEN, 3, 2.5)
-  mesh.add(light)
-  return mesh
+  const m = new THREE.Mesh(
+    new THREE.SphereGeometry(0.075, 7, 7),
+    new THREE.MeshBasicMaterial({ color: C_GREEN }),
+  )
+  m.position.set(x, y, 0.4)
+  m.add(new THREE.PointLight(C_GREEN, 5, 3.5))
+  return m
 }
 
-// ── Explosion particles ───────────────────────────────────────────────────────
-function spawnExplosion(scene, position) {
-  const particles = []
-  const count = 10
+// ── Explosion ──────────────────────────────────────────────────────────────────
+function spawnExplosion(scene, pos, size) {
+  const count = 10 + Math.floor(size * 12), parts = []
   for (let i = 0; i < count; i++) {
-    const geo = new THREE.SphereGeometry(0.04 + Math.random() * 0.06, 4, 4)
-    const mat = new THREE.MeshStandardMaterial({
-      color: Math.random() > 0.5 ? GREEN : AMBER,
-      emissive: Math.random() > 0.5 ? GREEN : AMBER,
-      emissiveIntensity: 4,
-    })
-    const p = new THREE.Mesh(geo, mat)
-    p.position.copy(position)
-    const vel = new THREE.Vector3(
-      (Math.random() - 0.5) * 0.25,
-      (Math.random() - 0.5) * 0.25,
-      (Math.random() - 0.5) * 0.12,
+    const s   = 0.04 + Math.random() * 0.08
+    const col = Math.random() > 0.45 ? C_GREEN : C_AMBER
+    const p   = new THREE.Mesh(
+      new THREE.SphereGeometry(s, 4, 4),
+      new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 1 }),
     )
-    p.userData.vel  = vel
-    p.userData.life = 1.0
-    scene.add(p)
-    particles.push(p)
+    p.position.copy(pos)
+    const spd = 0.06 + Math.random() * 0.22
+    const phi = Math.random() * Math.PI * 2, tht = Math.acos(2*Math.random()-1)
+    p.userData.vel  = new THREE.Vector3(Math.sin(tht)*Math.cos(phi)*spd, Math.sin(tht)*Math.sin(phi)*spd, Math.cos(tht)*spd)
+    p.userData.life = 1
+    scene.add(p); parts.push(p)
   }
-  return particles
+  // Brief flash light
+  const fl = new THREE.PointLight(C_AMBER, 20, 7); fl.position.copy(pos); scene.add(fl)
+  let t = 0
+  const fade = () => { t += 0.1; fl.intensity = Math.max(0, 20-t*20); if (fl.intensity>0) requestAnimationFrame(fade); else scene.remove(fl) }
+  fade()
+  return parts
 }
 
-// ── Main ──────────────────────────────────────────────────────────────────────
+// ── Main game ──────────────────────────────────────────────────────────────────
 function initGame() {
-  const canvas      = $('spaceCanvas')
-  const flashEl     = $('sgFlash')
-  const controlsEl  = $('sgControls')
-  const skipEl      = $('sgSkip')
+  const canvas     = $('spaceCanvas')
+  const flashEl    = $('sgFlash')
+  const controlsEl = $('sgControls')
+  const skipEl     = $('sgSkip')
+  if (!canvas) return
 
-  // Cover full viewport, hide sidenav/toggle
   document.body.classList.add('game-active')
 
-  let cleanupFn  = null
-  let gamePhase  = 'idle' // idle → playing → respawning → warping → done
+  let gamePhase = 'idle'
+  let cleanupFn = null
 
-  // Show controls hint after 2s
-  setTimeout(() => { if (controlsEl) controlsEl.classList.add('sg-controls-show') }, 2000)
+  setTimeout(() => { if (controlsEl) controlsEl.classList.add('sg-controls-show') }, 2500)
 
-  // Skip link — dismiss game immediately
   if (skipEl) {
     skipEl.addEventListener('click', e => {
-      e.preventDefault()
-      document.body.classList.remove('game-active')
-      const section = document.getElementById('game')
-      if (section) { section.style.transition = 'opacity 0.4s'; section.style.opacity = '0' }
-      setTimeout(() => {
-        if (section) section.style.display = 'none'
-        const hero = document.getElementById('home')
-        if (hero) hero.scrollIntoView({ behavior: 'smooth' })
-      }, 450)
+      e.preventDefault(); dismissGame()
     })
   }
 
-  // ── Start immediately ──────────────────────────────────────────────────────
+  function dismissGame() {
+    document.body.classList.remove('game-active')
+    const s = document.getElementById('game')
+    if (s) { s.style.transition = 'opacity 0.5s'; s.style.opacity = '0' }
+    setTimeout(() => {
+      if (s) s.style.display = 'none'
+      document.getElementById('home')?.scrollIntoView({ behavior: 'smooth' })
+    }, 520)
+  }
+
   startRound()
 
   function startRound() {
@@ -192,336 +194,256 @@ function initGame() {
 
     const W = window.innerWidth, H = window.innerHeight
 
-    // ── Scene ──────────────────────────────────────────────────────────────
+    // ── Scene setup ───────────────────────────────────────────────────────────
     const scene    = new THREE.Scene()
-    scene.background = new THREE.Color(0x0a0b0d)
-    const camera   = new THREE.PerspectiveCamera(70, W / H, 0.1, 800)
-    camera.position.set(0, 1.6, 7.5)
+    scene.background = new THREE.Color(C_BG)
+    scene.fog        = new THREE.FogExp2(C_BG, 0.0014)
+
+    const camera   = new THREE.PerspectiveCamera(65, W/H, 0.1, 600)
+    camera.position.set(0, 0.9, 8)
     camera.lookAt(0, 0, 0)
+
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true })
     renderer.setSize(W, H)
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2))
-    renderer.toneMapping = THREE.ACESFilmicToneMapping
-    renderer.toneMappingExposure = 1.0
+    renderer.toneMapping         = THREE.ACESFilmicToneMapping
+    renderer.toneMappingExposure = 1.15
 
-    // ── Lights ─────────────────────────────────────────────────────────────
-    scene.add(new THREE.AmbientLight(0x0d1a0d, 4))
-    const key = new THREE.DirectionalLight(0x44ff88, 3)
-    key.position.set(4, 8, 5); scene.add(key)
-    scene.add(new THREE.DirectionalLight(AMBER, 0.8)).position.set(-4, -3, -8)
+    // Lights
+    scene.add(new THREE.AmbientLight(0x0c1812, 6))
+    const key = new THREE.DirectionalLight(0x50ff88, 2.8); key.position.set(4,8,5); scene.add(key)
+    scene.add(Object.assign(new THREE.DirectionalLight(0x2040ff, 0.5), { position: new THREE.Vector3(-5,-3,-8) }))
 
-    // ── Stars ──────────────────────────────────────────────────────────────
-    const STAR_N = 4000
-    const starGeo = new THREE.BufferGeometry()
-    const starPos = new Float32Array(STAR_N * 3)
-    const starBase = [] // original positions for warp reference
-    for (let i = 0; i < STAR_N; i++) {
-      const x = (Math.random() - 0.5) * 400
-      const y = (Math.random() - 0.5) * 400
-      const z = (Math.random() - 0.5) * 400
-      starPos[i*3] = x; starPos[i*3+1] = y; starPos[i*3+2] = z
-      starBase.push(x, y, z)
+    // ── Starfield (3 depth layers, circular sprites) ─────────────────────────
+    const starTex = makeGlowTex()
+
+    function makeStarLayer(n, zNear, zFar, size, bright) {
+      const pos = new Float32Array(n*3), col = new Float32Array(n*3)
+      for (let i = 0; i < n; i++) {
+        pos[i*3]   = (Math.random()-.5)*360
+        pos[i*3+1] = (Math.random()-.5)*220
+        pos[i*3+2] = -zNear - Math.random()*(zFar-zNear)
+        const b = bright * (0.5 + Math.random()*0.5)
+        col[i*3] = b*0.88; col[i*3+1] = b*0.94; col[i*3+2] = b  // blue-white tint
+      }
+      const geo = new THREE.BufferGeometry()
+      geo.setAttribute('position', new THREE.BufferAttribute(pos, 3))
+      geo.setAttribute('color',    new THREE.BufferAttribute(col, 3))
+      return new THREE.Points(geo, new THREE.PointsMaterial({
+        size, vertexColors: true, sizeAttenuation: true,
+        transparent: true, alphaTest: 0.005, map: starTex,
+      }))
     }
-    starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3))
-    const starMat = new THREE.PointsMaterial({ color: 0xaaffcc, size: 0.45, sizeAttenuation: true })
-    const stars   = new THREE.Points(starGeo, starMat)
-    scene.add(stars)
 
-    // ── Nebula ─────────────────────────────────────────────────────────────
-    const nebGeo = new THREE.BufferGeometry()
-    const np = new Float32Array(700 * 3), nc = new Float32Array(700 * 3)
-    const cols = [[0.02,0.18,0.04],[0.04,0.08,0.02],[0.0,0.12,0.06]]
-    for (let i = 0; i < 700; i++) {
-      np[i*3] = (Math.random()-.5)*250; np[i*3+1] = (Math.random()-.5)*130; np[i*3+2] = -30 - Math.random()*250
-      const c = cols[i%3]; nc[i*3] = c[0]; nc[i*3+1] = c[1]; nc[i*3+2] = c[2]
-    }
-    nebGeo.setAttribute('position', new THREE.BufferAttribute(np, 3))
-    nebGeo.setAttribute('color',    new THREE.BufferAttribute(nc, 3))
-    scene.add(new THREE.Points(nebGeo, new THREE.PointsMaterial({
-      size: 0.7, vertexColors: true, transparent: true, opacity: 0.18, sizeAttenuation: true,
-    })))
+    const starFar  = makeStarLayer(2200, 80,  400, 0.38, 0.55)
+    const starMid  = makeStarLayer(700,  30,  160, 0.65, 0.80)
+    const starNear = makeStarLayer(120,  10,  70,  1.3,  1.00)
+    const starGroup = new THREE.Group()
+    starGroup.add(starFar, starMid, starNear); scene.add(starGroup)
 
-    // ── Ship ───────────────────────────────────────────────────────────────
-    const ship = buildShip()
-    scene.add(ship)
-    const engineGlow = new THREE.PointLight(GREEN, 2.5, 4.5)
-    engineGlow.position.set(0, 0, -1.6); ship.add(engineGlow)
+    // ── Ship ──────────────────────────────────────────────────────────────────
+    const ship = buildShip(); scene.add(ship)
+    const engineGlow = new THREE.PointLight(C_GREEN, 3, 5.5)
+    engineGlow.position.set(0,0,-1.6); ship.add(engineGlow)
 
-    // Thruster particles
-    const tCount = 60, tGeo = new THREE.BufferGeometry()
-    const tPos = new Float32Array(tCount * 3), tAge = new Float32Array(tCount)
-    for (let i = 0; i < tCount; i++) {
-      tPos[i*3] = (Math.random()-.5)*.22; tPos[i*3+1] = (Math.random()-.5)*.14; tPos[i*3+2] = -1.1 - Math.random()*2.2
-      tAge[i] = Math.random()
-    }
-    tGeo.setAttribute('position', new THREE.BufferAttribute(tPos, 3))
-    const tMat = new THREE.PointsMaterial({ color: GREEN, size: 0.11, transparent: true, opacity: 0.7, sizeAttenuation: true })
-    ship.add(new THREE.Points(tGeo, tMat))
+    // Engine exhaust particle trail
+    const EX_N  = 50, exGeo = new THREE.BufferGeometry()
+    const exPos = new Float32Array(EX_N*3), exAge = new Float32Array(EX_N)
+    for (let i = 0; i < EX_N; i++) { exPos[i*3+2] = -999; exAge[i] = Math.random() }
+    exGeo.setAttribute('position', new THREE.BufferAttribute(exPos, 3))
+    const exMat = new THREE.PointsMaterial({ color: C_GREEN, size: 0.09, transparent: true, opacity: 0.65, sizeAttenuation: true, map: starTex, alphaTest: 0.01 })
+    ship.add(new THREE.Points(exGeo, exMat))
 
-    // ── Asteroids ──────────────────────────────────────────────────────────
+    // ── Asteroids ─────────────────────────────────────────────────────────────
     const asteroids = []
     for (let i = 0; i < ASTEROID_COUNT; i++) {
-      const a = buildAsteroid(0.28 + Math.random() * 0.55)
-      a.position.set((Math.random()-.5)*14, (Math.random()-.5)*8, -40 - Math.random()*80)
+      const a = buildAsteroid(0.35 + Math.random()*0.55)
+      a.position.set((Math.random()-.5)*14, (Math.random()-.5)*8, -20 - i*12 - Math.random()*15)
       scene.add(a); asteroids.push(a)
     }
 
-    // ── Bullets ────────────────────────────────────────────────────────────
-    const bullets = []
+    // ── State ─────────────────────────────────────────────────────────────────
+    const bullets  = [], explosionParts = []
+    let _lives = 3, _kills = 0
+    let fireCooldown = 0, hitCooldown = 0, warpTime = 0, shakeAmt = 0
+    let last = performance.now(), raf
 
-    function fireBullet() {
-      if (gamePhase !== 'playing') return
+    // Smooth mouse target
+    const mx = { x:0, y:0, tx:0, ty:0 }
+
+    // ── Input ─────────────────────────────────────────────────────────────────
+    const keys = {}
+    const fire = () => {
+      if (gamePhase !== 'playing' || fireCooldown > 0) return
+      fireCooldown = 10
       const b = buildBullet(ship.position.x, ship.position.y)
-      scene.add(b)
-      bullets.push(b)
+      scene.add(b); bullets.push(b)
+      engineGlow.intensity = 8
     }
+    const onKD     = e => { keys[e.code] = true;  if (e.code === 'Space') { e.preventDefault(); fire() } }
+    const onKU     = e => { keys[e.code] = false }
+    const onMove   = e => { mx.tx = (e.clientX/window.innerWidth-.5)*11; mx.ty = -(e.clientY/window.innerHeight-.5)*7 }
+    const onTouch  = e => { if (e.touches[0]) { mx.tx = (e.touches[0].clientX/window.innerWidth-.5)*11; mx.ty = -(e.touches[0].clientY/window.innerHeight-.5)*7 } }
+    const onResize = () => { camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight) }
 
-    // ── Input ──────────────────────────────────────────────────────────────
-    const mouse = { x:0, y:0, tx:0, ty:0 }
-    const keys  = {}
-    let fireCooldown = 0
-
-    const onMove  = e => { const r = canvas.getBoundingClientRect(); mouse.tx = ((e.clientX-r.left)/r.width-.5)*12; mouse.ty = -((e.clientY-r.top)/r.height-.5)*7.5 }
-    const onTouch = e => { const t=e.touches[0],r=canvas.getBoundingClientRect(); mouse.tx=((t.clientX-r.left)/r.width-.5)*12; mouse.ty=-((t.clientY-r.top)/r.height-.5)*7.5 }
-    const onKD = e => {
-      keys[e.code] = true
-      if ((e.code === 'Space' || e.code === 'Enter') && fireCooldown <= 0) {
-        fireBullet(); fireCooldown = 18
-      }
-    }
-    const onKU    = e => { keys[e.code] = false }
-    const onClick = () => { if (gamePhase === 'playing' && fireCooldown <= 0) { fireBullet(); fireCooldown = 18 } }
-    const onResize = () => { camera.aspect=window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth,window.innerHeight) }
-
-    window.addEventListener('mousemove', onMove)
-    window.addEventListener('touchmove', onTouch, { passive: true })
     window.addEventListener('keydown',   onKD)
     window.addEventListener('keyup',     onKU)
-    canvas.addEventListener('click',     onClick)
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('touchmove', onTouch, { passive: true })
+    canvas.addEventListener('click',     fire)
     window.addEventListener('resize',    onResize)
 
-    // ── State ──────────────────────────────────────────────────────────────
-    let _lives      = 3
-    let _kills      = 0
-    let hitCooldown = 0
-    const explosionParticles = []
-    let warpTime    = 0
-    let last        = performance.now()
-    let raf
-
-    // ── Warp sequence ──────────────────────────────────────────────────────
+    // ── Warp sequence ─────────────────────────────────────────────────────────
     function triggerWarp() {
-      gamePhase = 'warping'
-      warpTime  = 0
-      announce('MISSION COMPLETE — INITIATING WARP', 'var(--accent)', 99999)
-
-      // CSS flash: first green glow, then white
-      setTimeout(() => { if (flashEl) { flashEl.className = 'sg-flash sg-flash-green' } }, 1400)
-      setTimeout(() => { if (flashEl) { flashEl.className = 'sg-flash sg-flash-white' } }, 2200)
-
-      // Transition to portfolio
+      gamePhase = 'warping'; warpTime = 0
+      announce('ALL TARGETS ELIMINATED — WARPING', 'var(--accent)', 99999)
+      setTimeout(() => { if (flashEl) flashEl.className = 'sg-flash sg-flash-green' }, 1400)
+      setTimeout(() => { if (flashEl) flashEl.className = 'sg-flash sg-flash-white' }, 2300)
       setTimeout(() => {
-        const section = document.getElementById('game')
-        if (section) {
-          section.style.transition = 'opacity 0.6s ease'
-          section.style.opacity    = '0'
-        }
+        const s = document.getElementById('game')
+        if (s) { s.style.transition = 'opacity 0.65s'; s.style.opacity = '0' }
         setTimeout(() => {
           document.body.classList.remove('game-active')
-          if (section) section.style.display = 'none'
-          const hero = document.getElementById('home')
-          if (hero) hero.scrollIntoView({ behavior: 'smooth' })
-          // Run debrief after portfolio entry
+          if (s) s.style.display = 'none'
+          document.getElementById('home')?.scrollIntoView({ behavior: 'smooth' })
           setTimeout(() => runDebrief(_kills * 10), 800)
         }, 700)
-      }, 2800)
+      }, 2900)
     }
 
-    // ── Loop ───────────────────────────────────────────────────────────────
+    // ── Render loop ───────────────────────────────────────────────────────────
     function loop(now) {
       raf = requestAnimationFrame(loop)
-      const dt = Math.min((now - last) / 16.67, 3)
-      last = now
+      const dt = Math.min((now - last) / 16.67, 3); last = now
 
-      // ── Warp animation ──────────────────────────────────────────────────
+      // ── WARP animation ──────────────────────────────────────────────────────
       if (gamePhase === 'warping') {
         warpTime += dt
-
-        // Star warp: rapidly increase star size and push them toward camera
-        const warpT = Math.min(warpTime / 80, 1) // 0→1 over ~80 frames
-        starMat.size = 0.45 + warpT * 18          // stars stretch into streaks
-        const sBuf = starGeo.attributes.position
-        for (let i = 0; i < STAR_N; i++) {
-          // Pull stars toward camera (z increases)
-          const z = sBuf.getZ(i) + warpT * 4 * dt
-          sBuf.setZ(i, z > 15 ? -300 : z)         // wrap if they pass camera
-        }
-        sBuf.needsUpdate = true
-
-        // Camera FOV widens
-        camera.fov = Math.min(70 + warpT * 55, 125)
-        camera.updateProjectionMatrix()
-
-        // Ship zooms toward camera
-        ship.position.z += warpT * 0.35 * dt
-        ship.scale.setScalar(1 + warpT * 0.8)
-        ship.rotation.x = -warpT * 0.4   // nose pitches up toward viewer
-
-        // Engine blast during warp
-        engineGlow.intensity = 2.5 + warpT * 30
-        ship.children.forEach(c => {
-          const m = c.material
-          if (m?.emissive?.g > 0.9) m.emissiveIntensity = 3 + warpT * 20
+        const t = Math.min(warpTime / 75, 1)
+        starFar.material.size  = 0.38 + t*16
+        starMid.material.size  = 0.65 + t*22
+        starNear.material.size = 1.3  + t*35
+        ;[starFar, starMid, starNear].forEach(layer => {
+          const buf = layer.geometry.attributes.position
+          for (let i = 0; i < buf.count; i++) { const z = buf.getZ(i)+t*7*dt; buf.setZ(i, z>25 ? -400 : z) }
+          buf.needsUpdate = true
         })
-
-        renderer.render(scene, camera)
-        return
+        camera.fov = Math.min(65 + t*65, 130); camera.updateProjectionMatrix()
+        ship.position.z -= t*0.6*dt
+        ship.scale.setScalar(1 + t*1.5)
+        engineGlow.intensity = 3 + t*50
+        renderer.render(scene, camera); return
       }
 
       if (gamePhase !== 'playing') { renderer.render(scene, camera); return }
 
-      // ── Normal gameplay ─────────────────────────────────────────────────
-      const isBoosting = keys['ShiftLeft'] || keys['ShiftRight']
-      const speed      = isBoosting ? BOOST_SPEED : BASE_SPEED
+      // ── Ship movement ───────────────────────────────────────────────────────
+      const boost = keys['ShiftLeft'] || keys['ShiftRight']
+      const nudge = boost ? 0.22 : 0.14
+      if (keys['KeyA']||keys['ArrowLeft'])  mx.tx -= nudge*dt
+      if (keys['KeyD']||keys['ArrowRight']) mx.tx += nudge*dt
+      if (keys['KeyW']||keys['ArrowUp'])    mx.ty += nudge*0.7*dt
+      if (keys['KeyS']||keys['ArrowDown'])  mx.ty -= nudge*0.7*dt
+      mx.tx = Math.max(-6.5, Math.min(6.5, mx.tx))
+      mx.ty = Math.max(-3.8, Math.min(3.8, mx.ty))
+      mx.x  += (mx.tx - mx.x) * SHIP_FOLLOW * dt
+      mx.y  += (mx.ty - mx.y) * SHIP_FOLLOW * dt
+      ship.position.set(mx.x, mx.y, 0)
 
-      if (keys['KeyA']||keys['ArrowLeft'])  mouse.tx -= 0.14*dt
-      if (keys['KeyD']||keys['ArrowRight']) mouse.tx += 0.14*dt
-      if (keys['KeyW']||keys['ArrowUp'])    mouse.ty += 0.10*dt
-      if (keys['KeyS']||keys['ArrowDown'])  mouse.ty -= 0.10*dt
-      mouse.tx = Math.max(-7, Math.min(7, mouse.tx))
-      mouse.ty = Math.max(-4.2, Math.min(4.2, mouse.ty))
-      mouse.x += (mouse.tx - mouse.x) * 0.10*dt
-      mouse.y += (mouse.ty - mouse.y) * 0.10*dt
+      // Bank & pitch — ship tilts with movement
+      const dxIn = (keys['KeyA']||keys['ArrowLeft'] ? -1:0) + (keys['KeyD']||keys['ArrowRight'] ? 1:0)
+      ship.rotation.z += (-dxIn*0.35 - ship.rotation.z) * 0.12 * dt
+      ship.rotation.y += ((mx.tx-mx.x)*0.06 - ship.rotation.y) * 0.10 * dt
+      ship.rotation.x += ((mx.ty-mx.y)*-0.04 - ship.rotation.x) * 0.10 * dt
 
-      ship.position.set(mouse.x, mouse.y, 0)
-      ship.rotation.z = (mouse.x - mouse.tx) * 0.2
-      ship.rotation.x = (mouse.ty - mouse.y) * 0.12
+      // Camera gently follows ship (parallax)
+      camera.position.x += (mx.x*0.06 - camera.position.x) * 0.04*dt
+      camera.position.y += (mx.y*0.04+0.9 - camera.position.y) * 0.04*dt
+      camera.lookAt(mx.x*0.15, mx.y*0.12, -2)
 
-      camera.position.x += (mouse.x*0.055 - camera.position.x) * 0.04*dt
-      camera.position.y += (mouse.y*0.04+1.6 - camera.position.y) * 0.04*dt
-      camera.lookAt(mouse.x*0.18, mouse.y*0.15, -2)
-
-      // Engine pulse
-      const pulse = Math.sin(now*0.007)*0.5 + (isBoosting ? 5 : 2.5)
-      ship.children.forEach(c => { const m = c.material; if (m?.emissive?.g > 0.9) m.emissiveIntensity = pulse })
-      engineGlow.intensity = pulse
-
-      // Thruster
-      const tBuf = tGeo.attributes.position
-      for (let i = 0; i < tCount; i++) {
-        tAge[i] += 0.042*dt*(isBoosting?1.9:1)
-        if (tAge[i]>1) { tAge[i]=0; tBuf.setXYZ(i,(Math.random()-.5)*.22,(Math.random()-.5)*.14,-1.1) }
-        else tBuf.setZ(i, tBuf.getZ(i)-0.09*dt)
+      // Camera shake on hit
+      if (shakeAmt > 0) {
+        camera.position.x += (Math.random()-.5)*shakeAmt
+        camera.position.y += (Math.random()-.5)*shakeAmt*0.7
+        shakeAmt *= 0.88; if (shakeAmt < 0.005) shakeAmt = 0
       }
-      tBuf.needsUpdate = true
-      tMat.opacity = isBoosting ? 0.95 : 0.65
 
-      stars.rotation.y += 0.00005*dt
-      if (hitCooldown > 0) hitCooldown -= dt
+      // Engine pulse & exhaust
+      const pulse = Math.sin(now*0.008)*0.4 + (boost ? 5 : 3)
+      engineGlow.intensity += (pulse - engineGlow.intensity) * 0.15 * dt
+      const exBuf = exGeo.attributes.position
+      for (let i = 0; i < EX_N; i++) {
+        exAge[i] -= 0.045*dt*(boost ? 1.8:1)
+        if (exAge[i] <= 0) {
+          exAge[i] = 0.7+Math.random()*0.5
+          exBuf.setXYZ(i,(Math.random()-.5)*0.13,(Math.random()-.5)*0.09,-0.92-Math.random()*0.4)
+        } else {
+          exBuf.setZ(i, exBuf.getZ(i)-0.07*dt)
+          exBuf.setX(i, exBuf.getX(i)*(1-0.015*dt))
+        }
+      }
+      exBuf.needsUpdate = true; exMat.opacity = boost ? 0.92 : 0.62
+
       if (fireCooldown > 0) fireCooldown -= dt
+      if (hitCooldown  > 0) hitCooldown  -= dt
 
-      // ── Bullets ──────────────────────────────────────────────────────────
-      for (let i = bullets.length - 1; i >= 0; i--) {
-        const b = bullets[i]
-        b.position.z -= BULLET_SPEED * dt
+      // Starfield parallax drift
+      starGroup.position.x += (-mx.x*0.015 - starGroup.position.x) * 0.015*dt
+      starGroup.position.y += (-mx.y*0.012 - starGroup.position.y) * 0.015*dt
 
-        // Hit asteroid?
+      // ── Bullets ──────────────────────────────────────────────────────────────
+      for (let bi = bullets.length-1; bi >= 0; bi--) {
+        const b = bullets[bi]; b.position.z -= BULLET_SPEED * dt
         let hit = false
         for (const a of asteroids) {
           if (!a.userData.alive) continue
-          const dist = b.position.distanceTo(a.position)
-          if (dist < a.userData.hitRadius + 0.08) {
-            // Kill the asteroid
-            a.userData.alive = false
-            const expPos = a.position.clone()
-            scene.remove(a)
-
-            // Explosion
-            const parts = spawnExplosion(scene, expPos)
-            explosionParticles.push(...parts)
-
-            // Kill flash (green)
-            if (flashEl) {
-              flashEl.className = 'sg-flash sg-flash-kill'
-              setTimeout(() => { if (flashEl) flashEl.className = 'sg-flash' }, 180)
-            }
-
-            _kills++
-            updateKillBoxes(_kills)
-
-            if (_kills >= TARGET_KILLS) {
-              scene.remove(b); bullets.splice(i, 1)
-              triggerWarp()
-              return
-            } else {
-              announce(`TARGET ${_kills}/${TARGET_KILLS} DESTROYED`, 'var(--accent)', 1200)
-              // Respawn asteroid far back
-              setTimeout(() => {
-                const newA = buildAsteroid(0.28 + Math.random() * 0.55)
-                newA.position.set((Math.random()-.5)*14, (Math.random()-.5)*8, -80 - Math.random()*60)
-                scene.add(newA); asteroids.push(newA)
-              }, 1500)
-            }
-
-            hit = true
-            break
+          if (b.position.distanceTo(a.position) < a.userData.hitR + 0.08) {
+            a.userData.alive = false; a.visible = false
+            scene.remove(b); bullets.splice(bi, 1)
+            explosionParts.push(...spawnExplosion(scene, a.position.clone(), a.userData.size))
+            if (flashEl) { flashEl.className='sg-flash sg-flash-kill'; setTimeout(()=>{ if(flashEl) flashEl.className='sg-flash' },200) }
+            _kills++; updateKillBoxes(_kills)
+            if (_kills >= TARGET_KILLS) { triggerWarp(); return }
+            announce(`TARGET ${_kills}/${TARGET_KILLS} DESTROYED`, 'var(--accent)', 1400)
+            setTimeout(() => resetAsteroid(a), 900)
+            hit = true; break
           }
         }
-
-        if (hit || b.position.z < -180) {
-          scene.remove(b); bullets.splice(i, 1)
-        }
+        if (!hit && b.position.z < -160) { scene.remove(b); bullets.splice(bi, 1) }
       }
 
-      // ── Explosion particles ───────────────────────────────────────────────
-      for (let i = explosionParticles.length - 1; i >= 0; i--) {
-        const p = explosionParticles[i]
-        p.userData.life -= 0.04 * dt
-        p.position.add(p.userData.vel.clone().multiplyScalar(dt))
-        p.material.opacity = p.userData.life
-        p.material.transparent = true
-        if (p.userData.life <= 0) {
-          scene.remove(p); explosionParticles.splice(i, 1)
-        }
-      }
-
-      // ── Asteroids ─────────────────────────────────────────────────────────
+      // ── Asteroids (physics) ───────────────────────────────────────────────────
       for (const a of asteroids) {
         if (!a.userData.alive) continue
-        a.position.z += speed * dt
-        a.rotation.x += a.userData.rotSpeed.x * dt
-        a.rotation.y += a.userData.rotSpeed.y * dt
-        a.rotation.z += a.userData.rotSpeed.z * dt
+        a.position.addScaledVector(a.userData.vel, dt)
+        a.rotation.x += a.userData.rotVel.x*dt
+        a.rotation.y += a.userData.rotVel.y*dt
+        a.rotation.z += a.userData.rotVel.z*dt
+        if (a.position.z > 9) resetAsteroid(a)
 
-        if (a.position.z > 10) {
-          a.position.set((Math.random()-.5)*14,(Math.random()-.5)*8,-60-Math.random()*80)
-        }
-
-        // Ship hit
-        if (hitCooldown <= 0) {
-          const dist = a.position.distanceTo(ship.position)
-          if (dist < a.userData.hitRadius + 0.32) {
-            _lives--
-            hitCooldown = 100
-            if ($('sgLives')) $('sgLives').textContent = livesBar(_lives)
-            a.position.set((Math.random()-.5)*14,(Math.random()-.5)*8,-60-Math.random()*50)
-
-            // Red hit flash
-            if (flashEl) {
-              flashEl.className = 'sg-flash sg-flash-hit'
-              setTimeout(() => { if (flashEl) flashEl.className = 'sg-flash' }, 250)
-            }
-
-            if (_lives <= 0) {
-              gamePhase = 'respawning'
-              announce('SHIP DESTROYED — REBOOTING...', 'var(--red)', 2000)
-              setTimeout(() => startRound(), 2200)
-              return
-            } else {
-              announce(`SHIELD HIT — ${_lives} REMAINING`, 'var(--red)', 1200)
-            }
+        if (hitCooldown <= 0 && a.position.distanceTo(ship.position) < a.userData.hitR + 0.52) {
+          _lives--; hitCooldown = 90; shakeAmt = 0.18
+          if ($('sgLives')) $('sgLives').textContent = livesBar(_lives)
+          if (flashEl) { flashEl.className='sg-flash sg-flash-hit'; setTimeout(()=>{ if(flashEl) flashEl.className='sg-flash' },320) }
+          resetAsteroid(a)
+          if (_lives <= 0) {
+            gamePhase = 'respawning'
+            announce('SHIELDS DESTROYED — REBOOTING', 'var(--red)', 2200)
+            setTimeout(() => startRound(), 2400)
+          } else {
+            announce(`SHIELD HIT — ${_lives} REMAINING`, 'var(--red)', 1200)
           }
         }
+      }
+
+      // ── Explosion particles ───────────────────────────────────────────────────
+      for (let i = explosionParts.length-1; i >= 0; i--) {
+        const p = explosionParts[i]
+        p.userData.life -= 0.035*dt
+        p.position.addScaledVector(p.userData.vel, dt)
+        p.userData.vel.multiplyScalar(0.93)
+        p.material.opacity = p.userData.life
+        if (p.userData.life <= 0) { scene.remove(p); explosionParts.splice(i,1) }
       }
 
       renderer.render(scene, camera)
@@ -531,62 +453,48 @@ function initGame() {
 
     cleanupFn = () => {
       cancelAnimationFrame(raf)
-      window.removeEventListener('mousemove', onMove)
-      window.removeEventListener('touchmove', onTouch)
       window.removeEventListener('keydown',   onKD)
       window.removeEventListener('keyup',     onKU)
-      canvas.removeEventListener('click',     onClick)
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('touchmove', onTouch)
+      canvas.removeEventListener('click',     fire)
       window.removeEventListener('resize',    onResize)
       renderer.dispose()
     }
   }
 }
 
-// ── Debrief (reused from before) ──────────────────────────────────────────────
+// ── Mission debrief ────────────────────────────────────────────────────────────
 function runDebrief(score) {
-  const overlay = document.getElementById('sgDebriefOverlay')
-  const body    = document.getElementById('sgDebriefBody')
-  const footer  = document.getElementById('sgDebriefFooter')
+  const overlay = $('sgDebriefOverlay')
+  const body    = $('sgDebriefBody')
+  const footer  = $('sgDebriefFooter')
   if (!overlay || !body || !footer) return
-
   const lines = [
-    { text: '> loading mission_debrief.sh...', delay: 0,    color: 'var(--ink-dim)'   },
-    { text: '> mission_status: COMPLETE ✓',    delay: 400,  color: 'var(--accent)'    },
-    { text: '> asteroids_destroyed: 3/3',       delay: 750,  color: 'var(--accent)'    },
-    { text: '> ---',                             delay: 1100, color: 'var(--line-strong)' },
-    { text: '> subject: ISHAAN SAMANTRAY',       delay: 1400, color: 'var(--ink-dim)'   },
-    { text: '> affiliation: CORNELL UNIVERSITY', delay: 1700, color: 'var(--ink-dim)'   },
-    { text: '> research_internships: 5+',        delay: 2000, color: 'var(--ink)'       },
-    { text: '> peer_reviewed_pubs: 2',           delay: 2250, color: 'var(--ink)'       },
-    { text: '> students_reached: 10,000+',       delay: 2500, color: 'var(--ink)'       },
-    { text: '> status: BUILDING AT WET-LAB × CODE INTERSECTION', delay: 2800, color: 'var(--accent)' },
+    { text:'> loading mission_debrief.sh...',                   delay:0,    color:'var(--ink-dim)'     },
+    { text:'> mission_status: COMPLETE ✓',                      delay:400,  color:'var(--accent)'      },
+    { text:'> asteroids_destroyed: 3/3',                        delay:750,  color:'var(--accent)'      },
+    { text:'> ---',                                              delay:1100, color:'var(--line-strong)' },
+    { text:'> subject: ISHAAN SAMANTRAY',                       delay:1400, color:'var(--ink-dim)'     },
+    { text:'> affiliation: CORNELL UNIVERSITY',                 delay:1700, color:'var(--ink-dim)'     },
+    { text:'> research_internships: 5+',                        delay:2000, color:'var(--ink)'         },
+    { text:'> peer_reviewed_pubs: 2',                           delay:2250, color:'var(--ink)'         },
+    { text:'> students_reached: 10,000+',                       delay:2500, color:'var(--ink)'         },
+    { text:'> status: BUILDING AT WET-LAB × CODE INTERSECTION', delay:2800, color:'var(--accent)'      },
   ]
-
   body.innerHTML = ''
   overlay.style.display = 'flex'
   requestAnimationFrame(() => overlay.classList.add('sg-debrief-visible'))
-
   lines.forEach(({ text, delay, color }) => {
     setTimeout(() => {
       const line = document.createElement('div')
-      line.className = 'sg-debrief-line'
-      line.style.color = color
-      line.textContent = text
-      body.appendChild(line)
-      body.scrollTop = body.scrollHeight
+      line.className = 'sg-debrief-line'; line.style.color = color; line.textContent = text
+      body.appendChild(line); body.scrollTop = body.scrollHeight
     }, delay)
   })
-
-  setTimeout(() => {
-    footer.style.display = 'block'
-    requestAnimationFrame(() => footer.classList.add('sg-debrief-footer-visible'))
-  }, 3400)
-
-  setTimeout(() => {
-    overlay.classList.remove('sg-debrief-visible')
-    setTimeout(() => { overlay.style.display = 'none' }, 400)
-  }, 5200)
+  setTimeout(() => { footer.style.display='block'; requestAnimationFrame(()=>footer.classList.add('sg-debrief-footer-visible')) }, 3400)
+  setTimeout(() => { overlay.classList.remove('sg-debrief-visible'); setTimeout(()=>{ overlay.style.display='none' },400) }, 5200)
 }
 
-// ── Boot ──────────────────────────────────────────────────────────────────────
+// ── Boot ───────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', initGame)
