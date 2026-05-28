@@ -46,43 +46,48 @@ function makeGlowTex() {
   return new THREE.CanvasTexture(c)
 }
 
-// ── Ship (clean angular fighter) ───────────────────────────────────────────────
+// ── Ship (visible, bright, angular fighter) ────────────────────────────────────
 function buildShip() {
   const g = new THREE.Group()
-  const hull  = new THREE.MeshStandardMaterial({ color: 0x0b1a0f, metalness: 0.85, roughness: 0.15 })
-  const emGrn = new THREE.MeshStandardMaterial({ color: C_GREEN, emissive: C_GREEN, emissiveIntensity: 2.5 })
-  const glass = new THREE.MeshStandardMaterial({ color: C_GREEN, transparent: true, opacity: 0.28, roughness: 0.05 })
+  // Much lighter materials so the ship is actually visible
+  const hull  = new THREE.MeshStandardMaterial({ color: 0x2a5c35, metalness: 0.7, roughness: 0.2, emissive: 0x0a2010, emissiveIntensity: 0.6 })
+  const emGrn = new THREE.MeshStandardMaterial({ color: C_GREEN, emissive: C_GREEN, emissiveIntensity: 3 })
+  const glass = new THREE.MeshStandardMaterial({ color: C_GREEN, transparent: true, opacity: 0.5, roughness: 0.05 })
+  const dark  = new THREE.MeshStandardMaterial({ color: 0x1a3a20, metalness: 0.6, roughness: 0.3, emissive: 0x061008, emissiveIntensity: 0.4 })
 
   // Hull — hexagonal tapered body
-  const body = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.26, 1.75, 6), hull)
+  const body = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.32, 2.1, 6), hull)
   body.rotation.x = Math.PI / 2; g.add(body)
 
-  // Nose
-  const nose = new THREE.Mesh(new THREE.ConeGeometry(0.07, 0.58, 6),
-    new THREE.MeshStandardMaterial({ color: 0x15281b, metalness: 0.9, roughness: 0.08 }))
-  nose.rotation.x = Math.PI / 2; nose.position.z = 1.16; g.add(nose)
+  // Nose — bright accent
+  const nose = new THREE.Mesh(new THREE.ConeGeometry(0.09, 0.7, 6),
+    new THREE.MeshStandardMaterial({ color: 0x3a7a45, metalness: 0.8, roughness: 0.1, emissive: 0x143020, emissiveIntensity: 0.8 }))
+  nose.rotation.x = Math.PI / 2; nose.position.z = 1.4; g.add(nose)
 
-  // Cockpit dome (half-sphere)
+  // Cockpit dome — glowing green
   const dome = new THREE.Mesh(
-    new THREE.SphereGeometry(0.14, 10, 6, 0, Math.PI * 2, 0, Math.PI * 0.5), glass)
-  dome.rotation.x = -Math.PI / 2; dome.position.set(0, 0.08, 0.38); g.add(dome)
+    new THREE.SphereGeometry(0.18, 10, 6, 0, Math.PI * 2, 0, Math.PI * 0.5), glass)
+  dome.rotation.x = -Math.PI / 2; dome.position.set(0, 0.1, 0.45); g.add(dome)
 
-  // Wings — swept triangles with tip lights
+  // Wings
   ;[-1, 1].forEach(s => {
-    const v = new Float32Array([0,0,0.28, s*1.55,-0.06,-0.45, s*0.22,0,0.18])
+    const v = new Float32Array([0,0,0.35, s*1.9,-0.08,-0.55, s*0.28,0,0.22])
     const geo = new THREE.BufferGeometry()
     geo.setAttribute('position', new THREE.BufferAttribute(v, 3))
     geo.computeVertexNormals()
-    g.add(new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
-      color: 0x0a1810, metalness: 0.8, roughness: 0.25, side: THREE.DoubleSide,
-    })))
-    const tip = new THREE.Mesh(new THREE.SphereGeometry(0.038, 5, 5), emGrn)
-    tip.position.set(s * 1.52, -0.06, -0.43); g.add(tip)
+    g.add(new THREE.Mesh(geo, dark))
+    // Bright wing tip
+    const tip = new THREE.Mesh(new THREE.SphereGeometry(0.055, 5, 5), emGrn)
+    tip.position.set(s * 1.88, -0.08, -0.53); g.add(tip)
   })
 
-  // Engine nozzle glow circle
-  const nozzle = new THREE.Mesh(new THREE.CircleGeometry(0.075, 10), new THREE.MeshBasicMaterial({ color: C_GREEN }))
-  nozzle.position.set(0, 0, -0.88); g.add(nozzle)
+  // Engine nozzle — bright
+  const nozzle = new THREE.Mesh(new THREE.CircleGeometry(0.1, 10), new THREE.MeshBasicMaterial({ color: C_GREEN }))
+  nozzle.position.set(0, 0, -1.07); g.add(nozzle)
+
+  // Inner glow ring on nozzle
+  const ring = new THREE.Mesh(new THREE.RingGeometry(0.1, 0.18, 10), new THREE.MeshBasicMaterial({ color: C_GREEN, side: THREE.DoubleSide }))
+  ring.position.set(0, 0, -1.06); g.add(ring)
 
   return g
 }
@@ -97,21 +102,29 @@ function buildAsteroid(size) {
   }
   geo.computeVertexNormals()
   const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
-    color: new THREE.Color().setHSL(0.07 + Math.random()*0.06, 0.1+Math.random()*0.08, 0.18+Math.random()*0.14),
-    roughness: 0.92, metalness: 0.06,
+    color: new THREE.Color().setHSL(0.07 + Math.random()*0.06, 0.12+Math.random()*0.1, 0.38+Math.random()*0.2),
+    roughness: 0.85, metalness: 0.08,
   }))
-  m.userData.vel    = new THREE.Vector3((Math.random()-.5)*.04,(Math.random()-.5)*.025, 0.04+Math.random()*.06) // slower
-  m.userData.rotVel = new THREE.Vector3((Math.random()-.5)*.028,(Math.random()-.5)*.028,(Math.random()-.5)*.018)
-  m.userData.hitR   = size * 1.1  // generous hit radius — easier to shoot
+  m.userData.vel    = new THREE.Vector3((Math.random()-.5)*.02,(Math.random()-.5)*.015, 0.025+Math.random()*.03) // very slow
+  m.userData.rotVel = new THREE.Vector3((Math.random()-.5)*.02,(Math.random()-.5)*.02,(Math.random()-.5)*.012)
+  m.userData.hitR   = size * 1.2  // very generous hit radius
   m.userData.size   = size
   m.userData.alive  = true
   return m
 }
 
 function resetAsteroid(a) {
-  const angle = Math.random() * Math.PI * 2, r = 3.5 + Math.random() * 4
-  a.position.set(Math.cos(angle)*r*1.6, Math.sin(angle)*r*0.9, -40 - Math.random()*50)
-  a.userData.vel.set((Math.random()-.5)*.05,(Math.random()-.5)*.03, 0.06+Math.random()*.09)
+  // Spawn CLOSE and in the CENTER of the screen — easy to see and shoot
+  a.position.set(
+    (Math.random() - 0.5) * 6,   // spread x: -3 to +3
+    (Math.random() - 0.5) * 3.5, // spread y: -1.75 to +1.75
+    -8 - Math.random() * 10,      // close z: -8 to -18
+  )
+  a.userData.vel.set(
+    (Math.random()-.5)*.02,
+    (Math.random()-.5)*.015,
+    0.025 + Math.random()*.025,
+  )
   a.userData.alive = true; a.visible = true
 }
 
@@ -207,10 +220,11 @@ function initGame() {
     renderer.toneMapping         = THREE.ACESFilmicToneMapping
     renderer.toneMappingExposure = 1.15
 
-    // Lights
-    scene.add(new THREE.AmbientLight(0x0c1812, 6))
-    const key = new THREE.DirectionalLight(0x50ff88, 2.8); key.position.set(4,8,5); scene.add(key)
-    const rim = new THREE.DirectionalLight(0x2040ff, 0.5); rim.position.set(-5,-3,-8); scene.add(rim)
+    // Lights — much brighter so ship and asteroids are clearly visible
+    scene.add(new THREE.AmbientLight(0x204030, 12))  // bright green-tinted ambient
+    const key = new THREE.DirectionalLight(0x80ffaa, 4); key.position.set(4, 8, 5); scene.add(key)
+    const fill = new THREE.DirectionalLight(0x40aaff, 1.5); fill.position.set(-4, 3, 6); scene.add(fill)
+    const rim = new THREE.DirectionalLight(0xffffff, 1.2); rim.position.set(0, -3, 8); scene.add(rim)
 
     // ── Starfield (3 depth layers, circular sprites) ─────────────────────────
     const starTex = makeGlowTex()
@@ -240,9 +254,14 @@ function initGame() {
     starGroup.add(starFar, starMid, starNear); scene.add(starGroup)
 
     // ── Ship ──────────────────────────────────────────────────────────────────
-    const ship = buildShip(); scene.add(ship)
-    const engineGlow = new THREE.PointLight(C_GREEN, 3, 5.5)
-    engineGlow.position.set(0,0,-1.6); ship.add(engineGlow)
+    const ship = buildShip()
+    ship.scale.setScalar(1.4)  // bigger — clearly visible
+    scene.add(ship)
+    // Front light illuminates the ship clearly from above-front
+    const shipLight = new THREE.PointLight(0xaaffcc, 10, 8)
+    shipLight.position.set(0, 2, 3); ship.add(shipLight)
+    const engineGlow = new THREE.PointLight(C_GREEN, 4, 7)
+    engineGlow.position.set(0, 0, -1.6); ship.add(engineGlow)
 
     // Engine exhaust particle trail
     const EX_N  = 50, exGeo = new THREE.BufferGeometry()
@@ -252,11 +271,15 @@ function initGame() {
     const exMat = new THREE.PointsMaterial({ color: C_GREEN, size: 0.09, transparent: true, opacity: 0.65, sizeAttenuation: true, map: starTex, alphaTest: 0.01 })
     ship.add(new THREE.Points(exGeo, exMat))
 
-    // ── Asteroids ─────────────────────────────────────────────────────────────
+    // ── Asteroids — BIG, CLOSE, CENTERED ──────────────────────────────────────
     const asteroids = []
     for (let i = 0; i < ASTEROID_COUNT; i++) {
-      const a = buildAsteroid(0.35 + Math.random()*0.55)
-      a.position.set((Math.random()-.5)*14, (Math.random()-.5)*8, -20 - i*12 - Math.random()*15)
+      const a = buildAsteroid(1.2 + Math.random() * 0.8)  // MUCH bigger: 1.2–2.0 radius
+      a.position.set(
+        (Math.random() - 0.5) * 7,    // centered across screen
+        (Math.random() - 0.5) * 4,
+        -6 - i * 4 - Math.random() * 4, // staggered close: -6 to -26
+      )
       scene.add(a); asteroids.push(a)
     }
 
