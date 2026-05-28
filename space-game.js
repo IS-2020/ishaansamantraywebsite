@@ -4,9 +4,9 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.168.0/build/three.m
 
 // ── Config ─────────────────────────────────────────────────────────────────────
 const TARGET_KILLS   = 3
-const ASTEROID_COUNT = 7
-const BULLET_SPEED   = 6
-const SHIP_FOLLOW    = 0.10   // lerp factor — how snappily ship tracks mouse
+const ASTEROID_COUNT = 5      // fewer, less overwhelming
+const BULLET_SPEED   = 7      // faster bullets — easier to hit
+const SHIP_FOLLOW    = 0.12   // snappier ship tracking
 const C_GREEN        = 0x7cf29a
 const C_AMBER        = 0xffb454
 const C_BG           = 0x030508  // deep space
@@ -81,10 +81,8 @@ function buildShip() {
   })
 
   // Engine nozzle glow circle
-  g.add(Object.assign(
-    new THREE.Mesh(new THREE.CircleGeometry(0.075, 10), new THREE.MeshBasicMaterial({ color: C_GREEN })),
-    { position: new THREE.Vector3(0, 0, -0.88) }
-  ))
+  const nozzle = new THREE.Mesh(new THREE.CircleGeometry(0.075, 10), new THREE.MeshBasicMaterial({ color: C_GREEN }))
+  nozzle.position.set(0, 0, -0.88); g.add(nozzle)
 
   return g
 }
@@ -102,9 +100,9 @@ function buildAsteroid(size) {
     color: new THREE.Color().setHSL(0.07 + Math.random()*0.06, 0.1+Math.random()*0.08, 0.18+Math.random()*0.14),
     roughness: 0.92, metalness: 0.06,
   }))
-  m.userData.vel    = new THREE.Vector3((Math.random()-.5)*.05,(Math.random()-.5)*.03, 0.06+Math.random()*.09)
+  m.userData.vel    = new THREE.Vector3((Math.random()-.5)*.04,(Math.random()-.5)*.025, 0.04+Math.random()*.06) // slower
   m.userData.rotVel = new THREE.Vector3((Math.random()-.5)*.028,(Math.random()-.5)*.028,(Math.random()-.5)*.018)
-  m.userData.hitR   = size * 0.85
+  m.userData.hitR   = size * 1.1  // generous hit radius — easier to shoot
   m.userData.size   = size
   m.userData.alive  = true
   return m
@@ -120,11 +118,11 @@ function resetAsteroid(a) {
 // ── Bullet ─────────────────────────────────────────────────────────────────────
 function buildBullet(x, y) {
   const m = new THREE.Mesh(
-    new THREE.SphereGeometry(0.075, 7, 7),
+    new THREE.SphereGeometry(0.11, 7, 7),  // larger — easier to see and hit
     new THREE.MeshBasicMaterial({ color: C_GREEN }),
   )
   m.position.set(x, y, 0.4)
-  m.add(new THREE.PointLight(C_GREEN, 5, 3.5))
+  m.add(new THREE.PointLight(C_GREEN, 6, 4.5))
   return m
 }
 
@@ -212,7 +210,7 @@ function initGame() {
     // Lights
     scene.add(new THREE.AmbientLight(0x0c1812, 6))
     const key = new THREE.DirectionalLight(0x50ff88, 2.8); key.position.set(4,8,5); scene.add(key)
-    scene.add(Object.assign(new THREE.DirectionalLight(0x2040ff, 0.5), { position: new THREE.Vector3(-5,-3,-8) }))
+    const rim = new THREE.DirectionalLight(0x2040ff, 0.5); rim.position.set(-5,-3,-8); scene.add(rim)
 
     // ── Starfield (3 depth layers, circular sprites) ─────────────────────────
     const starTex = makeGlowTex()
@@ -275,7 +273,7 @@ function initGame() {
     const keys = {}
     const fire = () => {
       if (gamePhase !== 'playing' || fireCooldown > 0) return
-      fireCooldown = 10
+      fireCooldown = 7  // faster fire rate
       const b = buildBullet(ship.position.x, ship.position.y)
       scene.add(b); bullets.push(b)
       engineGlow.intensity = 8
@@ -421,7 +419,7 @@ function initGame() {
         a.rotation.z += a.userData.rotVel.z*dt
         if (a.position.z > 9) resetAsteroid(a)
 
-        if (hitCooldown <= 0 && a.position.distanceTo(ship.position) < a.userData.hitR + 0.52) {
+        if (hitCooldown <= 0 && a.position.distanceTo(ship.position) < a.userData.hitR + 0.35) {  // tighter ship collision
           _lives--; hitCooldown = 90; shakeAmt = 0.18
           if ($('sgLives')) $('sgLives').textContent = livesBar(_lives)
           if (flashEl) { flashEl.className='sg-flash sg-flash-hit'; setTimeout(()=>{ if(flashEl) flashEl.className='sg-flash' },320) }
