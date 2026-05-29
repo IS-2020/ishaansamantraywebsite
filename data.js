@@ -431,3 +431,86 @@ window.PROJECTS.push(
     preview: { label: "redesign · shipped", img: "assets/logos/encore.png", meta: "Next.js · full-stack · DC ticketing" }
   }
 );
+
+/* ============================================================
+   OPEN-SOURCE CONTRIBUTIONS
+   ============================================================ */
+window.CONTRIBUTIONS = [
+  {
+    type: "fix",
+    repo: "agno-agi/agno",
+    title: "_acontinue_run_background_stream · prevent AttributeError on SSE",
+    date: "May 28, 2026",
+    pr: "https://github.com/agno-agi/agno/pull/8136",
+    site: "https://www.agno.com",
+    siteLabel: "agno.com",
+    what: "Agno is a high-performance Python framework for building multi-modal AI agents. When using server-sent event (SSE) streams to continue an existing run, the agent threw an unhandled <code>AttributeError</code> because the async background stream method was missing from the base class. Added <code>_acontinue_run_background_stream</code> to close the gap, restoring SSE-based agent continuations for async workflows.",
+    tags: ["Python", "async", "SSE", "AI agents"]
+  },
+  {
+    type: "fix",
+    repo: "lancedb/lancedb",
+    title: "LinearCombinationReranker · inverted scores & wrong FTS penalty",
+    date: "May 26, 2026",
+    pr: "https://github.com/lancedb/lancedb/pull/3437",
+    site: "https://lancedb.com",
+    siteLabel: "lancedb.com",
+    what: "LanceDB is a vector database built for AI applications, used to store and retrieve embeddings at scale. The <code>LinearCombinationReranker</code> — which blends full-text-search and vector scores — had two bugs: relevance scores were inverted (worst results ranked first) and the penalty applied to results missing from FTS was calculated incorrectly. Fixed both, restoring accurate hybrid search ranking across every app using this reranker.",
+    tags: ["Python", "vector search", "reranking", "hybrid search"]
+  },
+  {
+    type: "fix",
+    repo: "PrefectHQ/prefect",
+    title: "RetryFailedTasks · guard ZeroDivisionError on jitter without delay",
+    date: "May 26, 2026",
+    pr: "https://github.com/PrefectHQ/prefect/pull/22071",
+    site: "https://www.prefect.io",
+    siteLabel: "prefect.io",
+    what: "Prefect is a workflow orchestration platform that runs millions of data pipelines in production. When a task was configured with <code>retry_jitter_factor</code> but no <code>retry_delay</code>, the retry scheduler attempted to divide by zero and crashed the entire task run with an unhandled exception. Added a guard so jitter is safely skipped when there is no base delay to apply jitter to.",
+    tags: ["Python", "orchestration", "task retry", "bug fix"]
+  },
+  {
+    type: "fix",
+    repo: "supermemoryai/supermemory",
+    title: "OpenAI SDK · skip empty system prompt when no memories found",
+    date: "May 26, 2026",
+    pr: "https://github.com/supermemoryai/supermemory/pull/999",
+    site: "https://supermemory.ai",
+    siteLabel: "supermemory.ai",
+    what: "Supermemory is a memory infrastructure layer that gives AI apps long-term recall. The OpenAI SDK integration silently injected an empty <code>system</code> message into every LLM call, even when the memory lookup returned nothing. This wasted tokens, risked confusing the model's context, and broke strict API clients that reject empty message bodies. Fixed the injection to be conditional on actual memory content.",
+    tags: ["TypeScript", "OpenAI SDK", "LLM", "memory"]
+  },
+  {
+    type: "fix",
+    repo: "paysponge/paysponge-sdk",
+    title: "Client · throw on unloaded address; respect explicit testnet flag",
+    date: "May 27, 2026",
+    pr: "https://github.com/paysponge/paysponge-sdk/pull/1",
+    site: "https://paysponge.com",
+    siteLabel: "paysponge.com",
+    what: "PaySponge is a crypto payments SDK that abstracts wallet and chain management for developers. Two related bugs: the client silently allowed calls to proceed with an uninitialised wallet address (leading to silent failures downstream), and an explicit <code>testnet: true</code> flag passed by the developer was being overridden by auto-detection. Fixed both — the client now throws immediately on unloaded state, and the testnet flag is always honoured when explicitly set.",
+    tags: ["TypeScript", "Web3", "payments", "SDK"]
+  },
+  {
+    type: "docs",
+    repo: "langchain-ai/langchainjs",
+    title: "Source comments · fix duplicate-word typos across docs",
+    date: "May 22, 2026",
+    pr: "https://github.com/langchain-ai/langchainjs/pull/10940",
+    site: "https://js.langchain.com",
+    siteLabel: "js.langchain.com",
+    what: "LangChain.js is the JavaScript/TypeScript SDK for building LLM-powered applications — one of the most-used AI libraries in the ecosystem. Audited source comments and JSDoc blocks across the codebase, removing duplicate-word typos (e.g. \"the the\", \"a a\") that had crept into documentation read by thousands of developers every day.",
+    tags: ["TypeScript", "docs", "LLM", "open source"]
+  },
+  {
+    type: "feat",
+    repo: "IS-2020/ishaansamantraywebsite",
+    title: "Portfolio · hackathons section, now panel, Vaxon Space & Map Collective",
+    date: "May 23, 2026",
+    pr: "https://github.com/IS-2020/ishaansamantraywebsite/pull/1",
+    site: "https://ishaansamantray.com",
+    siteLabel: "ishaansamantray.com",
+    what: "Added a full <code>05 / hackathons.log</code> section to this portfolio featuring the YC Call My Agent Hackathon and the Kairos project, an interactive photo gallery with lightbox, a real-time metrics strip, and full tech stack. Also added a live \"now\" panel pinned below the hero, and new experience entries for Vaxon Space and Map Collective.",
+    tags: ["JavaScript", "Three.js", "HTML/CSS", "portfolio"]
+  }
+];

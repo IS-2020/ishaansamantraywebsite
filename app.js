@@ -352,6 +352,44 @@
     });
   }
 
+  /* ---------- RENDER CONTRIBUTIONS ---------- */
+  const contribList = $('#contribList');
+  const contribCount = $('#contribCount');
+  if (contribList && window.CONTRIBUTIONS) {
+    if (contribCount) contribCount.textContent = `[${window.CONTRIBUTIONS.length} merged PRs]`;
+    const typeColor = { fix:'var(--red)', feat:'var(--accent)', docs:'var(--blue)' };
+    const typeBg    = { fix:'rgba(255,107,107,.08)', feat:'rgba(124,242,154,.08)', docs:'rgba(110,168,255,.08)' };
+
+    window.CONTRIBUTIONS.forEach((c, i) => {
+      const tags = c.tags.map(t => `<span class="chip">${t}</span>`).join('');
+      const el = document.createElement('div');
+      el.className = 'contrib-card reveal-el';
+      el.style.setProperty('--i', i);
+      el.innerHTML = `
+        <div class="contrib-diff-bar" style="background:${typeBg[c.type]||'transparent'}">
+          <span class="contrib-type" style="color:${typeColor[c.type]||'var(--accent)'}">+ ${c.type}</span>
+          <span class="contrib-title">${c.title}</span>
+        </div>
+        <div class="contrib-body">
+          <div class="contrib-meta">
+            <a class="contrib-repo" href="${c.pr}" target="_blank" rel="noopener">
+              <span class="contrib-repo-icon">⎇</span> ${c.repo}
+            </a>
+            <span class="contrib-date">${c.date}</span>
+          </div>
+          <p class="contrib-what">${c.what}</p>
+          <div class="contrib-foot">
+            <div class="contrib-tags">${tags}</div>
+            <div class="contrib-links">
+              <a class="contrib-link contrib-link-pr" href="${c.pr}" target="_blank" rel="noopener">view PR ↗</a>
+              <a class="contrib-link contrib-link-site" href="${c.site}" target="_blank" rel="noopener">${c.siteLabel} ↗</a>
+            </div>
+          </div>
+        </div>`;
+      contribList.appendChild(el);
+    });
+  }
+
   /* ---------- RENDER PUBLICATIONS ---------- */
   const pubs = $('#pubsList');
   window.PUBLICATIONS.forEach((p, i) => {
