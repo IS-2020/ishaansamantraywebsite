@@ -2460,3 +2460,254 @@ main {
   .lb-prev { left: 8px; }
   .lb-next { right: 8px; }
 }
+
+/* ============================================================
+   SPACE GAME v3 — immersive career shooter
+   ============================================================ */
+
+/* ── Boot sequence ── */
+.sg-boot {
+  position: absolute; inset: 0;
+  background: var(--bg);
+  display: flex; flex-direction: column;
+  padding: 32px clamp(20px,5vw,56px);
+  font-family: var(--mono);
+  transition: opacity .45s ease;
+  z-index: 10;
+}
+.sg-boot.sg-boot-out { opacity: 0; pointer-events: none; }
+.sg-boot-header {
+  display: flex; align-items: center; gap: 8px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 28px;
+}
+.sg-boot-title {
+  font-size: 12px;
+  color: var(--ink-dim);
+  margin-left: 4px;
+  letter-spacing: .02em;
+}
+.sg-boot-lines { display: flex; flex-direction: column; gap: 10px; }
+.sg-boot-line {
+  font-size: clamp(11px,1.6vw,13px);
+  letter-spacing: .02em;
+  opacity: 0;
+  animation: bootLineIn .25s ease forwards;
+}
+@keyframes bootLineIn {
+  from { opacity:0; transform:translateX(-6px); }
+  to   { opacity:1; transform:translateX(0); }
+}
+
+/* ── Start overlay ── */
+.sg-start-overlay {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(3,5,8,.84);
+  backdrop-filter: blur(6px);
+  opacity: 0; transition: opacity .35s ease;
+  z-index: 10;
+}
+.sg-start-overlay.sg-start-in { opacity: 1; }
+.sg-start-card {
+  max-width: 500px; width: 90%;
+  padding: 40px 38px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  background: rgba(11,14,18,.94);
+  font-family: var(--mono);
+  position: relative;
+}
+.sg-start-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+/* ── Top HUD bar ── */
+.sg-top-bar {
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 44px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px;
+  background: rgba(3,5,8,.82);
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(8px);
+  font-family: var(--mono);
+  font-size: 12px;
+  pointer-events: none;
+  z-index: 5;
+}
+.sg-tb-left  { display: flex; align-items: center; gap: 6px; }
+.sg-tb-path  { font-size: 11px; color: var(--ink-dim); margin-left: 6px; letter-spacing: .01em; }
+.sg-tb-center{ display: flex; align-items: center; gap: 10px; }
+.sg-tb-group { display: flex; align-items: center; gap: 6px; }
+.sg-tb-label { font-size: 9px; text-transform: uppercase; letter-spacing: .12em; color: var(--ink-faint); }
+.sg-tb-shields,
+.sg-tb-targets{
+  font-size: 15px; font-weight: 600; letter-spacing: .06em;
+  color: var(--accent); transition: color .3s;
+}
+.sg-tb-sep   { color: var(--ink-faint); }
+.sg-tb-right { font-size: 10px; color: var(--ink-faint); letter-spacing: .05em; }
+
+/* ── Bottom terminal log ── */
+.sg-bottom-bar {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 110px;
+  background: linear-gradient(transparent, rgba(3,5,8,.9) 40%);
+  padding: 14px 24px 16px;
+  pointer-events: none;
+  z-index: 5;
+  display: flex; align-items: flex-end;
+}
+.sg-log {
+  width: 100%; overflow: hidden;
+  display: flex; flex-direction: column; gap: 3px;
+}
+.sg-log-line {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .01em;
+  line-height: 1.5;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  animation: logLineIn .2s ease forwards;
+}
+@keyframes logLineIn {
+  from { opacity:0; transform:translateY(4px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* ── Asteroid labels ── */
+.sg-labels {
+  position: absolute; inset: 0;
+  pointer-events: none; z-index: 4;
+}
+.sg-asteroid-label {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  transition: opacity .3s ease;
+  pointer-events: none;
+}
+.sg-al-org {
+  font-family: var(--mono);
+  font-size: 11px; font-weight: 600;
+  color: var(--col, var(--accent));
+  letter-spacing: .04em;
+  text-shadow: 0 0 8px var(--col, var(--accent));
+  white-space: nowrap;
+}
+.sg-al-tag {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--ink-faint);
+  letter-spacing: .03em;
+  white-space: nowrap;
+}
+
+/* ── Announcement ── */
+.sg-announce {
+  position: absolute; top: 56px; left: 50%; transform: translateX(-50%);
+  font-family: var(--mono);
+  font-size: clamp(12px,1.8vw,15px);
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 6;
+  opacity: 0; transition: opacity .2s ease;
+  text-shadow: 0 0 20px currentColor;
+}
+.sg-announce.sg-announce-show { opacity: 1; }
+
+/* ── Flash overlays ── */
+.sg-flash {
+  position: absolute; inset: 0;
+  pointer-events: none; z-index: 7;
+  opacity: 0; transition: opacity .08s;
+}
+.sg-flash-green  { background: rgba(124,242,154,.06); opacity:1; }
+.sg-flash-white  { background: rgba(255,255,255,.18); opacity:1; }
+.sg-flash-kill   { background: rgba(124,242,154,.1);  opacity:1; }
+.sg-flash-hit    { background: rgba(255,107,107,.14); opacity:1; }
+
+/* ── Enter btn ── */
+.sg-enter-btn {
+  display: inline-block;
+  padding: 9px 22px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background .15s, color .15s;
+}
+.sg-enter-btn:hover { background: var(--accent); color: var(--bg); border-bottom-color: var(--accent); }
+
+/* ── Debrief ── */
+.sg-debrief-overlay {
+  position: fixed; inset: 0;
+  background: rgba(3,5,8,.88);
+  backdrop-filter: blur(10px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999;
+  opacity: 0; transition: opacity .35s ease;
+}
+.sg-debrief-overlay.sg-debrief-visible { opacity: 1; }
+.sg-debrief-card {
+  width: min(560px, 92vw);
+  background: var(--bg-panel);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  font-family: var(--mono);
+}
+.sg-debrief-header {
+  display: flex; align-items: center; gap: 6px;
+  padding: 12px 18px;
+  background: var(--bg-elev);
+  border-bottom: 1px solid var(--line);
+}
+.sg-debrief-dot { width:11px;height:11px;border-radius:50%; }
+.sg-debrief-dot-red   { background:#ff5f57; }
+.sg-debrief-dot-amber { background:#febc2e; }
+.sg-debrief-dot-green { background:#28c840; }
+.sg-debrief-filename {
+  font-size: 11px; color: var(--ink-dim);
+  margin-left: 6px; letter-spacing: .02em;
+}
+.sg-debrief-body {
+  padding: 24px 24px 16px;
+  min-height: 180px;
+  max-height: 55vh; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 5px;
+}
+.sg-debrief-line {
+  font-size: 12.5px;
+  letter-spacing: .01em;
+  line-height: 1.6;
+  animation: logLineIn .2s ease forwards;
+}
+.sg-debrief-footer {
+  padding: 16px 24px 22px;
+  border-top: 1px dashed var(--line);
+  opacity: 0; transition: opacity .35s ease;
+}
+.sg-debrief-footer.sg-debrief-footer-visible { opacity: 1; }
+
+/* ── Responsive ── */
+@media (max-width:600px) {
+  .sg-tb-path  { display: none; }
+  .sg-tb-right { display: none; }
+  .sg-top-bar  { justify-content: space-between; }
+  .sg-al-tag   { display: none; }
+  .sg-bottom-bar{ height: 90px; }
+}

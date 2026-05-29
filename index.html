@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=7">
+<link rel="stylesheet" href="styles.css?v=8">
 </head>
 <body data-theme="dark">
 
@@ -61,70 +61,73 @@
   <section id="game" class="space-intro">
     <canvas id="spaceCanvas"></canvas>
 
-    <!-- start overlay -->
-    <div class="sg-overlay" id="sgOverlay">
-      <div class="sg-card">
+    <!-- Boot sequence -->
+    <div id="sgBoot" class="sg-boot">
+      <div class="sg-boot-header">
+        <span class="dot dot-red"></span>
+        <span class="dot dot-amber"></span>
+        <span class="dot dot-green"></span>
+        <span class="sg-boot-title">~/ishaan/career.sh — boot sequence</span>
+      </div>
+      <div id="sgBootLines" class="sg-boot-lines"></div>
+    </div>
+
+    <!-- Start overlay (shown after boot) -->
+    <div id="sgStartOverlay" class="sg-start-overlay" style="display:none">
+      <div class="sg-start-card">
         <div class="sg-prompt-line">
           <span class="prompt-user">ishaan@cornell</span><span class="prompt-colon">:</span><span class="prompt-path">~</span><span class="prompt-dollar">$</span>
-          <span class="sg-cmd">./navigate_space.sh</span><span class="caret">▍</span>
+          <span class="sg-cmd">&nbsp;./career.sh --interactive</span><span class="caret">▍</span>
         </div>
-        <h2 class="sg-title">navigate_space<span class="sg-title-ext">.exe</span></h2>
+        <h2 class="sg-title">career<span class="sg-title-ext">.exe</span></h2>
         <p class="sg-desc">
-          <span class="comment">// dodge asteroids. fly through rings for +5 pts.</span><br>
-          <span class="comment">// mouse or WASD to steer — space/shift to boost.</span>
+          <span class="comment">// 3 threats stand between you and the portfolio.</span><br>
+          <span class="comment">// each asteroid is a real experience. neutralize all 3.</span>
         </p>
-        <button class="sg-launch-btn" id="sgLaunch">
-          <span class="arr">▶</span> launch()
-        </button>
+        <button class="sg-launch-btn" id="sgLaunch"><span class="arr">▶</span> launch()</button>
         <div class="sg-skip-line">
-          <a href="#home" class="sg-skip">skip → enter_portfolio()</a>
+          <a href="#home" class="sg-skip" id="sgSkip">$ skip → enter_portfolio()</a>
         </div>
       </div>
     </div>
 
-    <!-- HUD -->
-    <div class="sg-hud" id="sgHud" style="display:none">
-      <div class="sg-hud-left">
-        <span class="sg-hud-label">shields</span>
-        <span class="sg-hud-val" id="sgLives">███</span>
+    <!-- Top HUD bar (terminal topbar style) -->
+    <div id="sgTopBar" class="sg-top-bar" style="display:none">
+      <div class="sg-tb-left">
+        <span class="dot dot-red"></span>
+        <span class="dot dot-amber"></span>
+        <span class="dot dot-green"></span>
+        <span class="sg-tb-path">~/ishaan/career.sh</span>
       </div>
-      <div class="sg-hud-right">
-        <span class="sg-hud-label">score</span>
-        <span class="sg-hud-val sg-hud-score" id="sgScore">000</span>
+      <div class="sg-tb-center">
+        <span class="sg-tb-group">
+          <span class="sg-tb-label">shields</span>
+          <span id="sgShields" class="sg-tb-shields">███</span>
+        </span>
+        <span class="sg-tb-sep">·</span>
+        <span class="sg-tb-group">
+          <span class="sg-tb-label">targets</span>
+          <span id="sgTargets" class="sg-tb-targets">□□□</span>
+        </span>
       </div>
-    </div>
-
-    <!-- Controls hint -->
-    <div class="sg-controls" id="sgControls" style="display:none">
-      <span class="sg-ctrl">mouse <span class="sg-ctrl-val">aim</span></span>
-      <span class="sg-ctrl">wasd <span class="sg-ctrl-val">move</span></span>
-      <span class="sg-ctrl">space <span class="sg-ctrl-val">boost</span></span>
-    </div>
-
-    <!-- Boost badge -->
-    <div class="sg-boost-badge" id="sgBoostBadge" style="opacity:0">⚡ BOOST</div>
-
-    <!-- Scroll hint -->
-    <div class="sg-scroll-hint" id="sgScrollHint" style="display:none">
-      <a href="#home">↓ scroll to portfolio</a>
-    </div>
-
-    <!-- Hit flash -->
-    <div class="sg-hit-flash" id="sgHitFlash"></div>
-
-    <!-- Game over -->
-    <div class="sg-overlay sg-gameover-overlay" id="sgGameOver" style="display:none">
-      <div class="sg-card">
-        <div class="sg-status-err">// ship_destroyed.log</div>
-        <div class="sg-final-score" id="sgFinalScore">000</div>
-        <div class="sg-hud-label sg-final-label">final_score</div>
-        <div class="sg-hud-label" id="sgHighScoreLabel" style="margin-bottom:24px;color:var(--accent-2)"></div>
-        <div class="sg-gameover-btns">
-          <button class="sg-launch-btn" id="sgRetry"><span class="arr">▶</span> retry()</button>
-          <button class="sg-enter-btn" id="sgDebrief">→ enter_portfolio()</button>
-        </div>
+      <div class="sg-tb-right">
+        <span class="sg-tb-hint">click · space → fire</span>
       </div>
     </div>
+
+    <!-- Bottom terminal log -->
+    <div id="sgBottomBar" class="sg-bottom-bar" style="display:none">
+      <div id="sgLog" class="sg-log"></div>
+    </div>
+
+    <!-- Asteroid label container -->
+    <div id="sgLabels" class="sg-labels" style="display:none"></div>
+
+    <!-- Centre announcement -->
+    <div id="sgAnnounce" class="sg-announce"></div>
+
+    <!-- Full-screen flash -->
+    <div id="sgFlash" class="sg-flash"></div>
   </section>
 
   <!-- ============ MISSION DEBRIEF ============ -->
@@ -138,8 +141,7 @@
       </div>
       <div class="sg-debrief-body" id="sgDebriefBody"></div>
       <div class="sg-debrief-footer" id="sgDebriefFooter" style="display:none">
-        <div class="sg-debrief-granted">▶ CLEARANCE GRANTED</div>
-        <div class="sg-debrief-sub">initializing portfolio...</div>
+        <a href="#about" class="sg-enter-btn">→ enter_portfolio()</a>
       </div>
     </div>
   </div>
