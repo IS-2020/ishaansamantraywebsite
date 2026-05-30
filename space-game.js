@@ -257,33 +257,34 @@ function initGame() {
 
   // Boot sequence
   const bootEl=$('sgBoot'), bootLines=$('sgBootLines')
+  // Hard-code boot lines with inline colors (no CSS vars — always dark)
   const BOOT=[
-    {t:0,    c:'var(--ink-dim)',  tx:'> initializing starmap...'},
-    {t:420,  c:'var(--ink-dim)',  tx:'> loading career.dat ············ OK'},
-    {t:900,  c:'var(--ink-dim)',  tx:'> scanning experience.log ···· 10 entries found'},
-    {t:1380, c:'var(--accent-2)',tx:'> WARNING: 3 hostile asteroids inbound'},
-    {t:1860, c:'var(--ink-dim)',  tx:'> arming laser systems ············ OK'},
-    {t:2350, c:'var(--accent)',   tx:'> LAUNCH READY — standby'},
+    {t:0,    col:'#5c616c', tx:'> initializing starmap...'},
+    {t:380,  col:'#5c616c', tx:'> loading career.dat ············ OK'},
+    {t:820,  col:'#5c616c', tx:'> scanning experience.log ···· 10 entries found'},
+    {t:1280, col:'#ffb454', tx:'> WARNING: 3 hostile asteroids inbound'},
+    {t:1720, col:'#5c616c', tx:'> arming laser systems ············ OK'},
+    {t:2150, col:'#7cf29a', tx:'> LAUNCH READY — mission briefing loading'},
   ]
-  BOOT.forEach(({t,c,tx})=>setTimeout(()=>{
-    const l=document.createElement('div'); l.className='sg-boot-line'; l.style.color=c; l.textContent=tx
+  BOOT.forEach(({t,col,tx})=>setTimeout(()=>{
+    const l=document.createElement('div'); l.className='sg-boot-line'; l.style.color=col; l.textContent=tx
     if(bootLines)bootLines.appendChild(l)
   },t))
   setTimeout(()=>{
     if(bootEl)bootEl.classList.add('sg-boot-out')
     setTimeout(()=>{
       if(bootEl)bootEl.style.display='none'
-      const s=$('sgStartOverlay')
-      if(s){s.style.display='flex';requestAnimationFrame(()=>s.classList.add('sg-start-in'))}
+      const s=$('sgMission')
+      if(s){s.style.display='flex';requestAnimationFrame(()=>s.classList.add('sg-mission-in'))}
     },480)
-  },2900)
+  },2650)
 
   const skipEl=$('sgSkip')
   if(skipEl)skipEl.addEventListener('click',e=>{e.preventDefault();dismissGame()})
   const launchEl=$('sgLaunch')
   if(launchEl)launchEl.addEventListener('click',()=>{
-    const s=$('sgStartOverlay')
-    if(s){s.classList.remove('sg-start-in');setTimeout(()=>{s.style.display='none'},350)}
+    const s=$('sgMission')
+    if(s){s.classList.add('sg-mission-out');setTimeout(()=>{s.style.display='none'},400)}
     startRound()
   })
 

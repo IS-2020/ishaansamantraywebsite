@@ -59,45 +59,106 @@
 <main>
 
   <!-- ============ SPACE GAME INTRO ============ -->
-  <section id="game" class="space-intro">
+  <section id="game" class="space-intro" data-force-dark>
+    <!-- Canvas always underneath everything -->
     <canvas id="spaceCanvas"></canvas>
 
-    <!-- Boot sequence -->
+    <!-- ── BOOT SEQUENCE ── -->
     <div id="sgBoot" class="sg-boot">
       <div class="sg-boot-header">
-        <span class="dot dot-red"></span>
-        <span class="dot dot-amber"></span>
-        <span class="dot dot-green"></span>
-        <span class="sg-boot-title">~/ishaan/career.sh — boot sequence</span>
+        <span class="sg-boot-dot sg-boot-dot-r"></span>
+        <span class="sg-boot-dot sg-boot-dot-a"></span>
+        <span class="sg-boot-dot sg-boot-dot-g"></span>
+        <span class="sg-boot-title">SYSTEM BOOT · career_navigator.sh</span>
       </div>
       <div id="sgBootLines" class="sg-boot-lines"></div>
+      <div class="sg-boot-cursor">▍</div>
     </div>
 
-    <!-- Start overlay (shown after boot) -->
-    <div id="sgStartOverlay" class="sg-start-overlay" style="display:none">
-      <div class="sg-start-card">
-        <div class="sg-prompt-line">
-          <span class="prompt-user">ishaan@cornell</span><span class="prompt-colon">:</span><span class="prompt-path">~</span><span class="prompt-dollar">$</span>
-          <span class="sg-cmd">&nbsp;./career.sh --interactive</span><span class="caret">▍</span>
+    <!-- ── MISSION BRIEFING ── -->
+    <div id="sgMission" class="sg-mission" style="display:none">
+
+      <!-- scanline overlay -->
+      <div class="sg-scanlines" aria-hidden="true"></div>
+
+      <!-- corner decorations -->
+      <div class="sg-corner sg-corner-tl"></div>
+      <div class="sg-corner sg-corner-tr"></div>
+      <div class="sg-corner sg-corner-bl"></div>
+      <div class="sg-corner sg-corner-br"></div>
+
+      <!-- header bar -->
+      <div class="sg-mission-header">
+        <span class="sg-mission-stamp">CLASSIFIED</span>
+        <span class="sg-mission-title">MISSION BRIEFING</span>
+        <span class="sg-mission-id">FILE #ISS-2026-001</span>
+      </div>
+
+      <!-- dossier card -->
+      <div class="sg-dossier">
+        <div class="sg-dossier-left">
+          <div class="sg-dossier-label">SUBJECT</div>
+          <div class="sg-dossier-name">ISHAAN<br>SAMANTRAY</div>
+          <div class="sg-dossier-sub">Cornell University · Biological Engineer</div>
+          <div class="sg-dossier-tags">
+            <span class="sg-dtag">Bio Eng '29</span>
+            <span class="sg-dtag">CS minor</span>
+            <span class="sg-dtag">ithaca, ny</span>
+          </div>
+          <div class="sg-dossier-stats">
+            <div class="sg-dstat"><span class="sg-dstat-n">5+</span><span class="sg-dstat-l">research internships</span></div>
+            <div class="sg-dstat"><span class="sg-dstat-n">2</span><span class="sg-dstat-l">publications</span></div>
+            <div class="sg-dstat"><span class="sg-dstat-n">10k+</span><span class="sg-dstat-l">students reached</span></div>
+            <div class="sg-dstat"><span class="sg-dstat-n">7</span><span class="sg-dstat-l">open-source PRs</span></div>
+          </div>
         </div>
-        <h2 class="sg-title">career<span class="sg-title-ext">.exe</span></h2>
-        <p class="sg-desc">
-          <span class="comment">// 3 threats stand between you and the portfolio.</span><br>
-          <span class="comment">// each asteroid is a real experience. neutralize all 3.</span>
-        </p>
-        <button class="sg-launch-btn" id="sgLaunch"><span class="arr">▶</span> launch()</button>
-        <div class="sg-skip-line">
-          <a href="#home" class="sg-skip" id="sgSkip">$ skip → enter_portfolio()</a>
+
+        <div class="sg-dossier-right">
+          <div class="sg-threat-header">
+            <span class="sg-threat-label">THREAT ASSESSMENT</span>
+            <span class="sg-threat-count">3 ASTEROIDS INBOUND</span>
+          </div>
+          <div class="sg-threat-list">
+            <div class="sg-threat-item">
+              <span class="sg-threat-dot"></span>
+              <span>Each asteroid = a <strong>real experience</strong> — NIH, Vaxon Space, Aegis, and more</span>
+            </div>
+            <div class="sg-threat-item">
+              <span class="sg-threat-dot"></span>
+              <span><strong>Click anywhere</strong> to fire toward target · <strong>WASD</strong> to maneuver</span>
+            </div>
+            <div class="sg-threat-item">
+              <span class="sg-threat-dot"></span>
+              <span>Neutralize all 3 threats to gain <strong>portfolio clearance</strong></span>
+            </div>
+          </div>
+
+          <div class="sg-mission-actions">
+            <button class="sg-accept-btn" id="sgLaunch">
+              <span class="sg-accept-icon">▶</span>
+              <span>ACCEPT MISSION</span>
+            </button>
+            <a href="#home" class="sg-skip-btn" id="sgSkip">
+              → SKIP · VIEW PORTFOLIO
+            </a>
+          </div>
         </div>
+      </div>
+
+      <!-- bottom bar -->
+      <div class="sg-mission-footer">
+        <span>CLEARANCE LEVEL: OPEN</span>
+        <span class="sg-mission-blink">▍</span>
+        <span>AUTHORISED: EYES ONLY</span>
       </div>
     </div>
 
-    <!-- Top HUD bar (terminal topbar style) -->
+    <!-- ── GAME HUD (shown during play) ── -->
     <div id="sgTopBar" class="sg-top-bar" style="display:none">
       <div class="sg-tb-left">
-        <span class="dot dot-red"></span>
-        <span class="dot dot-amber"></span>
-        <span class="dot dot-green"></span>
+        <span class="sg-boot-dot sg-boot-dot-r"></span>
+        <span class="sg-boot-dot sg-boot-dot-a"></span>
+        <span class="sg-boot-dot sg-boot-dot-g"></span>
         <span class="sg-tb-path">~/ishaan/career.sh</span>
       </div>
       <div class="sg-tb-center">
@@ -112,22 +173,16 @@
         </span>
       </div>
       <div class="sg-tb-right">
-        <span class="sg-tb-hint">click · space → fire</span>
+        <span class="sg-tb-hint">click · space → fire · wasd → move</span>
       </div>
     </div>
 
-    <!-- Bottom terminal log -->
     <div id="sgBottomBar" class="sg-bottom-bar" style="display:none">
       <div id="sgLog" class="sg-log"></div>
     </div>
 
-    <!-- Asteroid label container -->
     <div id="sgLabels" class="sg-labels" style="display:none"></div>
-
-    <!-- Centre announcement -->
     <div id="sgAnnounce" class="sg-announce"></div>
-
-    <!-- Full-screen flash -->
     <div id="sgFlash" class="sg-flash"></div>
   </section>
 
