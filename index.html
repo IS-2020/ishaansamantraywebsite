@@ -540,6 +540,8 @@
 <script src="gallery.js"></script>
 <script src="app.js?v=6"></script>
 <script src="gallery-app.js"></script>
-<script type="module" src="space-game.js"></script>
+<!-- Three.js loaded as global so space-game.js can use window.THREE reliably -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.168.0/build/three.min.js"></script>
+<script src="space-game.js?v=4"></script>
 </body>
 </html>
