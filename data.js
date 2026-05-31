@@ -109,6 +109,21 @@ window.EXPERIENCE = [
 
 window.PROJECTS = [
   {
+    index: "P.00",
+    title: "Kairos",
+    org: "YC Call My Agent Hackathon · San Francisco",
+    tags: ["AI", "featured", "hackathon"],
+    featured: true,
+    desc: "Live AI command center for anonymous school threat reporting and triage. Accepts tips via SMS and phone calls, runs a multi-agent pipeline (Anthropic Claude + Gemini Live), and triages each report in 8.2s on average at $0.03/tip. Built in 1 day.",
+    links: [
+      { label: "live site ↗", href: "https://threat-vector.vercel.app" },
+      { label: "github ↗",    href: "https://github.com/devteamaegis/threat-vector" },
+      { label: "youtube ↗",   href: "https://www.youtube.com/watch?v=6oZcUjKFwf4" },
+      { label: "hackathon ↗", href: "https://agentphone.ai/callmyagent" }
+    ],
+    preview: { label: "built in 1 day · sf 2025", meta: "Anthropic · Gemini · Twilio · Supabase" }
+  },
+  {
     index: "P.01",
     title: "LipidUNet",
     org: "NIH · National Eye Institute",
@@ -306,6 +321,7 @@ window.HACKATHONS = [
     date: "May 17, 2025",
     location: "San Francisco, CA",
     eventHref: "https://agentphone.ai/callmyagent",
+    youtubeId: "6oZcUjKFwf4",
     project: "Kairos",
     tagline: "Live AI command center for anonymous school threat reporting & triage.",
     desc: "Built <strong>Kairos</strong> in a single day — a live AI command center that accepts school threat tips via SMS and phone calls, runs them through a multi-agent pipeline using Anthropic Claude and Gemini Live, and triages each report in 8.2 seconds on average. The pipeline integrates Anthropic, Gemini, AgentPhone, AgentMail, Supermemory, Twilio, and Supabase into a real-time dashboard showing live threat feeds, heatmaps, escalation status, and multilingual call support.",

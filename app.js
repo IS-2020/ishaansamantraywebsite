@@ -291,6 +291,18 @@
 
         <div class="hk-stack">${stack}</div>
 
+        ${h.youtubeId ? `
+        <div class="hk-video-wrap">
+          <iframe
+            src="https://www.youtube.com/embed/${h.youtubeId}"
+            title="Kairos demo"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+            loading="lazy"
+          ></iframe>
+        </div>` : ''}
+
         <div class="hk-photos" id="hkPhotos${hi}">${photos}</div>
 
         <div class="hk-foot">

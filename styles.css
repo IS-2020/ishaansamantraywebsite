@@ -35,8 +35,8 @@
   --line: #d8d4c7;
   --line-strong: #b8b2a1;
   --ink: #14140f;
-  --ink-dim: #55514a;
-  --ink-faint: #8a857a;
+  --ink-dim: #3d3a34;       /* was #55514a — bumped for readability */
+  --ink-faint: #6b665e;     /* was #8a857a — bumped for readability */
   --accent: #0a6b2d;
   --accent-soft: #0a6b2d1a;
   --accent-2: #b8631a;
@@ -2891,4 +2891,83 @@ body.game-active .noise {
 @media (max-width: 600px) {
   .contrib-diff-bar { flex-direction: column; gap: 4px; }
   .contrib-foot     { flex-direction: column; align-items: flex-start; }
+}
+
+/* ── YouTube embed ── */
+.hk-video-wrap {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; /* 16:9 */
+  margin-bottom: 24px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: #000;
+}
+.hk-video-wrap iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* ── Mobile fixes ── */
+@media (max-width: 768px) {
+  /* sidenav: collapse to bottom bar on mobile */
+  .sidenav {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: auto;
+    border-right: none;
+    border-top: 1px solid var(--line);
+    padding: 8px 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  .sidenav ol {
+    display: flex;
+    flex-direction: row;
+    gap: 0;
+    padding: 0 8px;
+  }
+  .sidenav li { border-bottom: none; }
+  .sidenav a {
+    flex-direction: column;
+    padding: 6px 10px;
+    gap: 2px;
+    white-space: nowrap;
+  }
+  .nav-num { font-size: 9px; }
+  .nav-label { font-size: 9px; letter-spacing: .04em; }
+
+  /* main content: no left offset */
+  main { padding-left: var(--gutter) !important; padding-bottom: 56px; }
+
+  /* about: stack vertically */
+  .about-grid { grid-template-columns: 1fr; gap: 28px; }
+  .about-photo { display: flex; gap: 20px; align-items: flex-start; }
+  .photo-frame { width: 100px; height: 100px; flex-shrink: 0; }
+
+  /* hero */
+  .hero-inner { padding-top: 40px; }
+  .hero-name { font-size: clamp(36px, 12vw, 64px); }
+  .hero-cta { flex-wrap: wrap; gap: 8px; }
+  .hero-stats { grid-template-columns: repeat(2, 1fr); }
+  .stat:nth-child(2) { border-right: 0; }
+  .stat:nth-child(1), .stat:nth-child(2) { border-bottom: 1px dashed var(--line); }
+
+  /* hackathon dossier photo grid */
+  .hk-photos { grid-template-columns: repeat(2, 1fr); }
+
+  /* timeline */
+  .tl-row { grid-template-columns: 80px 1fr; gap: 12px; }
+  .tl-logo { display: none; }
+  .tl-date { font-size: 10px; }
+
+  /* contact grid */
+  .contact-grid { grid-template-columns: 1fr; }
 }
