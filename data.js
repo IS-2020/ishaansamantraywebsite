@@ -37,6 +37,17 @@ window.EXPERIENCE = [
     links: [{label: "team →", href: "https://aguaclara.cornell.edu/Team"}]
   },
   {
+    date: "May 2024 — Aug 2024",
+    org: "George Mason University — ASSIP",
+    role: "Research Intern · Summer Science Institute",
+    logo: "assets/logos/gmu.png",
+    logoText: "GMU",
+    logoColor: "#006633",
+    desc: "Conducted research on cancer immunotherapy targeting the FGL-1/LAG-3 immune checkpoint interaction. Designed small interfering peptides (FGLpep 1.0 and FGLpep 2.0) based on 3D protein docking models built with HADDOCK and visualized in ChimeraX. Published findings in <em>George Mason University's Journal of Student-Scientists' Research</em> (Volume 6).",
+    location: "Manassas, VA",
+    links: [{label: "journal ↗", href: "https://journals.gmu.edu/jssr/article/view/4225"}]
+  },
+  {
     date: "Jun 2024 — Aug 2024",
     org: "AstraZeneca",
     role: "Business Development Intern",
@@ -70,7 +81,7 @@ window.EXPERIENCE = [
     ]
   },
   {
-    date: "Summer 2023",
+    date: "Summer 2022",
     org: "Johns Hopkins — LabCOTE",
     role: "Research Intern · Dr. Warren Grayson",
     logo: "assets/logos/johnshopkins.png",
@@ -219,14 +230,7 @@ window.PUBLICATIONS = [
     href: "https://pubmed.ncbi.nlm.nih.gov/40321780/"
   },
   {
-    cite: "[02] PMID: 37578220",
-    title: "LipidUNet — a deep-learning pipeline for segmenting lipid deposits in retinal pigment epithelium imaging",
-    authors: "NIH-NEI Bharti Lab · contributing author",
-    venue: "Peer-reviewed · National Eye Institute",
-    href: "https://pubmed.ncbi.nlm.nih.gov/37578220/"
-  },
-  {
-    cite: "[03] GMU · JSSR",
+    cite: "[02] GMU · JSSR",
     title: "George Mason University — Journal of Student-Scientists' Research (article 4225)",
     authors: "<em>Samantray I.</em>",
     venue: "Undergraduate research journal · 2024",
@@ -450,5 +454,49 @@ window.CONTRIBUTIONS = [
     siteLabel: "ishaansamantray.com",
     what: "Added a full <code>05 / hackathons.log</code> section to this portfolio featuring the YC Call My Agent Hackathon and the Kairos project, an interactive photo gallery with lightbox, a real-time metrics strip, and full tech stack. Also added a live \"now\" panel pinned below the hero, and new experience entries for Vaxon Space and Map Collective.",
     tags: ["JavaScript", "Three.js", "HTML/CSS", "portfolio"]
+  },
+  {
+    type: "fix",
+    repo: "getsentry/sentry-python",
+    title: "from_incoming_header · baggage values with '=' silently dropped",
+    date: "Jun 1, 2026",
+    pr: "https://github.com/getsentry/sentry-python/pull/6450",
+    site: "https://sentry.io",
+    siteLabel: "sentry.io",
+    what: "Sentry's Python SDK instruments millions of production apps for error tracking and distributed tracing. The W3C Baggage spec allows values to contain <code>=</code> (e.g. base64-encoded tokens, JWTs). The parser called <code>item.split(\"=\")</code> without <code>maxsplit=1</code>, producing too many parts for a 2-variable unpack. The exception was silently swallowed by Sentry's own exception handler — causing Baggage items to be invisibly dropped from distributed traces with no error surfaced.",
+    tags: ["Python", "distributed tracing", "W3C Baggage", "bug fix"]
+  },
+  {
+    type: "fix",
+    repo: "getsentry/sentry-python",
+    title: "_setup_instrumentation · dotless function name crashes sentry_sdk.init()",
+    date: "Jun 1, 2026",
+    pr: "https://github.com/getsentry/sentry-python/pull/6452",
+    site: "https://sentry.io",
+    siteLabel: "sentry.io",
+    what: "When a <code>functions_to_trace</code> entry had no module dot (e.g. <code>\"my_function\"</code> instead of <code>\"module.my_function\"</code>), <code>rsplit(\".\", 1)</code> returned a single-element list and the 2-variable unpack raised <code>ValueError</code>. This line was placed <em>before</em> the surrounding <code>try/except</code>, so the exception escaped and crashed <code>sentry_sdk.init()</code> entirely — leaving the application with zero error tracking.",
+    tags: ["Python", "SDK init", "instrumentation", "bug fix"]
+  },
+  {
+    type: "fix",
+    repo: "cohere-ai/cohere-python",
+    title: "merge_embed_responses · TypeError when batched response omits billed_units",
+    date: "Jun 1, 2026",
+    pr: "https://github.com/cohere-ai/cohere-python/pull/771",
+    site: "https://cohere.com",
+    siteLabel: "cohere.com",
+    what: "Cohere's Python SDK is a core dependency in large-scale embedding pipelines for RAG and semantic search. When batching embed requests, the SDK splits input into sub-batches and merges responses. The merge logic inspected fields from the <em>first</em> response to determine which fields to collect, then iterated them across all responses — but <code>ApiMeta.billed_units</code> is <code>Optional</code> and later batches could return <code>None</code>. Iterating over <code>None</code> raised <code>TypeError</code> mid-batch, crashing large embedding jobs silently.",
+    tags: ["Python", "embeddings", "RAG", "batch processing"]
+  },
+  {
+    type: "fix",
+    repo: "cohere-ai/cohere-python",
+    title: "sum_fields_if_not_none · AttributeError when billed_units is None",
+    date: "Jun 1, 2026",
+    pr: "https://github.com/cohere-ai/cohere-python/pull/773",
+    site: "https://cohere.com",
+    siteLabel: "cohere.com",
+    what: "A follow-on fix to the same batch-merge path: <code>sum_fields_if_not_none</code> called <code>getattr(obj, field)</code> on every item in the <code>billed_units</code> list without first guarding against <code>obj</code> being <code>None</code>. When any sub-batch returned no billing metadata, the list contained <code>None</code> entries and the function raised <code>AttributeError: 'NoneType' object has no attribute 'input_tokens'</code>, preventing token usage from being tracked across any batched embed call that hit this edge case.",
+    tags: ["Python", "embeddings", "billing metadata", "bug fix"]
   }
 ];
