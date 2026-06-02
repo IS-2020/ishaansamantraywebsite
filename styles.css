@@ -798,6 +798,85 @@ main {
 }
 .hp-img img { max-width: 70%; max-height: 70%; object-fit: contain; }
 
+/* ============ OSS CONTRIBUTIONS ============ */
+.oss-summary {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 24px;
+  font-size: 12px;
+  color: var(--ink-dim);
+  letter-spacing: .03em;
+}
+.oss-sep { color: var(--ink-faint); }
+.oss-stat-num { color: var(--ink); font-weight: 600; margin-right: 3px; }
+.oss-stat-num.oss-merged { color: var(--accent); }
+
+.oss-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 14px;
+}
+
+.oss-card {
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-panel);
+  display: flex; flex-direction: column; gap: 8px;
+  transition: all .25s;
+  cursor: pointer;
+}
+.oss-card:hover { border-color: var(--accent); background: var(--bg-elev); }
+
+.oss-card-top {
+  display: flex; align-items: center; gap: 8px;
+  flex-wrap: wrap;
+}
+.oss-status {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .07em;
+  padding: 2px 7px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+.oss-status--merged {
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.oss-status--open {
+  background: color-mix(in srgb, var(--ink-dim) 10%, transparent);
+  color: var(--ink-dim);
+  border: 1px solid var(--line);
+}
+.oss-repo {
+  font-size: 11px;
+  color: var(--ink-dim);
+  flex: 1;
+  letter-spacing: .01em;
+}
+.oss-num { color: var(--ink-faint); }
+.oss-link {
+  font-size: 10.5px;
+  color: var(--ink-faint);
+  margin-left: auto;
+  white-space: nowrap;
+}
+.oss-card:hover .oss-link { color: var(--accent); }
+
+.oss-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.45;
+  letter-spacing: -.005em;
+}
+.oss-desc {
+  font-size: 11.5px;
+  color: var(--ink-dim);
+  line-height: 1.55;
+}
+
 /* ============ PUBLICATIONS ============ */
 .pubs { display: flex; flex-direction: column; gap: 20px; }
 

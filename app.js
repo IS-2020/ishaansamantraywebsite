@@ -352,6 +352,43 @@
     });
   }
 
+  /* ---------- RENDER OSS CONTRIBUTIONS ---------- */
+  const ossGrid = $('#ossGrid');
+  const ossSummary = $('#ossSummary');
+  if (ossGrid && window.OSS_CONTRIBUTIONS) {
+    const merged = window.OSS_CONTRIBUTIONS.filter(c => c.status === 'merged');
+    const open   = window.OSS_CONTRIBUTIONS.filter(c => c.status === 'open');
+    const repos  = new Set(window.OSS_CONTRIBUTIONS.map(c => c.repo.split('/')[0])).size;
+    if (ossSummary) {
+      ossSummary.innerHTML = `
+        <span class="oss-stat"><span class="oss-stat-num">${window.OSS_CONTRIBUTIONS.length}</span> pull requests</span>
+        <span class="oss-sep">·</span>
+        <span class="oss-stat"><span class="oss-stat-num oss-merged">${merged.length}</span> merged</span>
+        <span class="oss-sep">·</span>
+        <span class="oss-stat"><span class="oss-stat-num">${repos}+</span> orgs</span>
+      `;
+    }
+    $('#ossCount').textContent = `[${window.OSS_CONTRIBUTIONS.length} entries]`;
+    window.OSS_CONTRIBUTIONS.forEach((c, i) => {
+      const el = document.createElement('a');
+      el.href = c.href;
+      el.target = '_blank';
+      el.rel = 'noopener';
+      el.className = 'oss-card reveal-el';
+      el.style.setProperty('--i', i);
+      el.innerHTML = `
+        <div class="oss-card-top">
+          <span class="oss-status oss-status--${c.status}">${c.status === 'merged' ? '✓ merged' : '⟳ in review'}</span>
+          <span class="oss-repo">${c.repo} <span class="oss-num">#${c.num}</span></span>
+          <span class="oss-link">view →</span>
+        </div>
+        <div class="oss-title">${c.title}</div>
+        <div class="oss-desc">${c.desc}</div>
+      `;
+      ossGrid.appendChild(el);
+    });
+  }
+
   /* ---------- RENDER PUBLICATIONS ---------- */
   const pubs = $('#pubsList');
   window.PUBLICATIONS.forEach((p, i) => {

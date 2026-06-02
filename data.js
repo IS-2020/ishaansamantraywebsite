@@ -72,6 +72,19 @@ window.EXPERIENCE = [
     links: [{label: "astrazeneca.com ↗", href: "https://www.astrazeneca.com/"}]
   },
   {
+    date: "May 2024 — Aug 2024",
+    org: "George Mason University — ASSIP",
+    role: "Research Intern · Summer Science Institute",
+    logo: "assets/logos/gmu.png",
+    logoText: "GMU",
+    logoColor: "#006633",
+    desc: "Conducted research on cancer immunotherapy targeting the FGL-1/LAG-3 immune checkpoint interaction. Designed small interfering peptides (FGLpep 1.0 and FGLpep 2.0) based on 3D protein docking models built with HADDOCK and visualized in ChimeraX. Published findings in <em>George Mason University's Journal of Student-Scientists' Research</em> (Volume 6).",
+    location: "Manassas, VA",
+    links: [
+      {label: "journal ↗", href: "https://journals.gmu.edu/jssr/article/view/4225"}
+    ]
+  },
+  {
     date: "Dec 2023 — May 2025",
     org: "NIH — National Eye Institute",
     role: "Research Intern · Bharti Lab (Dr. Sharma)",
@@ -96,7 +109,7 @@ window.EXPERIENCE = [
     ]
   },
   {
-    date: "Summer 2023",
+    date: "Summer 2022",
     org: "Johns Hopkins — LabCOTE",
     role: "Research Intern · Dr. Warren Grayson",
     logo: "assets/logos/johnshopkins.png",
@@ -230,14 +243,7 @@ window.PUBLICATIONS = [
     href: "https://pubmed.ncbi.nlm.nih.gov/40321780/"
   },
   {
-    cite: "[02] PMID: 37578220",
-    title: "LipidUNet — a deep-learning pipeline for segmenting lipid deposits in retinal pigment epithelium imaging",
-    authors: "NIH-NEI Bharti Lab · contributing author",
-    venue: "Peer-reviewed · National Eye Institute",
-    href: "https://pubmed.ncbi.nlm.nih.gov/37578220/"
-  },
-  {
-    cite: "[03] GMU · JSSR",
+    cite: "[02] GMU · JSSR",
     title: "George Mason University — Journal of Student-Scientists' Research (article 4225)",
     authors: "<em>Samantray I.</em>",
     venue: "Undergraduate research journal · 2024",
@@ -406,6 +412,174 @@ window.HACKATHONS = [
       { src: "assets/hackathon/h3.jpg", caption: "kairos threat graph visualization · live" }
     ]
   }
+];
+
+/* ============================================================
+   OPEN SOURCE CONTRIBUTIONS
+   ============================================================ */
+window.OSS_CONTRIBUTIONS = [
+  // ── MERGED ──────────────────────────────────────────────────
+  {
+    status: "merged",
+    repo: "getsentry/sentry-python",
+    num: 6452,
+    title: "fix(client): guard against dotless qualified_name in _setup_instrumentation",
+    desc: "Crash in sentry_sdk.init() when a functions_to_trace entry has no module dot — rsplit unpacking placed before the try/except, so the ValueError escaped and killed SDK init entirely.",
+    href: "https://github.com/getsentry/sentry-python/pull/6452"
+  },
+  {
+    status: "merged",
+    repo: "getsentry/sentry-python",
+    num: 6450,
+    title: "fix(tracing_utils): handle baggage values containing '=' in from_incoming_header",
+    desc: "W3C Baggage values with '=' (base64, JWTs) were silently dropped — split without maxsplit=1 produced too many parts, the ValueError was swallowed by Sentry's own exception handler.",
+    href: "https://github.com/getsentry/sentry-python/pull/6450"
+  },
+  {
+    status: "merged",
+    repo: "cohere-ai/cohere-python",
+    num: 773,
+    title: "fix(utils): guard against None fields in sum_fields_if_not_none",
+    desc: "AttributeError when batching embed requests — billed_units is Optional and can be None, but the merge code called getattr(None, 'input_tokens') without a guard.",
+    href: "https://github.com/cohere-ai/cohere-python/pull/773"
+  },
+  {
+    status: "merged",
+    repo: "cohere-ai/cohere-python",
+    num: 771,
+    title: "fix(utils): guard against None in merge_embed_responses",
+    desc: "TypeError when any sub-batch in a large embedding request returned None for billed_units — the merge loop iterated over None without checking.",
+    href: "https://github.com/cohere-ai/cohere-python/pull/771"
+  },
+  {
+    status: "merged",
+    repo: "agno-agi/agno",
+    num: 8136,
+    title: "fix: add _acontinue_run_background_stream to prevent AttributeError on continue-run SSE",
+    desc: "Missing async method caused AttributeError when resuming a streaming agent run via SSE — the sync version existed but its async counterpart did not.",
+    href: "https://github.com/agno-agi/agno/pull/8136"
+  },
+  {
+    status: "merged",
+    repo: "lancedb/lancedb",
+    num: 3437,
+    title: "fix(rerankers): inverted scores and incorrect FTS penalty in LinearCombinationReranker",
+    desc: "Relevance scores were inverted and the missing-FTS penalty applied to the wrong set of results, causing the worst matches to rank highest.",
+    href: "https://github.com/lancedb/lancedb/pull/3437"
+  },
+  {
+    status: "merged",
+    repo: "supermemoryai/supermemory",
+    num: 999,
+    title: "fix(openai-sdk): don't inject empty system prompt when no memories are found",
+    desc: "An empty system prompt was injected into every LLM call when the memory store returned no results, corrupting model behavior.",
+    href: "https://github.com/supermemoryai/supermemory/pull/999"
+  },
+  {
+    status: "merged",
+    repo: "PrefectHQ/prefect",
+    num: 22071,
+    title: "fix(orchestration): guard ZeroDivisionError in RetryFailedTasks",
+    desc: "Crash when retry_jitter_factor was set without retry_delay — division by zero when computing jitter with no base delay defined.",
+    href: "https://github.com/PrefectHQ/prefect/pull/22071"
+  },
+  // ── OPEN / IN REVIEW ────────────────────────────────────────
+  {
+    status: "open",
+    repo: "openai/openai-python",
+    num: 3342,
+    title: "fix(models): guard bare dict unpack in construct_type()",
+    desc: "ValueError when a model field is annotated as plain dict — get_args(dict) returns (), and the 2-variable unpack crashes with 'not enough values to unpack'.",
+    href: "https://github.com/openai/openai-python/pull/3342"
+  },
+  {
+    status: "open",
+    repo: "openai/openai-python",
+    num: 3339,
+    title: "fix(utils): guard bare dict annotation in _transform_recursive",
+    desc: "IndexError when a request type uses bare dict — get_args(stripped_type)[1] on an unparameterised dict hits an empty tuple.",
+    href: "https://github.com/openai/openai-python/pull/3339"
+  },
+  {
+    status: "open",
+    repo: "anthropics/anthropic-sdk-python",
+    num: 1627,
+    title: "fix(models): guard bare list in construct_type()",
+    desc: "IndexError when called with bare list type — the origin == list branch unconditionally accesses args[0], but get_args(list) == ().",
+    href: "https://github.com/anthropics/anthropic-sdk-python/pull/1627"
+  },
+  {
+    status: "open",
+    repo: "anthropics/anthropic-sdk-python",
+    num: 1620,
+    title: "fix(models): guard bare dict unpack in construct_type()",
+    desc: "ValueError when deserialising into a plain dict field — same class of bug as the openai-python fix, unparameterised generic returns empty args tuple.",
+    href: "https://github.com/anthropics/anthropic-sdk-python/pull/1620"
+  },
+  {
+    status: "open",
+    repo: "vllm-project/vllm",
+    num: 44155,
+    title: "fix(tool_parsers): add maxsplit=1 to tool-call start-marker split",
+    desc: "ValueError when model output contains multiple tool-call start markers — split without maxsplit produces 3+ parts that can't unpack into 2 variables.",
+    href: "https://github.com/vllm-project/vllm/pull/44155"
+  },
+  {
+    status: "open",
+    repo: "google/adk-python",
+    num: 5921,
+    title: "fix(tools): return [] instead of None in _get_required_fields()",
+    desc: "Bare return returned None, which was assigned to declaration.parameters.required — any downstream iteration raised TypeError: 'NoneType' is not iterable.",
+    href: "https://github.com/google/adk-python/pull/5921"
+  },
+  {
+    status: "open",
+    repo: "browser-use/browser-use",
+    num: 4946,
+    title: "fix(llm): check tool_calls path for structured output in Groq chat",
+    desc: "Groq returns content=None and puts structured JSON in tool_calls for tool-calling models — the guard always raised ModelProviderError even on valid responses.",
+    href: "https://github.com/browser-use/browser-use/pull/4946"
+  },
+  {
+    status: "open",
+    repo: "PrefectHQ/prefect",
+    num: 22170,
+    title: "fix(cli): add maxsplit=1 to slug.split('/') in block inspect/delete",
+    desc: "ValueError when a block slug contains more than one '/' — the 2-variable unpack fails for any path-like identifier with nested segments.",
+    href: "https://github.com/PrefectHQ/prefect/pull/22170"
+  },
+  {
+    status: "open",
+    repo: "deepset-ai/haystack",
+    num: 11452,
+    title: "fix(utils): add maxsplit=1 to device string split in _split_device_string()",
+    desc: "ValueError on any device string with more than one colon (e.g. cuda:0:1) — affects Device.from_str(), ComponentDevice.from_str(), and DeviceMap.from_dict().",
+    href: "https://github.com/deepset-ai/haystack/pull/11452"
+  },
+  {
+    status: "open",
+    repo: "openai/openai-agents-python",
+    num: 3548,
+    title: "fix(function_schema): block Pydantic protected namespace names in function_tool",
+    desc: "TypeError deep in Pydantic when a @function_tool parameter is named model_config — Pydantic treats it as a model-level config key rather than a field.",
+    href: "https://github.com/openai/openai-agents-python/pull/3548"
+  },
+  {
+    status: "open",
+    repo: "qdrant/qdrant-client",
+    num: 1222,
+    title: "fix(local): guard non-string payload type in MatchText check",
+    desc: "TypeError on text filter applied to a numeric field — 'in' operator on int raises 'argument of type int is not iterable' for mixed-type payload collections.",
+    href: "https://github.com/qdrant/qdrant-client/pull/1222"
+  },
+  {
+    status: "open",
+    repo: "e2b-dev/E2B",
+    num: 1374,
+    title: "fix(parse): fix false-positive detached HEAD for upstream named 'detached-*'",
+    desc: "Any branch tracking origin/detached-work was incorrectly flagged as detached HEAD — the 'detached' substring check was too broad.",
+    href: "https://github.com/e2b-dev/E2B/pull/1374"
+  },
 ];
 
 window.PROJECTS.push(
