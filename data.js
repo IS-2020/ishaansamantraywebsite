@@ -319,6 +319,31 @@ window.NEWS = [];
 
 window.HACKATHONS = [
   {
+    id: "ara-ai-computer",
+    event: "Ara.so (YC P26) × DayDreamers — Build Your AI Computer Hackathon",
+    organizer: "Ara.so (YC P26) × DayDreamers",
+    date: "April 2026",
+    location: "Multi-college · UPenn, Cornell, UC Berkeley, Johns Hopkins, Stanford, Columbia",
+    eventHref: "https://ara.so",
+    project: "Ara Co-Pilot",
+    tagline: "AI earpiece for live calls — transcribes locally, reasons over your calendar and email, answers in real time.",
+    desc: "Built <strong>Ara Co-Pilot</strong> at the Ara.so × DayDreamers hackathon — a macOS menu-bar app that listens during FaceTime, Zoom, Meet, and Teams calls, transcribes your mic locally with Whisper (no audio ever leaves the machine), and surfaces answers grounded in your actual Google Calendar, Gmail, and Drive inside a transparent overlay floating above the call window. A keyword-routing \"brain\" classifies each utterance into connector categories (Calendar, Gmail, Drive, Notion, Linear) and dispatches to the right data source in real time. Placed <strong>3rd · Most Viral</strong> across 6 competing colleges.",
+    metrics: [
+      { val: "3rd",    label: "place · Most Viral" },
+      { val: "6",      label: "colleges competing" },
+      { val: "on-device", label: "Whisper transcription" },
+      { val: "1 day",  label: "built in" }
+    ],
+    stack: ["Python", "Whisper (faster-whisper)", "PyObjC", "Anthropic Claude", "AppleScript", "Google Calendar", "macOS rumps"],
+    links: [
+      { label: "github ↗", href: "https://github.com/devteamaegis/ara-copilot" },
+      { label: "ara.so ↗", href: "https://ara.so" }
+    ],
+    photos: [
+      { src: "assets/hackathon/ara-event.jpg", caption: "3rd place · Most Viral — Ara.so × DayDreamers Hackathon" }
+    ]
+  },
+  {
     id: "yc-call-my-agent",
     event: "YC Call My Agent Hackathon",
     organizer: "Y Combinator × AgentPhone",
@@ -353,15 +378,6 @@ window.HACKATHONS = [
 window.PROJECTS.push(
   {
     index: "P.09",
-    title: "Ara — Co-Pilot",
-    org: "Ara Hackathon",
-    tags: ["cs", "hackathon", "AI"],
-    desc: "Co-pilot tool built for the Ara Hackathon. AI agent that helps users navigate and automate workflows in the Ara ecosystem.",
-    links: [{ label: "github ↗", href: "https://github.com/devteamaegis/ara-copilot" }],
-    preview: { label: "hackathon · 2025", img: "assets/logos/ara.png", meta: "AI co-pilot · workflow automation" }
-  },
-  {
-    index: "P.10",
     title: "Encore Tickets — Redesign",
     org: "Encore Tickets",
     tags: ["cs", "redesign", "web"],
