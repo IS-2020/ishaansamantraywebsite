@@ -364,40 +364,36 @@
     });
   }
 
-  /* ---------- RENDER CONTRIBUTIONS ---------- */
+  /* ---------- RENDER CONTRIBUTIONS (grouped by org) ---------- */
   const contribList = $('#contribList');
   const contribCount = $('#contribCount');
   if (contribList && window.CONTRIBUTIONS) {
-    if (contribCount) contribCount.textContent = `[${window.CONTRIBUTIONS.length} merged PRs]`;
-    const typeColor = { fix:'var(--red)', feat:'var(--accent)', docs:'var(--blue)' };
-    const typeBg    = { fix:'rgba(255,107,107,.08)', feat:'rgba(124,242,154,.08)', docs:'rgba(110,168,255,.08)' };
+    const totalPRs = window.CONTRIBUTIONS.reduce((s, o) => s + o.prs.length, 0);
+    if (contribCount) contribCount.textContent = `[${totalPRs} merged PRs · ${window.CONTRIBUTIONS.length} orgs]`;
 
-    window.CONTRIBUTIONS.forEach((c, i) => {
-      const tags = c.tags.map(t => `<span class="chip">${t}</span>`).join('');
+    window.CONTRIBUTIONS.forEach((o, i) => {
+      const prRows = o.prs.map(p => `
+        <a class="contrib-pr-row" href="https://github.com/${o.repo}/pull/${p.num}" target="_blank" rel="noopener">
+          <span class="contrib-pr-num">#${p.num}</span>
+          <span class="contrib-pr-fix">${p.fix}</span>
+          <span class="contrib-pr-arrow">↗</span>
+        </a>
+      `).join('');
       const el = document.createElement('div');
       el.className = 'contrib-card reveal-el';
       el.style.setProperty('--i', i);
       el.innerHTML = `
-        <div class="contrib-diff-bar" style="background:${typeBg[c.type]||'transparent'}">
-          <span class="contrib-type" style="color:${typeColor[c.type]||'var(--accent)'}">+ ${c.type}</span>
-          <span class="contrib-title">${c.title}</span>
+        <div class="contrib-org-head">
+          <div class="contrib-org-left">
+            <span class="contrib-org-dot"></span>
+            <span class="contrib-org-name">${o.org}</span>
+            ${o.badge ? `<span class="contrib-org-badge">${o.badge}</span>` : ''}
+            <span class="contrib-org-count">${o.prs.length} merged</span>
+          </div>
+          <a class="contrib-org-site" href="${o.site}" target="_blank" rel="noopener">${o.siteLabel} ↗</a>
         </div>
-        <div class="contrib-body">
-          <div class="contrib-meta">
-            <a class="contrib-repo" href="${c.pr}" target="_blank" rel="noopener">
-              <span class="contrib-repo-icon">⎇</span> ${c.repo}
-            </a>
-            <span class="contrib-date">${c.date}</span>
-          </div>
-          <p class="contrib-what">${c.what}</p>
-          <div class="contrib-foot">
-            <div class="contrib-tags">${tags}</div>
-            <div class="contrib-links">
-              <a class="contrib-link contrib-link-pr" href="${c.pr}" target="_blank" rel="noopener">view PR ↗</a>
-              <a class="contrib-link contrib-link-site" href="${c.site}" target="_blank" rel="noopener">${c.siteLabel} ↗</a>
-            </div>
-          </div>
-        </div>`;
+        <div class="contrib-org-desc">${o.desc}</div>
+        <div class="contrib-pr-list">${prRows}</div>`;
       contribList.appendChild(el);
     });
   }

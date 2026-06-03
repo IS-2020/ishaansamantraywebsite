@@ -397,124 +397,108 @@ window.PROJECTS.push(
    ============================================================ */
 window.CONTRIBUTIONS = [
   {
-    type: "fix",
-    repo: "agno-agi/agno",
-    title: "_acontinue_run_background_stream · prevent AttributeError on SSE",
-    date: "May 28, 2026",
-    pr: "https://github.com/agno-agi/agno/pull/8136",
-    site: "https://www.agno.com",
-    siteLabel: "agno.com",
-    what: "Agno is a high-performance Python framework for building multi-modal AI agents. When using server-sent event (SSE) streams to continue an existing run, the agent threw an unhandled <code>AttributeError</code> because the async background stream method was missing from the base class. Added <code>_acontinue_run_background_stream</code> to close the gap, restoring SSE-based agent continuations for async workflows.",
-    tags: ["Python", "async", "SSE", "AI agents"]
-  },
-  {
-    type: "fix",
+    org: "LanceDB",
+    badge: "YC W22",
+    desc: "Multimodal vector database for AI applications",
     repo: "lancedb/lancedb",
-    title: "LinearCombinationReranker · inverted scores & wrong FTS penalty",
-    date: "May 26, 2026",
-    pr: "https://github.com/lancedb/lancedb/pull/3437",
     site: "https://lancedb.com",
     siteLabel: "lancedb.com",
-    what: "LanceDB is a vector database built for AI applications, used to store and retrieve embeddings at scale. The <code>LinearCombinationReranker</code> — which blends full-text-search and vector scores — had two bugs: relevance scores were inverted (worst results ranked first) and the penalty applied to results missing from FTS was calculated incorrectly. Fixed both, restoring accurate hybrid search ranking across every app using this reranker.",
-    tags: ["Python", "vector search", "reranking", "hybrid search"]
+    prs: [
+      { num: "3437", fix: "<code>LinearCombinationReranker</code> was inverting relevance scores — worst results ranked first. Also fixed the missing-FTS penalty logic that was rewarding non-matching documents." },
+      { num: "3467", fix: "<code>RRFReranker.rerank_multivector([])</code> crashed with <code>IndexError</code> on empty input — <code>all()</code> passes vacuously, so <code>vector_results[0]</code> was reached unchecked." },
+      { num: "3469", fix: "<code>MRRReranker.rerank_multivector([])</code> shared the same root cause — added an explicit <code>ValueError</code> guard before any indexing." }
+    ]
   },
   {
-    type: "fix",
-    repo: "PrefectHQ/prefect",
-    title: "RetryFailedTasks · guard ZeroDivisionError on jitter without delay",
-    date: "May 26, 2026",
-    pr: "https://github.com/PrefectHQ/prefect/pull/22071",
-    site: "https://www.prefect.io",
-    siteLabel: "prefect.io",
-    what: "Prefect is a workflow orchestration platform that runs millions of data pipelines in production. When a task was configured with <code>retry_jitter_factor</code> but no <code>retry_delay</code>, the retry scheduler attempted to divide by zero and crashed the entire task run with an unhandled exception. Added a guard so jitter is safely skipped when there is no base delay to apply jitter to.",
-    tags: ["Python", "orchestration", "task retry", "bug fix"]
+    org: "Sentry",
+    badge: "YC W12",
+    desc: "Error tracking & performance monitoring · ~50M Python SDK downloads/month",
+    repo: "getsentry/sentry-python",
+    site: "https://sentry.io",
+    siteLabel: "sentry.io",
+    prs: [
+      { num: "6450", fix: "W3C Baggage values containing <code>=</code> (base64, JWTs) were silently dropped from distributed traces — <code>split(\"=\")</code> without <code>maxsplit=1</code>, exception swallowed by Sentry's own handler." },
+      { num: "6452", fix: "A dotless function name in <code>functions_to_trace</code> crashed <code>sentry_sdk.init()</code> entirely — the <code>rsplit(\".\", 1)</code> unpack sat before the try/except, so <code>ValueError</code> escaped and killed SDK init." },
+      { num: "6478", fix: "<code>_is_image_type_with_blob_content</code> crashed with <code>AttributeError</code> on string-shorthand <code>image_url</code> values — called <code>.get()</code> on a string instead of a dict." }
+    ]
   },
   {
-    type: "fix",
+    org: "Agno",
+    badge: "YC W23",
+    desc: "High-performance Python framework for multi-modal AI agents",
+    repo: "agno-agi/agno",
+    site: "https://www.agno.com",
+    siteLabel: "agno.com",
+    prs: [
+      { num: "8136", fix: "<code>acontinue_run</code> with <code>background=True, stream=True</code> threw <code>AttributeError</code> — <code>_acontinue_run_background_stream</code> didn't exist, so raw event objects hit Starlette's <code>.encode()</code> call." }
+    ]
+  },
+  {
+    org: "Supermemory",
+    badge: "YC",
+    desc: "Memory infrastructure layer for AI apps",
     repo: "supermemoryai/supermemory",
-    title: "OpenAI SDK · skip empty system prompt when no memories found",
-    date: "May 26, 2026",
-    pr: "https://github.com/supermemoryai/supermemory/pull/999",
     site: "https://supermemory.ai",
     siteLabel: "supermemory.ai",
-    what: "Supermemory is a memory infrastructure layer that gives AI apps long-term recall. The OpenAI SDK integration silently injected an empty <code>system</code> message into every LLM call, even when the memory lookup returned nothing. This wasted tokens, risked confusing the model's context, and broke strict API clients that reject empty message bodies. Fixed the injection to be conditional on actual memory content.",
-    tags: ["TypeScript", "OpenAI SDK", "LLM", "memory"]
+    prs: [
+      { num: "999", fix: "Empty system prompt injected into every LLM call when memory lookup returned nothing — corrupted model context and wasted tokens on blank system messages." }
+    ]
   },
   {
-    type: "fix",
-    repo: "paysponge/paysponge-sdk",
-    title: "Client · throw on unloaded address; respect explicit testnet flag",
-    date: "May 27, 2026",
-    pr: "https://github.com/paysponge/paysponge-sdk/pull/1",
-    site: "https://paysponge.com",
-    siteLabel: "paysponge.com",
-    what: "PaySponge is a crypto payments SDK that abstracts wallet and chain management for developers. Two related bugs: the client silently allowed calls to proceed with an uninitialised wallet address (leading to silent failures downstream), and an explicit <code>testnet: true</code> flag passed by the developer was being overridden by auto-detection. Fixed both — the client now throws immediately on unloaded state, and the testnet flag is always honoured when explicitly set.",
-    tags: ["TypeScript", "Web3", "payments", "SDK"]
+    org: "Prefect",
+    badge: "$150M Series C",
+    desc: "Workflow orchestration platform",
+    repo: "PrefectHQ/prefect",
+    site: "https://www.prefect.io",
+    siteLabel: "prefect.io",
+    prs: [
+      { num: "22071", fix: "<code>ZeroDivisionError</code> in the retry scheduler when <code>retry_jitter_factor</code> was set without <code>retry_delay</code> — jitter applied to a zero-length delay caused a divide-by-zero in the orchestration server." },
+      { num: "22188", fix: "<code>parse_obj_as()</code> raised <code>StopIteration</code> on an empty dict — <code>next(iter({}))</code> escaped the <code>except ValueError</code> handler, bypassing all error-handling callers." }
+    ]
   },
   {
-    type: "docs",
+    org: "Cohere",
+    badge: "Series C",
+    desc: "Enterprise AI platform",
+    repo: "cohere-ai/cohere-python",
+    site: "https://cohere.com",
+    siteLabel: "cohere.com",
+    prs: [
+      { num: "771", fix: "<code>merge_embed_responses</code> crashed batched embedding jobs — iterated <code>None</code> fields from later sub-batches that were absent in the first response." },
+      { num: "773", fix: "<code>sum_fields_if_not_none</code> called <code>getattr(None, 'input_tokens')</code> — <code>billed_units</code> is Optional and can be None, but the guard only checked field values, not the object itself." }
+    ]
+  },
+  {
+    org: "SkyPilot",
+    badge: "a16z-backed",
+    desc: "Cloud-agnostic AI/ML compute framework",
+    repo: "skypilot-org/skypilot",
+    site: "https://skypilot.co",
+    siteLabel: "skypilot.co",
+    prs: [
+      { num: "9768", fix: "<code>is_az_container_endpoint()</code> accepted bare storage-account URLs with no container segment — regex <code>*</code> vs <code>+</code> — causing <code>IndexError: pop from empty list</code> downstream in Azure storage code." }
+    ]
+  },
+  {
+    org: "Anthropic MCP SDK",
+    badge: "official SDK",
+    desc: "Official Python SDK for the Model Context Protocol",
+    repo: "modelcontextprotocol/python-sdk",
+    site: "https://modelcontextprotocol.io",
+    siteLabel: "modelcontextprotocol.io",
+    prs: [
+      { num: "2656", fix: "<code>.gitattribute</code> (typo) renamed to <code>.gitattributes</code> — the misspelled file was a silent no-op, meaning <code>uv.lock</code> was never flagged as generated for GitHub Linguist." }
+    ]
+  },
+  {
+    org: "LangChain.js",
+    badge: "",
+    desc: "JavaScript/TypeScript LLM framework",
     repo: "langchain-ai/langchainjs",
-    title: "Source comments · fix duplicate-word typos across docs",
-    date: "May 22, 2026",
-    pr: "https://github.com/langchain-ai/langchainjs/pull/10940",
     site: "https://js.langchain.com",
     siteLabel: "js.langchain.com",
-    what: "LangChain.js is the JavaScript/TypeScript SDK for building LLM-powered applications — one of the most-used AI libraries in the ecosystem. Audited source comments and JSDoc blocks across the codebase, removing duplicate-word typos (e.g. \"the the\", \"a a\") that had crept into documentation read by thousands of developers every day.",
-    tags: ["TypeScript", "docs", "LLM", "open source"]
-  },
-  {
-    type: "feat",
-    repo: "IS-2020/ishaansamantraywebsite",
-    title: "Portfolio · hackathons section, now panel, Vaxon Space & Map Collective",
-    date: "May 23, 2026",
-    pr: "https://github.com/IS-2020/ishaansamantraywebsite/pull/1",
-    site: "https://ishaansamantray.com",
-    siteLabel: "ishaansamantray.com",
-    what: "Added a full <code>05 / hackathons.log</code> section to this portfolio featuring the YC Call My Agent Hackathon and the Kairos project, an interactive photo gallery with lightbox, a real-time metrics strip, and full tech stack. Also added a live \"now\" panel pinned below the hero, and new experience entries for Vaxon Space and Map Collective.",
-    tags: ["JavaScript", "Three.js", "HTML/CSS", "portfolio"]
-  },
-  {
-    type: "fix",
-    repo: "getsentry/sentry-python",
-    title: "from_incoming_header · baggage values with '=' silently dropped",
-    date: "Jun 1, 2026",
-    pr: "https://github.com/getsentry/sentry-python/pull/6450",
-    site: "https://sentry.io",
-    siteLabel: "sentry.io",
-    what: "Sentry's Python SDK instruments millions of production apps for error tracking and distributed tracing. The W3C Baggage spec allows values to contain <code>=</code> (e.g. base64-encoded tokens, JWTs). The parser called <code>item.split(\"=\")</code> without <code>maxsplit=1</code>, producing too many parts for a 2-variable unpack. The exception was silently swallowed by Sentry's own exception handler — causing Baggage items to be invisibly dropped from distributed traces with no error surfaced.",
-    tags: ["Python", "distributed tracing", "W3C Baggage", "bug fix"]
-  },
-  {
-    type: "fix",
-    repo: "getsentry/sentry-python",
-    title: "_setup_instrumentation · dotless function name crashes sentry_sdk.init()",
-    date: "Jun 1, 2026",
-    pr: "https://github.com/getsentry/sentry-python/pull/6452",
-    site: "https://sentry.io",
-    siteLabel: "sentry.io",
-    what: "When a <code>functions_to_trace</code> entry had no module dot (e.g. <code>\"my_function\"</code> instead of <code>\"module.my_function\"</code>), <code>rsplit(\".\", 1)</code> returned a single-element list and the 2-variable unpack raised <code>ValueError</code>. This line was placed <em>before</em> the surrounding <code>try/except</code>, so the exception escaped and crashed <code>sentry_sdk.init()</code> entirely — leaving the application with zero error tracking.",
-    tags: ["Python", "SDK init", "instrumentation", "bug fix"]
-  },
-  {
-    type: "fix",
-    repo: "cohere-ai/cohere-python",
-    title: "merge_embed_responses · TypeError when batched response omits billed_units",
-    date: "Jun 1, 2026",
-    pr: "https://github.com/cohere-ai/cohere-python/pull/771",
-    site: "https://cohere.com",
-    siteLabel: "cohere.com",
-    what: "Cohere's Python SDK is a core dependency in large-scale embedding pipelines for RAG and semantic search. When batching embed requests, the SDK splits input into sub-batches and merges responses. The merge logic inspected fields from the <em>first</em> response to determine which fields to collect, then iterated them across all responses — but <code>ApiMeta.billed_units</code> is <code>Optional</code> and later batches could return <code>None</code>. Iterating over <code>None</code> raised <code>TypeError</code> mid-batch, crashing large embedding jobs silently.",
-    tags: ["Python", "embeddings", "RAG", "batch processing"]
-  },
-  {
-    type: "fix",
-    repo: "cohere-ai/cohere-python",
-    title: "sum_fields_if_not_none · AttributeError when billed_units is None",
-    date: "Jun 1, 2026",
-    pr: "https://github.com/cohere-ai/cohere-python/pull/773",
-    site: "https://cohere.com",
-    siteLabel: "cohere.com",
-    what: "A follow-on fix to the same batch-merge path: <code>sum_fields_if_not_none</code> called <code>getattr(obj, field)</code> on every item in the <code>billed_units</code> list without first guarding against <code>obj</code> being <code>None</code>. When any sub-batch returned no billing metadata, the list contained <code>None</code> entries and the function raised <code>AttributeError: 'NoneType' object has no attribute 'input_tokens'</code>, preventing token usage from being tracked across any batched embed call that hit this edge case.",
-    tags: ["Python", "embeddings", "billing metadata", "bug fix"]
+    prs: [
+      { num: "10940", fix: "Duplicate-word typos (\"the the\", \"a a way\") in JSDoc comments across 3 files." }
+    ]
   }
 ];
