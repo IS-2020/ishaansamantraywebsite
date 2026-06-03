@@ -307,7 +307,7 @@
 
         <div class="hk-foot">
           <div class="hk-links">${links}</div>
-          <span class="hk-built">// built in 1 day · sf 2025</span>
+          <span class="hk-built">// ${h.footer || 'built in 1 day'}</span>
         </div>
       `;
       hackEl.appendChild(card);

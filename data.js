@@ -323,16 +323,17 @@ window.HACKATHONS = [
     event: "Ara.so (YC P26) × DayDreamers — Build Your AI Computer Hackathon",
     organizer: "Ara.so (YC P26) × DayDreamers",
     date: "April 2026",
-    location: "Multi-college · UPenn, Cornell, UC Berkeley, Johns Hopkins, Stanford, Columbia",
+    location: "San Francisco, CA",
     eventHref: "https://ara.so",
+    footer: "built in 1 day · sf 2026",
     project: "Ara Co-Pilot",
     tagline: "AI earpiece for live calls — transcribes locally, reasons over your calendar and email, answers in real time.",
-    desc: "Built <strong>Ara Co-Pilot</strong> at the Ara.so × DayDreamers hackathon — a macOS menu-bar app that listens during FaceTime, Zoom, Meet, and Teams calls, transcribes your mic locally with Whisper (no audio ever leaves the machine), and surfaces answers grounded in your actual Google Calendar, Gmail, and Drive inside a transparent overlay floating above the call window. A keyword-routing \"brain\" classifies each utterance into connector categories (Calendar, Gmail, Drive, Notion, Linear) and dispatches to the right data source in real time. Placed <strong>3rd · Most Viral</strong> across 6 competing colleges.",
+    desc: "Built <strong>Ara Co-Pilot</strong> at the Ara.so × DayDreamers hackathon — a macOS menu-bar app that listens during FaceTime, Zoom, Meet, and Teams calls, transcribes your mic locally with Whisper (no audio ever leaves the machine), and surfaces answers grounded in your actual Google Calendar, Gmail, and Drive inside a transparent overlay floating above the call window. A keyword-routing \"brain\" classifies each utterance into connector categories (Calendar, Gmail, Drive, Notion, Linear) and dispatches to the right data source in real time.",
     metrics: [
-      { val: "3rd",    label: "place · Most Viral" },
-      { val: "6",      label: "colleges competing" },
+      { val: "real-time", label: "call overlay" },
+      { val: "5",         label: "data connectors" },
       { val: "on-device", label: "Whisper transcription" },
-      { val: "1 day",  label: "built in" }
+      { val: "1 day",     label: "built in" }
     ],
     stack: ["Python", "Whisper (faster-whisper)", "PyObjC", "Anthropic Claude", "AppleScript", "Google Calendar", "macOS rumps"],
     links: [
@@ -340,7 +341,7 @@ window.HACKATHONS = [
       { label: "ara.so ↗", href: "https://ara.so" }
     ],
     photos: [
-      { src: "assets/hackathon/ara-event.jpg", caption: "3rd place · Most Viral — Ara.so × DayDreamers Hackathon" }
+      { src: "assets/hackathon/ara-event.jpg", caption: "Ara.so × DayDreamers — Build Your AI Computer Hackathon" }
     ]
   },
   {
@@ -350,6 +351,7 @@ window.HACKATHONS = [
     date: "May 17, 2025",
     location: "San Francisco, CA",
     eventHref: "https://agentphone.ai/callmyagent",
+    footer: "built in 1 day · sf 2025",
     youtubeId: "6oZcUjKFwf4",
     project: "Kairos",
     tagline: "Live AI command center for anonymous school threat reporting & triage.",
