@@ -480,6 +480,17 @@ window.CONTRIBUTIONS = [
     ]
   },
   {
+    org: "PaySponge",
+    badge: "",
+    desc: "Crypto payments SDK — wallet & chain abstraction for developers",
+    repo: "paysponge/paysponge-sdk",
+    site: "https://paysponge.com",
+    siteLabel: "paysponge.com",
+    prs: [
+      { num: "1", fix: "Client silently proceeded with an uninitialised wallet address, causing silent downstream failures — now throws immediately on unloaded state. Also fixed an explicit <code>testnet: true</code> flag being overridden by auto-detection." }
+    ]
+  },
+  {
     org: "Anthropic MCP SDK",
     badge: "official SDK",
     desc: "Official Python SDK for the Model Context Protocol",
