@@ -406,12 +406,13 @@ window.CONTRIBUTIONS = [
     prs: [
       { num: "3437", fix: "<code>LinearCombinationReranker</code> was inverting relevance scores — worst results ranked first. Also fixed the missing-FTS penalty logic that was rewarding non-matching documents." },
       { num: "3467", fix: "<code>RRFReranker.rerank_multivector([])</code> crashed with <code>IndexError</code> on empty input — <code>all()</code> passes vacuously, so <code>vector_results[0]</code> was reached unchecked." },
-      { num: "3469", fix: "<code>MRRReranker.rerank_multivector([])</code> shared the same root cause — added an explicit <code>ValueError</code> guard before any indexing." }
+      { num: "3469", fix: "<code>MRRReranker.rerank_multivector([])</code> shared the same root cause — added an explicit <code>ValueError</code> guard before any indexing." },
+      { num: "3522", fix: "<code>Table.update()</code> raised <code>NotImplementedError</code> on numpy scalars (<code>np.int64</code>, <code>np.int32</code>, <code>np.float32</code>, <code>np.bool_</code>) — values that arise naturally from indexing an ndarray or pandas column. Added scalar conversion in <code>value_to_sql</code>." }
     ]
   },
   {
     org: "Sentry",
-    badge: "YC W12",
+    badge: "$3B valuation",
     desc: "Error tracking & performance monitoring · ~50M Python SDK downloads/month",
     repo: "getsentry/sentry-python",
     site: "https://sentry.io",
@@ -424,18 +425,20 @@ window.CONTRIBUTIONS = [
   },
   {
     org: "Agno",
-    badge: "YC W23",
+    badge: "18k★ open-source",
     desc: "High-performance Python framework for multi-modal AI agents",
     repo: "agno-agi/agno",
     site: "https://www.agno.com",
     siteLabel: "agno.com",
     prs: [
-      { num: "8136", fix: "<code>acontinue_run</code> with <code>background=True, stream=True</code> threw <code>AttributeError</code> — <code>_acontinue_run_background_stream</code> didn't exist, so raw event objects hit Starlette's <code>.encode()</code> call." }
+      { num: "8136", fix: "<code>acontinue_run</code> with <code>background=True, stream=True</code> threw <code>AttributeError</code> — <code>_acontinue_run_background_stream</code> didn't exist, so raw event objects hit Starlette's <code>.encode()</code> call." },
+      { num: "8187", fix: "<code>AgentSession.from_dict</code> / <code>TeamSession.from_dict</code> hit <code>IndexError</code> on an empty runs list — <code>runs is not None</code> short-circuited True, then <code>runs[0]</code> was reached unguarded. Breaks round-tripping any freshly created session." },
+      { num: "8329", fix: "Registering a tool with an <code>Optional[Literal[1, \"a\"]]</code> dataclass field crashed schema generation — <code>schema[\"type\"]</code> on an <code>anyOf</code> member that legitimately has none. The caller swallowed it, silently dropping the entire parameter so the model never saw it." }
     ]
   },
   {
     org: "Supermemory",
-    badge: "YC",
+    badge: "Google/Cloudflare execs backed",
     desc: "Memory infrastructure layer for AI apps",
     repo: "supermemoryai/supermemory",
     site: "https://supermemory.ai",
@@ -481,7 +484,7 @@ window.CONTRIBUTIONS = [
   },
   {
     org: "PaySponge",
-    badge: "",
+    badge: "YC W26",
     desc: "Crypto payments SDK — wallet & chain abstraction for developers",
     repo: "paysponge/paysponge-sdk",
     site: "https://paysponge.com",
@@ -510,6 +513,28 @@ window.CONTRIBUTIONS = [
     siteLabel: "js.langchain.com",
     prs: [
       { num: "10940", fix: "Duplicate-word typos (\"the the\", \"a a way\") in JSDoc comments across 3 files." }
+    ]
+  },
+  {
+    org: "Langfuse",
+    badge: "YC W23",
+    desc: "Open-source LLM engineering & observability platform (acquired by ClickHouse)",
+    repo: "langfuse/langfuse-python",
+    site: "https://langfuse.com",
+    siteLabel: "langfuse.com",
+    prs: [
+      { num: "1683", fix: "<code>EventSerializer</code> serialized <code>float('-inf')</code> as <code>\"Infinity\"</code> (wrong sign) — <code>math.isinf()</code> is True for both infinities, but the code returned <code>\"Infinity\"</code> unconditionally. Any metric or metadata field with negative infinity was silently corrupted on the way to the server." }
+    ]
+  },
+  {
+    org: "Pydantic AI",
+    badge: "by Pydantic",
+    desc: "Agent framework from the team behind Pydantic",
+    repo: "pydantic/pydantic-ai",
+    site: "https://ai.pydantic.dev",
+    siteLabel: "ai.pydantic.dev",
+    prs: [
+      { num: "5779", fix: "<code>BinaryContent.from_data_uri</code> crashed on valid non-base64 data URIs — RFC 2397 permits URIs without the <code>;base64,</code> marker, but the unpack expected two parts. The public method is called on client-supplied URIs in the Vercel AI and AG-UI adapters." }
     ]
   }
 ];
