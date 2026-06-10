@@ -3,11 +3,29 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Ishaan Samantray — Biological Engineer</title>
+<title>Ishaan Samantray — Biomedical Engineering + CS @ Cornell</title>
+<meta name="description" content="Ishaan Samantray — Biomedical Engineering + Computer Science at Cornell. 21 merged open-source PRs (LanceDB, Sentry, Cohere, Pydantic, Langfuse), AI hackathon builds, and peer-reviewed research. Seeking a SWE internship for Summer 2027." />
+<link rel="canonical" href="https://ishaansamantray.com/" />
+
+<!-- Open Graph / social preview -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://ishaansamantray.com/" />
+<meta property="og:title" content="Ishaan Samantray — Biomedical Engineering + CS @ Cornell" />
+<meta property="og:description" content="21 merged open-source PRs · AI hackathon builds · peer-reviewed research. Seeking a SWE internship — Summer 2027." />
+<meta property="og:image" content="https://ishaansamantray.com/assets/profile.jpg" />
+<meta property="og:image:alt" content="Ishaan Samantray" />
+<meta property="og:site_name" content="Ishaan Samantray" />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Ishaan Samantray — Biomedical Engineering + CS @ Cornell" />
+<meta name="twitter:description" content="21 merged open-source PRs · AI hackathon builds · peer-reviewed research. Seeking a SWE internship — Summer 2027." />
+<meta name="twitter:image" content="https://ishaansamantray.com/assets/profile.jpg" />
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=9">
+<link rel="stylesheet" href="styles.css?v=10">
 </head>
 <body data-theme="dark">
 
@@ -82,8 +100,31 @@
       </h1>
 
       <div class="hero-sub">
-        <div class="hero-sub-line"><span class="bullet">▸</span> Cornell University — Biological Engineer, minoring in Computer Science &amp; Business.</div>
+        <div class="hero-sub-line"><span class="bullet">▸</span> Cornell University — Biomedical Engineering + Computer Science.</div>
         <div class="hero-sub-line"><span class="bullet">▸</span> Building at the intersection of wet-lab research, software, and medical devices.</div>
+      </div>
+
+      <!-- availability / intent banner -->
+      <a href="mailto:is455@cornell.edu?subject=SWE%20Internship%20—%20Summer%202027" class="hero-avail" data-cursor="link">
+        <span class="hero-avail-dot"></span>
+        <span class="hero-avail-text"><strong>Open to work</strong> — seeking a <strong>SWE internship · Summer 2027</strong></span>
+        <span class="hero-avail-arr">→</span>
+      </a>
+
+      <!-- selected highlights strip -->
+      <div class="hero-highlights">
+        <a class="hl" href="#contributions" data-cursor="link">
+          <span class="hl-num">21</span>
+          <span class="hl-label">merged OSS PRs<br><span class="hl-sub">LanceDB · Sentry · Cohere · Pydantic</span></span>
+        </a>
+        <a class="hl" href="#projects" data-cursor="link">
+          <span class="hl-num">Kairos</span>
+          <span class="hl-label">YC hackathon build<br><span class="hl-sub">multi-agent AI · 8.2s triage</span></span>
+        </a>
+        <a class="hl" href="#publications" data-cursor="link">
+          <span class="hl-num">2</span>
+          <span class="hl-label">peer-reviewed pubs<br><span class="hl-sub">NIH · Sanaria · GMU research</span></span>
+        </a>
       </div>
 
       <div class="hero-cta">
@@ -143,15 +184,15 @@
         </div>
         <div class="photo-caption">
           <div>▸ potomac, md → ithaca, ny</div>
-          <div>▸ b.s. biological eng. '29</div>
+          <div>▸ b.s. biomedical eng. + cs</div>
         </div>
       </div>
 
       <div class="about-copy">
         <p class="lede">
-          I'm a biological engineer at Cornell working where wet lab meets code.
+          I'm a Biomedical Engineering + Computer Science student at Cornell working where wet lab meets code.
           My research spans retinal disease AI, malaria vaccine genetics,
-          and craniofacial tissue engineering.
+          and craniofacial tissue engineering — and I ship production code, with 21 merged PRs across open-source AI libraries.
         </p>
 
         <p>
@@ -335,6 +376,16 @@
     </div>
   </section>
 
+  <!-- ============ REFERENCES / TESTIMONIALS (hidden until populated) ============ -->
+  <section id="references" class="section" data-screen-label="references" style="display:none">
+    <div class="section-head">
+      <span class="section-num">★ /</span>
+      <h2 class="section-title">references.txt</h2>
+      <span class="section-rule"></span>
+    </div>
+    <div class="refs-list" id="refsList"></div>
+  </section>
+
   <!-- ============ CONTACT ============ -->
   <section id="contact" class="section" data-screen-label="contact">
     <div class="section-head">
@@ -403,9 +454,9 @@
 <!-- ============ PROJECT HOVER PREVIEW ============ -->
 <div class="hover-preview" id="hoverPreview" aria-hidden="true"></div>
 
-<script src="data.js?v=11"></script>
+<script src="data.js?v=12"></script>
 <script src="gallery.js"></script>
-<script src="app.js?v=7"></script>
+<script src="app.js?v=8"></script>
 <script src="gallery-app.js"></script>
 <!-- space-game.js temporarily disabled — restore by re-adding Three.js + space-game.js scripts and game HTML section -->
 <!-- <script src="https://cdn.jsdelivr.net/npm/three@0.168.0/build/three.min.js"></script> -->

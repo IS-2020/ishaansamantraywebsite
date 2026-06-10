@@ -385,8 +385,7 @@ window.PROJECTS.push(
     tags: ["cs", "redesign", "web"],
     desc: "Full-stack redesign of the Encore Tickets platform — modernized UI, refactored booking flow, improved ticketing experience.",
     links: [
-      { label: "live site ↗", href: "https://encoretix.com/" },
-      { label: "github ↗", href: "https://github.com/devteamaegis/encore-tickets" }
+      { label: "live site ↗", href: "https://encoretix.com/" }
     ],
     preview: { label: "redesign · shipped", img: "assets/logos/encore.png", meta: "Next.js · full-stack · DC ticketing" }
   }
@@ -538,3 +537,10 @@ window.CONTRIBUTIONS = [
     ]
   }
 ];
+
+/* ============================================================
+   REFERENCES / TESTIMONIALS
+   Add an entry to make the references.txt section appear:
+   { quote: "...", author: "Dr. Jane Smith", role: "PI, NIH National Eye Institute" }
+   ============================================================ */
+window.TESTIMONIALS = [];

@@ -398,6 +398,25 @@
     });
   }
 
+  /* ---------- RENDER REFERENCES / TESTIMONIALS ---------- */
+  const refsList = $('#refsList');
+  if (refsList && window.TESTIMONIALS && window.TESTIMONIALS.length) {
+    const section = document.getElementById('references');
+    if (section) section.style.display = '';
+    window.TESTIMONIALS.forEach((t, i) => {
+      const el = document.createElement('div');
+      el.className = 'ref-card reveal-el';
+      el.style.setProperty('--i', i);
+      el.innerHTML = `
+        <div class="ref-quote">${t.quote}</div>
+        <div class="ref-author">
+          <span class="ref-name">${t.author}</span>
+          <span class="ref-role">${t.role || ''}</span>
+        </div>`;
+      refsList.appendChild(el);
+    });
+  }
+
   /* ---------- RENDER PUBLICATIONS ---------- */
   const pubs = $('#pubsList');
   window.PUBLICATIONS.forEach((p, i) => {
