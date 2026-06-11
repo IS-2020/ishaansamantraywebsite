@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" rx="14" fill="#0a0b0d"/>
+  <rect x="1.5" y="1.5" width="61" height="61" rx="12.5" fill="none" stroke="#1e2229" stroke-width="1"/>
+  <text x="32" y="44" font-family="'JetBrains Mono','IBM Plex Mono',ui-monospace,monospace"
+        font-size="30" font-weight="700" fill="#7cf29a" text-anchor="middle"
+        letter-spacing="-1">IS</text>
+</svg>
