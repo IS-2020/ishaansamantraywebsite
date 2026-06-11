@@ -3048,20 +3048,35 @@ body.game-active .noise {
 /* ============================================================
    REFERENCES / TESTIMONIALS
    ============================================================ */
-.refs-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+/* prominent band right under the hero */
+.references-band {
+  padding: clamp(20px, 4vw, 40px) var(--gutter);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-elev);
+}
+.refs-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; max-width: var(--maxw); margin: 0 auto; }
 .ref-card {
   border: 1px solid var(--line);
   border-left: 3px solid var(--accent);
   border-radius: var(--radius-lg);
   background: var(--bg-panel);
-  padding: 24px 26px;
+  padding: 26px 30px;
+  position: relative;
+  overflow: hidden;
+}
+.ref-card::before {
+  content: '★ reference';
+  position: absolute; top: 14px; right: 18px;
+  font-family: var(--mono); font-size: 9px; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--accent); opacity: .6;
 }
 .ref-quote {
-  font-size: 14.5px; line-height: 1.7; color: var(--ink);
-  font-style: italic; margin-bottom: 16px;
+  font-size: clamp(14px, 1.8vw, 17px); line-height: 1.65; color: var(--ink);
+  font-style: italic; margin-bottom: 18px; max-width: 760px;
 }
-.ref-quote::before { content: '“'; color: var(--accent); font-size: 22px; margin-right: 2px; }
-.ref-quote::after  { content: '”'; color: var(--accent); font-size: 22px; margin-left: 2px; }
-.ref-author { display: flex; flex-direction: column; gap: 2px; font-family: var(--mono); }
-.ref-name { font-size: 13px; font-weight: 600; color: var(--ink); }
-.ref-role { font-size: 11px; color: var(--ink-faint); }
+.ref-quote::before { content: '“'; color: var(--accent); font-size: 24px; margin-right: 2px; }
+.ref-quote::after  { content: '”'; color: var(--accent); font-size: 24px; margin-left: 2px; }
+.ref-author { display: flex; flex-direction: column; gap: 3px; font-family: var(--mono); }
+.ref-name { font-size: 14px; font-weight: 600; color: var(--ink); }
+.ref-role { font-size: 11.5px; color: var(--ink-faint); line-height: 1.5; }

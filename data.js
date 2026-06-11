@@ -543,4 +543,10 @@ window.CONTRIBUTIONS = [
    Add an entry to make the references.txt section appear:
    { quote: "...", author: "Dr. Jane Smith", role: "PI, NIH National Eye Institute" }
    ============================================================ */
-window.TESTIMONIALS = [];
+window.TESTIMONIALS = [
+  {
+    quote: "I thought your project was really cool. 12 seconds from tip to principal alert is exactly the right design. If you end up applying to YC at any point, please shoot me an email so we can be sure to read your application quickly.",
+    author: "David Lieb",
+    role: "YC Partner · founder of Bump (acq. Google) · judge, Call My Agent Hackathon"
+  }
+];
