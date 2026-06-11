@@ -542,7 +542,7 @@
       try {
         const pdfjsLib = window['pdfjs-dist/build/pdf'] || window.pdfjsLib;
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-        const loadingTask = pdfjsLib.getDocument('assets/IshaanSamantray-Resume.pdf');
+        const loadingTask = pdfjsLib.getDocument('assets/IshaanSamantray-Resume.pdf?v=2');
         const pdf = await loadingTask.promise;
         // render all pages
         for (let p = 1; p <= pdf.numPages; p++) {
