@@ -467,7 +467,8 @@ window.CONTRIBUTIONS = [
     siteLabel: "cohere.com",
     prs: [
       { num: "771", fix: "<code>merge_embed_responses</code> crashed batched embedding jobs — iterated <code>None</code> fields from later sub-batches that were absent in the first response." },
-      { num: "773", fix: "<code>sum_fields_if_not_none</code> called <code>getattr(None, 'input_tokens')</code> — <code>billed_units</code> is Optional and can be None, but the guard only checked field values, not the object itself." }
+      { num: "773", fix: "<code>sum_fields_if_not_none</code> called <code>getattr(None, 'input_tokens')</code> — <code>billed_units</code> is Optional and can be None, but the guard only checked field values, not the object itself." },
+      { num: "778", fix: "<code>embed(texts=[])</code> crashed with <code>IndexError</code> on empty input — the batch-merge path indexed the first response before checking the list was non-empty." }
     ]
   },
   {
@@ -534,6 +535,28 @@ window.CONTRIBUTIONS = [
     siteLabel: "ai.pydantic.dev",
     prs: [
       { num: "5779", fix: "<code>BinaryContent.from_data_uri</code> crashed on valid non-base64 data URIs — RFC 2397 permits URIs without the <code>;base64,</code> marker, but the unpack expected two parts. The public method is called on client-supplied URIs in the Vercel AI and AG-UI adapters." }
+    ]
+  },
+  {
+    org: "Lightly",
+    badge: "YC S21",
+    desc: "Self-supervised learning & ML data curation (ETH Zürich spinout)",
+    repo: "lightly-ai/lightly",
+    site: "https://www.lightly.ai",
+    siteLabel: "lightly.ai",
+    prs: [
+      { num: "1938", fix: "<code>DINOLoss</code> returned a silent <code>NaN</code> for the single-view case shown in its own docstring — a 1×1 loss matrix zeroed by <code>fill_diagonal_(0)</code>. Silent NaN poisons training, so I made it raise a clear error instead." }
+    ]
+  },
+  {
+    org: "Opentrons",
+    badge: "YC W16",
+    desc: "Lab automation robotics — used by 70% of top-10 pharma & 90% of top-50 bio research universities",
+    repo: "Opentrons/opentrons",
+    site: "https://opentrons.com",
+    siteLabel: "opentrons.com",
+    prs: [
+      { num: "21717", fix: "<code>wells_covered_sparse</code> threw <code>IndexError</code> when a 96-channel pipette ran a row (H1) configuration into a sparse reservoir with more rows than columns — the H1 branch bounds-checked the column index against row count, then indexed past the grid." }
     ]
   }
 ];
