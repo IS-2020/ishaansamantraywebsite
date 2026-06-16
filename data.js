@@ -558,6 +558,39 @@ window.CONTRIBUTIONS = [
     prs: [
       { num: "21717", fix: "<code>wells_covered_sparse</code> threw <code>IndexError</code> when a 96-channel pipette ran a row (H1) configuration into a sparse reservoir with more rows than columns — the H1 branch bounds-checked the column index against row count, then indexed past the grid." }
     ]
+  },
+  {
+    org: "Svix",
+    badge: "YC W21",
+    desc: "Enterprise webhook infrastructure (a16z, YC)",
+    repo: "svix/svix-webhooks",
+    site: "https://www.svix.com",
+    siteLabel: "svix.com",
+    prs: [
+      { num: "2393", fix: "The C# SDK's <code>Webhook.Verify</code> silently dropped the <em>last</em> signature in a multi-signature header, so a legitimate webhook was rejected if its only matching signature came last. Multi-sig headers happen during normal signing-secret rotation, so this rejected valid production traffic." }
+    ]
+  },
+  {
+    org: "Tiptap",
+    badge: "YC S23",
+    desc: "Headless rich-text editor framework — 2M+ downloads/month (Substack, GitLab)",
+    repo: "ueberdosis/tiptap",
+    site: "https://tiptap.dev",
+    siteLabel: "tiptap.dev",
+    prs: [
+      { num: "7935", fix: "<code>rewriteUnknownContent</code> (the helper that sanitizes untrusted/old-schema JSON before loading the editor) threw a <code>TypeError</code> on a <code>null</code> entry in a <code>marks</code> or <code>content</code> array instead of cleaning it out — reading <code>null.type</code> or <code>null.marks</code>. It now strips the bad entries safely." }
+    ]
+  },
+  {
+    org: "docTR",
+    badge: "open-source OCR",
+    desc: "Document text recognition / OCR deep-learning library (Mindee)",
+    repo: "mindee/doctr",
+    site: "https://mindee.github.io/doctr/",
+    siteLabel: "doctr docs",
+    prs: [
+      { num: "2071", fix: "<code>extract_crops</code> added its inclusive <code>+1</code> to the wrong axis — <code>_boxes[2:] += 1</code> shifted all four coordinates of every box from index 2 onward instead of nudging the xmax/ymax columns. With 3+ boxes per page, every crop from index 2 on was cut one pixel off in both x and y, silently misaligning the detection→recognition pipeline." }
+    ]
   }
 ];
 
