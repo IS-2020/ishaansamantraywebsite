@@ -591,6 +591,39 @@ window.CONTRIBUTIONS = [
     prs: [
       { num: "2071", fix: "<code>extract_crops</code> added its inclusive <code>+1</code> to the wrong axis — <code>_boxes[2:] += 1</code> shifted all four coordinates of every box from index 2 onward instead of nudging the xmax/ymax columns. With 3+ boxes per page, every crop from index 2 on was cut one pixel off in both x and y, silently misaligning the detection→recognition pipeline." }
     ]
+  },
+  {
+    org: "Rigetti",
+    badge: "YC S14",
+    desc: "Quantum computing — public (NYSE: RGTI)",
+    repo: "rigetti/pyquil",
+    site: "https://www.rigetti.com",
+    siteLabel: "rigetti.com",
+    prs: [
+      { num: "1850", fix: "<code>format_parameter</code> raised <code>ValueError</code> on a complex number with a nonzero real part and an imaginary part of exactly <code>±1</code> (e.g. <code>2+1j</code>). It's reached through the live noise path <code>_create_kraus_pragmas</code>, which serializes Kraus operators into <code>PRAGMA ADD-KRAUS</code> strings — and Kraus entries like <code>2+1j</code> are common, so this broke noisy-gate simulation." }
+    ]
+  },
+  {
+    org: "Algolia",
+    badge: "search platform",
+    desc: "Search & discovery API — autocomplete UI library",
+    repo: "algolia/autocomplete",
+    site: "https://www.algolia.com",
+    siteLabel: "algolia.com",
+    prs: [
+      { num: "1348", fix: "In the reverse-highlight sibling strategy, <code>isPartHighlighted</code> computed neighbor state with <code>parts[i±1]?.isHighlighted || true</code>, which is always <code>true</code> even when the neighbor genuinely is <code>false</code>. The equality guard then always passed, dropping separator highlights between mismatched siblings." }
+    ]
+  },
+  {
+    org: "Outlines",
+    badge: "$11.9M · dottxt",
+    desc: "Structured LLM generation — guaranteed-valid model outputs",
+    repo: "dottxt-ai/outlines",
+    site: "https://dottxt.ai",
+    siteLabel: "dottxt.ai",
+    prs: [
+      { num: "1869", fix: "<code>python_types_to_terms</code> raised <code>TypeError</code> on <code>Literal[True]</code>, <code>Literal[False]</code>, or <code>Literal[True, False]</code> — bool args fell through every branch since <code>is_int_instance</code> explicitly excludes bool and no bool branch existed. Added explicit handling so boolean literals compile to valid structured-generation terms." }
+    ]
   }
 ];
 
