@@ -241,20 +241,20 @@ window.PUBLICATIONS = [
 window.AWARDS = [
   {
     year: "2024",
-    badge: "1st",
+    badge: "",
     title: "1st Place Biology — Montgomery Science Fair",
     desc: "AstraZeneca Exceptional Award for malaria vaccine work at Sanaria Inc."
   },
   {
     year: "2023",
-    badge: "$1.5k",
+    badge: "",
     title: "Battelle Climate Change Finalist",
     desc: "Nitrogen Storm Drain — Winner of $1,500 grant.",
     link: "https://www.futureengineers.org/battelleclimatechallenge/gallery/61285"
   },
   {
     year: "2023",
-    badge: "1·3·6",
+    badge: "",
     title: "Science Olympiad Regionals",
     desc: "Placed 1st, 3rd, and 6th across events. Qualified for State competition."
   },
@@ -275,7 +275,7 @@ window.AWARDS = [
   },
   {
     year: "2021",
-    badge: "$1k",
+    badge: "",
     title: "eCYBERMISSION State Winner",
     desc: "Led a three-person team on a drug-repurposing solution for WET AMD (macular degeneration) — $1,000 bond."
   },
@@ -397,7 +397,7 @@ window.PROJECTS.push(
 window.CONTRIBUTIONS = [
   {
     org: "LanceDB",
-    badge: "YC W22",
+    badge: "",
     desc: "Multimodal vector database for AI applications",
     repo: "lancedb/lancedb",
     site: "https://lancedb.com",
@@ -411,7 +411,7 @@ window.CONTRIBUTIONS = [
   },
   {
     org: "Sentry",
-    badge: "$3B valuation",
+    badge: "",
     desc: "Error tracking & performance monitoring · ~50M Python SDK downloads/month",
     repo: "getsentry/sentry-python",
     site: "https://sentry.io",
@@ -424,7 +424,7 @@ window.CONTRIBUTIONS = [
   },
   {
     org: "Agno",
-    badge: "18k★ open-source",
+    badge: "",
     desc: "High-performance Python framework for multi-modal AI agents",
     repo: "agno-agi/agno",
     site: "https://www.agno.com",
@@ -432,12 +432,13 @@ window.CONTRIBUTIONS = [
     prs: [
       { num: "8136", fix: "<code>acontinue_run</code> with <code>background=True, stream=True</code> threw <code>AttributeError</code> — <code>_acontinue_run_background_stream</code> didn't exist, so raw event objects hit Starlette's <code>.encode()</code> call." },
       { num: "8187", fix: "<code>AgentSession.from_dict</code> / <code>TeamSession.from_dict</code> hit <code>IndexError</code> on an empty runs list — <code>runs is not None</code> short-circuited True, then <code>runs[0]</code> was reached unguarded. Breaks round-tripping any freshly created session." },
-      { num: "8329", fix: "Registering a tool with an <code>Optional[Literal[1, \"a\"]]</code> dataclass field crashed schema generation — <code>schema[\"type\"]</code> on an <code>anyOf</code> member that legitimately has none. The caller swallowed it, silently dropping the entire parameter so the model never saw it." }
+      { num: "8329", fix: "Registering a tool with an <code>Optional[Literal[1, \"a\"]]</code> dataclass field crashed schema generation — <code>schema[\"type\"]</code> on an <code>anyOf</code> member that legitimately has none. The caller swallowed it, silently dropping the entire parameter so the model never saw it." },
+      { num: "8094", fix: "The guidance-retry cap was bypassed when a plain retry preceded a <code>RetryableModelProviderError</code> — the counter logic let retries exceed the configured limit instead of stopping." }
     ]
   },
   {
     org: "Supermemory",
-    badge: "Google/Cloudflare execs backed",
+    badge: "",
     desc: "Memory infrastructure layer for AI apps",
     repo: "supermemoryai/supermemory",
     site: "https://supermemory.ai",
@@ -448,7 +449,7 @@ window.CONTRIBUTIONS = [
   },
   {
     org: "Prefect",
-    badge: "$150M Series C",
+    badge: "",
     desc: "Workflow orchestration platform",
     repo: "PrefectHQ/prefect",
     site: "https://www.prefect.io",
@@ -460,7 +461,7 @@ window.CONTRIBUTIONS = [
   },
   {
     org: "Cohere",
-    badge: "Series C",
+    badge: "",
     desc: "Enterprise AI platform",
     repo: "cohere-ai/cohere-python",
     site: "https://cohere.com",
@@ -473,7 +474,7 @@ window.CONTRIBUTIONS = [
   },
   {
     org: "SkyPilot",
-    badge: "a16z-backed",
+    badge: "",
     desc: "Cloud-agnostic AI/ML compute framework",
     repo: "skypilot-org/skypilot",
     site: "https://skypilot.co",
@@ -484,7 +485,7 @@ window.CONTRIBUTIONS = [
   },
   {
     org: "PaySponge",
-    badge: "YC W26",
+    badge: "",
     desc: "Crypto payments SDK — wallet & chain abstraction for developers",
     repo: "paysponge/paysponge-sdk",
     site: "https://paysponge.com",
@@ -494,30 +495,8 @@ window.CONTRIBUTIONS = [
     ]
   },
   {
-    org: "Anthropic MCP SDK",
-    badge: "official SDK",
-    desc: "Official Python SDK for the Model Context Protocol",
-    repo: "modelcontextprotocol/python-sdk",
-    site: "https://modelcontextprotocol.io",
-    siteLabel: "modelcontextprotocol.io",
-    prs: [
-      { num: "2656", fix: "<code>.gitattribute</code> (typo) renamed to <code>.gitattributes</code> — the misspelled file was a silent no-op, meaning <code>uv.lock</code> was never flagged as generated for GitHub Linguist." }
-    ]
-  },
-  {
-    org: "LangChain.js",
-    badge: "",
-    desc: "JavaScript/TypeScript LLM framework",
-    repo: "langchain-ai/langchainjs",
-    site: "https://js.langchain.com",
-    siteLabel: "js.langchain.com",
-    prs: [
-      { num: "10940", fix: "Duplicate-word typos (\"the the\", \"a a way\") in JSDoc comments across 3 files." }
-    ]
-  },
-  {
     org: "Langfuse",
-    badge: "YC W23",
+    badge: "",
     desc: "Open-source LLM engineering & observability platform (acquired by ClickHouse)",
     repo: "langfuse/langfuse-python",
     site: "https://langfuse.com",
@@ -528,7 +507,7 @@ window.CONTRIBUTIONS = [
   },
   {
     org: "Pydantic AI",
-    badge: "by Pydantic",
+    badge: "",
     desc: "Agent framework from the team behind Pydantic",
     repo: "pydantic/pydantic-ai",
     site: "https://ai.pydantic.dev",
@@ -539,7 +518,7 @@ window.CONTRIBUTIONS = [
   },
   {
     org: "Lightly",
-    badge: "YC S21",
+    badge: "",
     desc: "Self-supervised learning & ML data curation (ETH Zürich spinout)",
     repo: "lightly-ai/lightly",
     site: "https://www.lightly.ai",
@@ -550,7 +529,7 @@ window.CONTRIBUTIONS = [
   },
   {
     org: "Opentrons",
-    badge: "YC W16",
+    badge: "",
     desc: "Lab automation robotics — used by 70% of top-10 pharma & 90% of top-50 bio research universities",
     repo: "Opentrons/opentrons",
     site: "https://opentrons.com",
@@ -561,7 +540,7 @@ window.CONTRIBUTIONS = [
   },
   {
     org: "Svix",
-    badge: "YC W21",
+    badge: "",
     desc: "Enterprise webhook infrastructure (a16z, YC)",
     repo: "svix/svix-webhooks",
     site: "https://www.svix.com",
@@ -572,7 +551,7 @@ window.CONTRIBUTIONS = [
   },
   {
     org: "Tiptap",
-    badge: "YC S23",
+    badge: "",
     desc: "Headless rich-text editor framework — 2M+ downloads/month (Substack, GitLab)",
     repo: "ueberdosis/tiptap",
     site: "https://tiptap.dev",
@@ -583,7 +562,7 @@ window.CONTRIBUTIONS = [
   },
   {
     org: "docTR",
-    badge: "open-source OCR",
+    badge: "",
     desc: "Document text recognition / OCR deep-learning library (Mindee)",
     repo: "mindee/doctr",
     site: "https://mindee.github.io/doctr/",
@@ -594,7 +573,7 @@ window.CONTRIBUTIONS = [
   },
   {
     org: "Rigetti",
-    badge: "YC S14",
+    badge: "",
     desc: "Quantum computing — public (NYSE: RGTI)",
     repo: "rigetti/pyquil",
     site: "https://www.rigetti.com",
@@ -605,7 +584,7 @@ window.CONTRIBUTIONS = [
   },
   {
     org: "Algolia",
-    badge: "search platform",
+    badge: "",
     desc: "Search & discovery API — autocomplete UI library",
     repo: "algolia/autocomplete",
     site: "https://www.algolia.com",
@@ -616,7 +595,7 @@ window.CONTRIBUTIONS = [
   },
   {
     org: "Outlines",
-    badge: "$11.9M · dottxt",
+    badge: "",
     desc: "Structured LLM generation — guaranteed-valid model outputs",
     repo: "dottxt-ai/outlines",
     site: "https://dottxt.ai",
