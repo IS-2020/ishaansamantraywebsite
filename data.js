@@ -603,6 +603,28 @@ window.CONTRIBUTIONS = [
     prs: [
       { num: "1869", fix: "<code>python_types_to_terms</code> raised <code>TypeError</code> on <code>Literal[True]</code>, <code>Literal[False]</code>, or <code>Literal[True, False]</code> — bool args fell through every branch since <code>is_int_instance</code> explicitly excludes bool and no bool branch existed. Added explicit handling so boolean literals compile to valid structured-generation terms." }
     ]
+  },
+  {
+    org: "Ditto (ion.design)",
+    badge: "",
+    desc: "AI website cloner — turns any link into a Next.js + Tailwind clone",
+    repo: "ion-design/ditto.site",
+    site: "https://www.ditto.site",
+    siteLabel: "ditto.site",
+    prs: [
+      { num: "9", fix: "Added <strong>Lottie</strong> animation capture and replay to the compiler's motion stage. lottie-web renders vector animations from runtime JSON, so it fell outside the declarative CSS path and clones shipped an empty container with the animation gone. This captures the source JSON plus playback config and replays it with a fixed client component, for both single-page and multi-page output." }
+    ]
+  },
+  {
+    org: "Stanford NLP · Stanza",
+    badge: "",
+    desc: "Stanford's NLP toolkit for 70+ human languages",
+    repo: "stanfordnlp/stanza",
+    site: "https://stanfordnlp.github.io/stanza/",
+    siteLabel: "stanfordnlp.github.io",
+    prs: [
+      { num: "1628", fix: "When serializing a Document to CoNLL-U, coreference-chain annotations were written under the MISC key <code>ner=</code> instead of <code>coref_chains=</code>. If a token also had a real NER label, the output contained two colliding <code>ner=</code> entries, corrupting the annotation. Routed coref chains back to the correct key." }
+    ]
   }
 ];
 
@@ -618,3 +640,10 @@ window.TESTIMONIALS = [
     role: "YC Partner · founder of Bump (acq. Google) · judge, Call My Agent Hackathon"
   }
 ];
+
+/* ============================================================
+   CAR PHOTOGRAPHY
+   Drop images into uploads/cars/ then add an entry here:
+   { src: "uploads/cars/porsche.jpg", caption: "911 · golden hour" }
+   ============================================================ */
+window.CARS = [];

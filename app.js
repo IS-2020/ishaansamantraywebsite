@@ -398,6 +398,42 @@
     });
   }
 
+  /* ---------- DITTO LIVE STAR COUNT ---------- */
+  const dittoStars = $('#dittoStars');
+  if (dittoStars) {
+    fetch('https://api.github.com/repos/ion-design/ditto.site')
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(d => { dittoStars.textContent = (d.stargazers_count || 0).toLocaleString(); })
+      .catch(() => { dittoStars.textContent = '300+'; });
+  }
+
+  /* ---------- RENDER CAR PHOTOGRAPHY COLLAGE ---------- */
+  const carsCollage = $('#carsCollage');
+  if (carsCollage && window.CARS) {
+    const carCount = $('#carCount');
+    if (!window.CARS.length) {
+      const empty = $('#carsEmpty');
+      if (empty) empty.style.display = 'block';
+      if (carCount) carCount.textContent = '[0 shots]';
+    } else {
+      if (carCount) carCount.textContent = `[${window.CARS.length} shots]`;
+      window.CARS.forEach((c, i) => {
+        const fig = document.createElement('figure');
+        fig.className = 'car-photo reveal-el';
+        fig.style.setProperty('--i', i);
+        fig.innerHTML = `
+          <img src="${c.src}" alt="${c.caption || 'car'}" loading="lazy"
+               onerror="this.closest('.car-photo').classList.add('car-photo-missing')">
+          ${c.caption ? `<figcaption>${c.caption}</figcaption>` : ''}`;
+        carsCollage.appendChild(fig);
+      });
+      // reuse gallery lightbox if present, else simple click-to-open
+      $$('.car-photo img').forEach(img => {
+        img.addEventListener('click', () => window.open(img.src, '_blank'));
+      });
+    }
+  }
+
   /* ---------- RENDER REFERENCES / TESTIMONIALS ---------- */
   const refsList = $('#refsList');
   if (refsList && window.TESTIMONIALS && window.TESTIMONIALS.length) {

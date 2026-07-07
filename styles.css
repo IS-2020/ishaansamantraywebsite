@@ -3080,3 +3080,115 @@ body.game-active .noise {
 .ref-author { display: flex; flex-direction: column; gap: 3px; font-family: var(--mono); }
 .ref-name { font-size: 14px; font-weight: 600; color: var(--ink); }
 .ref-role { font-size: 11.5px; color: var(--ink-faint); line-height: 1.5; }
+
+/* ============================================================
+   DITTO FEATURE (band right after hero)
+   ============================================================ */
+.ditto-feature {
+  padding: clamp(24px, 5vw, 52px) var(--gutter);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-elev);
+  position: relative;
+  overflow: hidden;
+}
+.ditto-feature::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2), transparent);
+}
+.ditto-inner {
+  max-width: var(--maxw); margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 420px; gap: 40px; align-items: center;
+}
+@media (max-width: 860px) { .ditto-inner { grid-template-columns: 1fr; gap: 28px; } }
+
+.ditto-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--mono); font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .12em;
+  margin-bottom: 16px;
+}
+.ditto-badge-mit { color: var(--accent); border: 1px solid var(--accent); padding: 2px 8px; border-radius: 3px; }
+.ditto-badge-sep { color: var(--ink-faint); }
+.ditto-badge-contrib { color: var(--accent-2); border: 1px solid var(--accent-2); padding: 2px 8px; border-radius: 3px; }
+
+.ditto-title {
+  font-size: clamp(36px, 6vw, 56px); font-weight: 700;
+  color: var(--ink); letter-spacing: -.03em; line-height: 1; margin: 0 0 14px;
+}
+.ditto-desc {
+  font-size: 14px; color: var(--ink-dim); line-height: 1.75; margin: 0 0 22px; max-width: 560px;
+}
+.ditto-desc a { color: var(--accent); }
+.ditto-desc strong { color: var(--ink); }
+
+.ditto-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.ditto-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 18px; border-radius: var(--radius);
+  background: var(--accent); color: var(--bg);
+  font-family: var(--mono); font-size: 12.5px; font-weight: 600;
+  text-decoration: none; border-bottom: none;
+  transition: transform .12s, background .15s;
+}
+.ditto-btn:hover { transform: translateY(-1px); background: #9ffab2; color: var(--bg); }
+.ditto-btn-ghost { background: transparent; color: var(--ink); border: 1px solid var(--line-strong); }
+.ditto-btn-ghost:hover { background: transparent; border-color: var(--accent); color: var(--accent); }
+.ditto-btn .arr { font-size: 12px; }
+
+.ditto-star {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 14px; border-radius: var(--radius);
+  border: 1px solid var(--line-strong); background: var(--bg-panel);
+  font-family: var(--mono); text-decoration: none; border-bottom: 1px solid var(--line-strong);
+  transition: border-color .15s;
+}
+.ditto-star:hover { border-color: var(--accent-2); }
+.ditto-star-ico { color: var(--accent-2); font-size: 14px; }
+.ditto-star-count { color: var(--ink); font-size: 14px; font-weight: 700; }
+.ditto-star-label { color: var(--ink-faint); font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }
+
+.ditto-video { display: flex; justify-content: center; min-width: 0; }
+.ditto-video .twitter-tweet { margin: 0 !important; max-width: 100% !important; }
+
+/* ============================================================
+   CAR PHOTOGRAPHY (masonry collage)
+   ============================================================ */
+.cars-intro { font-family: var(--mono); font-size: 12px; color: var(--ink-faint); margin: 0 0 24px; }
+.cars-collage {
+  column-count: 3; column-gap: 14px;
+}
+@media (max-width: 900px) { .cars-collage { column-count: 2; } }
+@media (max-width: 560px) { .cars-collage { column-count: 1; } }
+.car-photo {
+  break-inside: avoid; margin: 0 0 14px;
+  border: 1px solid var(--line); border-radius: var(--radius-lg);
+  overflow: hidden; background: var(--bg-elev);
+  transition: border-color .2s, transform .2s;
+}
+.car-photo:hover { border-color: var(--accent-2); transform: translateY(-2px); }
+.car-photo img { width: 100%; display: block; cursor: zoom-in; transition: filter .3s; }
+.car-photo:hover img { filter: brightness(1.06); }
+.car-photo figcaption {
+  font-family: var(--mono); font-size: 11px; color: var(--ink-dim);
+  padding: 8px 12px; border-top: 1px solid var(--line);
+}
+.car-photo-missing { display: none; }
+.cars-empty { font-family: var(--mono); border: 1px dashed var(--line); border-radius: var(--radius-lg); padding: 24px; }
+.cars-empty-prompt { font-size: 13px; color: var(--ink); margin-bottom: 8px; }
+.cars-empty-cmd { color: var(--accent); }
+.cars-empty-out { font-size: 12px; color: var(--ink-faint); }
+.cars-empty-out code { color: var(--accent-2); }
+
+/* ============================================================
+   BLOG (placeholder)
+   ============================================================ */
+.blog-empty {
+  font-family: var(--mono);
+  border: 1px dashed var(--line); border-radius: var(--radius-lg);
+  padding: 32px; text-align: left;
+}
+.blog-empty-prompt { font-size: 14px; color: var(--ink); margin-bottom: 10px; }
+.blog-empty-cmd { color: var(--accent); }
+.blog-empty-out { font-size: 12.5px; color: var(--ink-faint); line-height: 1.6; }
