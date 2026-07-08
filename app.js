@@ -409,29 +409,39 @@
 
   /* ---------- RENDER CAR PHOTOGRAPHY COLLAGE ---------- */
   const carsCollage = $('#carsCollage');
-  if (carsCollage && window.CARS) {
+  if (carsCollage) {
     const carCount = $('#carCount');
-    if (!window.CARS.length) {
+    const renderCars = (list) => {
+      carsCollage.innerHTML = '';
       const empty = $('#carsEmpty');
-      if (empty) empty.style.display = 'block';
-      if (carCount) carCount.textContent = '[0 shots]';
-    } else {
-      if (carCount) carCount.textContent = `[${window.CARS.length} shots]`;
-      window.CARS.forEach((c, i) => {
+      if (!list || !list.length) {
+        if (empty) empty.style.display = 'block';
+        if (carCount) carCount.textContent = '[0 shots]';
+        return;
+      }
+      if (empty) empty.style.display = 'none';
+      if (carCount) carCount.textContent = `[${list.length} shots]`;
+      list.forEach((c, i) => {
         const fig = document.createElement('figure');
-        fig.className = 'car-photo reveal-el';
-        fig.style.setProperty('--i', i);
+        fig.className = 'car-photo reveal-el reveal';
+        fig.style.setProperty('--i', Math.min(i, 12));
         fig.innerHTML = `
           <img src="${c.src}" alt="${c.caption || 'car'}" loading="lazy"
                onerror="this.closest('.car-photo').classList.add('car-photo-missing')">
           ${c.caption ? `<figcaption>${c.caption}</figcaption>` : ''}`;
         carsCollage.appendChild(fig);
       });
-      // reuse gallery lightbox if present, else simple click-to-open
-      $$('.car-photo img').forEach(img => {
-        img.addEventListener('click', () => window.open(img.src, '_blank'));
-      });
-    }
+      $$('.car-photo img').forEach(img => img.addEventListener('click', () => window.open(img.src, '_blank')));
+    };
+    // Always fetch the manifest fresh (bypasses GitHub Pages' 10-min cache),
+    // falling back to the window.CARS baked in at load time.
+    fetch(`cars-data.js?t=${Date.now()}`, { cache: 'no-store' })
+      .then(r => r.ok ? r.text() : Promise.reject())
+      .then(txt => {
+        const m = txt.match(/window\.CARS\s*=\s*(\[[\s\S]*\]);\s*$/);
+        renderCars(m ? JSON.parse(m[1]) : (window.CARS || []));
+      })
+      .catch(() => renderCars(window.CARS || []));
   }
 
   /* ---------- RENDER REFERENCES / TESTIMONIALS ---------- */
