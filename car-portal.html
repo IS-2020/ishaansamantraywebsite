@@ -201,13 +201,26 @@
     canWrite=false;
     if(!token){$('tokStatus').textContent='not connected';renderQueue();return;}
     try{
-      const r=await gh('');
-      const j=await r.json();
-      canWrite=!!(j.permissions&&(j.permissions.push||j.permissions.admin));
-      $('tokStatus').innerHTML=canWrite
-        ?`<span class="status-ok">✓ connected to ${OWNER}/${REPO} with write access</span>`
-        :`<span class="status-err">✗ token connects but has NO write access — when creating it, make sure the repo is selected under "Only select repositories" and Contents is Read and write</span>`;
-      if(canWrite){await loadExisting();}
+      // real write probe: create an orphan git blob (no commit, invisible, GC'd by GitHub).
+      // GET /repos "permissions" reflects the ACCOUNT, not the TOKEN's grants, so it lies
+      // for fine-grained tokens — only an actual write proves write access.
+      await gh('');   // basic reachability / token validity
+      try{
+        await gh('/git/blobs',{method:'POST',body:JSON.stringify({content:'car-portal write probe',encoding:'utf-8'})});
+        canWrite=true;
+      }catch(probeErr){
+        canWrite=false;
+        $('tokStatus').innerHTML=`<span class="status-err">✗ token connects but CANNOT WRITE to ${OWNER}/${REPO}.<br>
+          Most common causes:<br>
+          &nbsp;1. Token was created from the wrong account — it must be created while logged in as <b>${OWNER}</b> (fine-grained tokens only work on repos their creator owns)<br>
+          &nbsp;2. Repository access wasn't set to "Only select repositories" → <b>${REPO}</b><br>
+          &nbsp;3. Contents permission is Read-only — it must be <b>Read and write</b><br>
+          <span style="color:var(--ink-faint)">(alternative: a classic token (ghp_…) with "repo" scope from a collaborator account also works)</span></span>`;
+      }
+      if(canWrite){
+        $('tokStatus').innerHTML=`<span class="status-ok">✓ connected to ${OWNER}/${REPO} — write access verified</span>`;
+        await loadExisting();
+      }
     }catch(e){$('tokStatus').innerHTML=`<span class="status-err">✗ ${esc(e.message)}</span>`;}
     renderQueue();
   }
@@ -285,6 +298,9 @@
       queue=[];await loadExisting();
     }catch(e){
       log(`✗ upload failed: ${esc(e.message)} — your queue is intact; hitting upload again will resume safely`,'status-err');
+      if(/^403/.test(e.message)&&/not accessible/i.test(e.message)){
+        log(`  ↳ this means the token can't write to the repo. Recreate it while logged in as ${OWNER}, with "Only select repositories" → ${REPO} and Contents: Read and write. Then paste the new token above and reconnect.`,'status-warn');
+      }
     }
     busy=false; renderQueue();
   };
