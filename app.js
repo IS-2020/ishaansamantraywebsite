@@ -411,17 +411,57 @@
   const carsCollage = $('#carsCollage');
   if (carsCollage) {
     const carCount = $('#carCount');
+    let carList = [];
+
+    // ----- centered lightbox (built once, reused for all photos) -----
+    const clb = document.createElement('div');
+    clb.className = 'car-lightbox';
+    clb.innerHTML = `
+      <div class="clb-bg"></div>
+      <button class="clb-close" aria-label="close">✕</button>
+      <button class="clb-prev" aria-label="previous">‹</button>
+      <button class="clb-next" aria-label="next">›</button>
+      <figure class="clb-inner">
+        <img class="clb-img" src="" alt="">
+        <figcaption class="clb-cap"></figcaption>
+        <div class="clb-counter"></div>
+      </figure>`;
+    document.body.appendChild(clb);
+    let clbIdx = 0;
+    const clbShow = () => {
+      const c = carList[clbIdx]; if (!c) return;
+      clb.querySelector('.clb-img').src = c.src;
+      clb.querySelector('.clb-img').alt = c.caption || 'car';
+      const cap = clb.querySelector('.clb-cap');
+      cap.textContent = c.caption || ''; cap.style.display = c.caption ? '' : 'none';
+      clb.querySelector('.clb-counter').textContent = `${clbIdx + 1} / ${carList.length}`;
+    };
+    const clbOpen = i => { clbIdx = i; clbShow(); clb.classList.add('open'); document.body.style.overflow = 'hidden'; };
+    const clbClose = () => { clb.classList.remove('open'); document.body.style.overflow = ''; };
+    const clbStep = d => { clbIdx = (clbIdx + d + carList.length) % carList.length; clbShow(); };
+    clb.querySelector('.clb-bg').addEventListener('click', clbClose);
+    clb.querySelector('.clb-close').addEventListener('click', clbClose);
+    clb.querySelector('.clb-prev').addEventListener('click', e => { e.stopPropagation(); clbStep(-1); });
+    clb.querySelector('.clb-next').addEventListener('click', e => { e.stopPropagation(); clbStep(1); });
+    document.addEventListener('keydown', e => {
+      if (!clb.classList.contains('open')) return;
+      if (e.key === 'Escape') clbClose();
+      else if (e.key === 'ArrowLeft') clbStep(-1);
+      else if (e.key === 'ArrowRight') clbStep(1);
+    });
+
     const renderCars = (list) => {
+      carList = list || [];
       carsCollage.innerHTML = '';
       const empty = $('#carsEmpty');
-      if (!list || !list.length) {
+      if (!carList.length) {
         if (empty) empty.style.display = 'block';
         if (carCount) carCount.textContent = '[0 shots]';
         return;
       }
       if (empty) empty.style.display = 'none';
-      if (carCount) carCount.textContent = `[${list.length} shots]`;
-      list.forEach((c, i) => {
+      if (carCount) carCount.textContent = `[${carList.length} shots]`;
+      carList.forEach((c, i) => {
         const fig = document.createElement('figure');
         fig.className = 'car-photo reveal-el reveal';
         fig.style.setProperty('--i', Math.min(i, 12));
@@ -429,9 +469,9 @@
           <img src="${c.src}" alt="${c.caption || 'car'}" loading="lazy"
                onerror="this.closest('.car-photo').classList.add('car-photo-missing')">
           ${c.caption ? `<figcaption>${c.caption}</figcaption>` : ''}`;
+        fig.querySelector('img').addEventListener('click', () => clbOpen(i));
         carsCollage.appendChild(fig);
       });
-      $$('.car-photo img').forEach(img => img.addEventListener('click', () => window.open(img.src, '_blank')));
     };
     // Always fetch the manifest fresh (bypasses GitHub Pages' 10-min cache),
     // falling back to the window.CARS baked in at load time.
