@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>car portal — ishaansamantray.com</title>
+<meta name="robots" content="noindex,nofollow"/>
+<link rel="icon" type="image/svg+xml" href="favicon.svg"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0b0d; --bg-elev:#0f1114; --bg-panel:#11141a;
+    --line:#1e2229; --line-strong:#2a2f38;
+    --ink:#e6e8ec; --ink-dim:#9aa0a9; --ink-faint:#5c616c;
+    --accent:#7cf29a; --accent-soft:#7cf29a22; --accent-2:#ffb454; --red:#ff6b6b;
+    --mono:'JetBrains Mono',ui-monospace,monospace; --radius:6px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--mono);font-size:14px;line-height:1.55;padding:32px clamp(16px,4vw,48px) 80px;}
+  a{color:var(--accent)}
+  h1{font-size:22px;margin:0 0 4px} h2{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin:34px 0 12px}
+  .sub{color:var(--ink-faint);font-size:12px;margin-bottom:24px}
+  .panel{background:var(--bg-panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin-bottom:14px}
+  label{font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:6px}
+  input[type=text],input[type=password]{width:100%;background:var(--bg-elev);border:1px solid var(--line-strong);border-radius:4px;color:var(--ink);font-family:var(--mono);font-size:13px;padding:9px 12px;outline:none}
+  input:focus{border-color:var(--accent)}
+  button{background:var(--accent);color:var(--bg);border:0;border-radius:4px;font-family:var(--mono);font-weight:700;font-size:13px;padding:10px 18px;cursor:pointer}
+  button:hover{background:#9ffab2}
+  button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line-strong)}
+  button.ghost:hover{border-color:var(--accent);color:var(--accent)}
+  button.danger{background:transparent;color:var(--red);border:1px solid var(--red)}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .status-ok{color:var(--accent)} .status-err{color:var(--red)} .status-warn{color:var(--accent-2)}
+  #drop{border:2px dashed var(--line-strong);border-radius:var(--radius);padding:46px 20px;text-align:center;color:var(--ink-faint);transition:border-color .15s,background .15s;cursor:pointer}
+  #drop.over{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+  #drop b{color:var(--ink)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
+  .card{background:var(--bg-elev);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .card img{width:100%;height:130px;object-fit:cover;display:block}
+  .card .meta{padding:8px 10px}
+  .card input[type=text]{font-size:11.5px;padding:6px 8px}
+  .card .nm{font-size:10px;color:var(--ink-faint);margin-bottom:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .card .st{font-size:10px;margin-top:6px}
+  .card .actions{display:flex;gap:6px;margin-top:8px}
+  .card .actions button{font-size:10px;padding:5px 8px;flex:1}
+  #log{background:#07080a;border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;font-size:11.5px;max-height:220px;overflow-y:auto;white-space:pre-wrap}
+  .hint{font-size:11.5px;color:var(--ink-faint);line-height:1.7}
+  .hint code{background:var(--bg-elev);padding:1px 5px;border-radius:3px;color:var(--accent-2)}
+  ol.hint li{margin-bottom:4px}
+  .pill{display:inline-block;font-size:10px;border:1px solid var(--line-strong);border-radius:99px;padding:1px 9px;color:var(--ink-dim);margin-left:8px}
+</style>
+</head>
+<body>
+<h1>car_portal.sh <span class="pill">private admin</span></h1>
+<div class="sub">// drag HEIC or JPG photos in → they're converted in your browser → pushed to ishaansamantray.com/cars</div>
+
+<!-- TOKEN -->
+<div class="panel" id="tokenPanel">
+  <label>github personal access token (stored only in this browser)</label>
+  <div class="row">
+    <input type="password" id="tok" placeholder="github_pat_… or ghp_…" style="flex:1;min-width:260px"/>
+    <button id="saveTok">connect</button>
+    <button class="ghost" id="forgetTok">forget</button>
+  </div>
+  <div id="tokStatus" class="hint" style="margin-top:10px">not connected</div>
+  <details style="margin-top:12px">
+    <summary class="hint" style="cursor:pointer">how to create the token (one-time, 2 minutes)</summary>
+    <ol class="hint">
+      <li>Log into GitHub as <b>IS-2020</b> (the account that owns the website repo)</li>
+      <li>Go to <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Settings → Developer settings → Fine-grained tokens → Generate new token</a></li>
+      <li>Name: <code>car-portal</code> · Expiration: 90 days (or custom)</li>
+      <li>Repository access: <b>Only select repositories</b> → <code>ishaansamantraywebsite</code></li>
+      <li>Permissions → Repository permissions → <b>Contents: Read and write</b> (leave everything else No access)</li>
+      <li>Generate, copy the token, paste it above, hit connect</li>
+    </ol>
+    <div class="hint status-warn">⚠ Never share this token or paste it anywhere else. It only lives in this browser's localStorage.</div>
+  </details>
+</div>
+
+<!-- DROP -->
+<h2>01 / add photos</h2>
+<div id="drop">drop <b>HEIC / JPG / PNG</b> here (straight from the Photos app) — or click to browse</div>
+<input type="file" id="fileIn" accept="image/*,.heic,.heif" multiple style="display:none"/>
+<div class="grid" id="queue" style="margin-top:14px"></div>
+<div class="row" style="margin-top:14px">
+  <button id="uploadAll" disabled>upload 0 photos →</button>
+  <button class="ghost" id="clearQ">clear queue</button>
+</div>
+
+<!-- EXISTING -->
+<h2>02 / photos on the site</h2>
+<div class="grid" id="existing"></div>
+<div class="row" style="margin-top:14px">
+  <button class="ghost" id="saveCaps" disabled>save caption edits</button>
+  <span class="hint" id="existingHint">connect your token to load</span>
+</div>
+
+<!-- LOG -->
+<h2>03 / log</h2>
+<div id="log">// ready</div>
+
+<script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
+<script>
+(() => {
+  const OWNER='IS-2020', REPO='ishaansamantraywebsite', BRANCH='main';
+  const DIR='uploads/cars', MANIFEST='cars-data.js';
+  const API=`https://api.github.com/repos/${OWNER}/${REPO}`;
+  const $=id=>document.getElementById(id);
+  const log=(m,cls='')=>{const el=$('log');el.innerHTML+=`\n${cls?`<span class="${cls}">`:''}${m}${cls?'</span>':''}`;el.scrollTop=el.scrollHeight;};
+
+  let token=localStorage.getItem('carPortalTok')||'';
+  let canWrite=false;      // proven push access (connect() sets this) — gates all write buttons
+  let busy=false;          // one write operation at a time (prevents stale-index/sha races)
+  let seq=0;               // per-session counter to avoid name collisions
+  let queue=[];            // {file, blob, name, caption, url, status}
+  let existing=[];         // manifest entries {src, caption}
+  let manifestSha=null;
+  let capsDirty=false;
+  const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+  /* ---------- github api ---------- */
+  const hdrs=()=>({'Authorization':`Bearer ${token}`,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'});
+  // 404 tolerance is OPT-IN (reads only). Writes always throw on any failure —
+  // fine-grained PATs without repo access get 404 (not 403) on writes.
+  async function gh(path,opts={},{allow404=false}={}){
+    const r=await fetch(`${API}${path}`,{...opts,headers:{...hdrs(),...(opts.headers||{})}});
+    if(!r.ok && !(allow404 && r.status===404)){const t=await r.text();throw new Error(`${r.status} ${t.slice(0,180)}`);}
+    return r;
+  }
+  async function getManifest(){
+    const r=await gh(`/contents/${MANIFEST}?ref=${BRANCH}&t=${Date.now()}`,{},{allow404:true});
+    if(r.status===404){manifestSha=null;return [];}
+    const j=await r.json(); manifestSha=j.sha;
+    const txt=decodeURIComponent(escape(atob(j.content.replace(/\n/g,''))));
+    // greedy + end-anchored: the file is machine-generated, the closing ]; is always last
+    const m=txt.match(/window\.CARS\s*=\s*(\[[\s\S]*\]);\s*$/);
+    if(!m) throw new Error('cars-data.js exists but could not be parsed — refusing to overwrite it');
+    try{return JSON.parse(m[1]);}
+    catch(e){throw new Error(`cars-data.js parse failed (${e.message}) — refusing to overwrite it`);}
+  }
+  async function putManifest(list,msg){
+    const body=`/* auto-generated by car-portal.html — manage photos there */\nwindow.CARS = ${JSON.stringify(list,null,2)};\n`;
+    const content=btoa(unescape(encodeURIComponent(body)));
+    const payload={message:msg,content,branch:BRANCH};
+    if(manifestSha)payload.sha=manifestSha;
+    const r=await gh(`/contents/${MANIFEST}`,{method:'PUT',body:JSON.stringify(payload)});
+    const j=await r.json(); manifestSha=j.content.sha;
+  }
+  async function putImage(name,b64){
+    const payload={message:`cars: add ${name}`,content:b64,branch:BRANCH};
+    try{
+      const r=await gh(`/contents/${DIR}/${name}`,{method:'PUT',body:JSON.stringify(payload)});
+      return r.json();
+    }catch(e){
+      // 422 = file already exists (e.g. retry after a partial batch) — fetch sha and overwrite
+      if(/^422/.test(e.message)){
+        const g=await gh(`/contents/${DIR}/${name}?ref=${BRANCH}`,{},{allow404:true});
+        if(g.status!==404){
+          payload.sha=(await g.json()).sha;
+          const r2=await gh(`/contents/${DIR}/${name}`,{method:'PUT',body:JSON.stringify(payload)});
+          return r2.json();
+        }
+      }
+      throw e;
+    }
+  }
+  async function dirShas(){
+    const r=await gh(`/contents/${DIR}?ref=${BRANCH}&t=${Date.now()}`,{},{allow404:true});
+    if(r.status===404)return {};
+    const j=await r.json();
+    const map={}; (Array.isArray(j)?j:[]).forEach(f=>map[f.name]=f.sha); return map;
+  }
+  async function deleteImage(name,sha){
+    await gh(`/contents/${DIR}/${name}`,{method:'DELETE',body:JSON.stringify({message:`cars: remove ${name}`,sha,branch:BRANCH})});
+  }
+  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+  /* ---------- image pipeline ---------- */
+  const isHeic=f=>/\.hei[cf]$/i.test(f.name)||/hei[cf]/.test(f.type);
+  async function toJpegBlob(file){
+    let blob=file;
+    if(isHeic(file)){
+      log(`  converting ${esc(file.name)} (HEIC → JPEG)…`);
+      const out=await heic2any({blob:file,toType:'image/jpeg',quality:0.92});
+      blob=Array.isArray(out)?out[0]:out;
+    }
+    const bmp=await createImageBitmap(blob,{imageOrientation:'from-image'});
+    const scale=Math.min(1,1800/Math.max(bmp.width,bmp.height));
+    const w=Math.round(bmp.width*scale),h=Math.round(bmp.height*scale);
+    const cv=document.createElement('canvas');cv.width=w;cv.height=h;
+    cv.getContext('2d').drawImage(bmp,0,0,w,h);
+    bmp.close();
+    return new Promise(res=>cv.toBlob(b=>res(b),'image/jpeg',0.85));
+  }
+  const b64of=blob=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(blob);});
+  const slug=n=>n.replace(/\.[^.]+$/,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40)||'car';
+
+  /* ---------- token ---------- */
+  async function connect(){
+    canWrite=false;
+    if(!token){$('tokStatus').textContent='not connected';renderQueue();return;}
+    try{
+      const r=await gh('');
+      const j=await r.json();
+      canWrite=!!(j.permissions&&(j.permissions.push||j.permissions.admin));
+      $('tokStatus').innerHTML=canWrite
+        ?`<span class="status-ok">✓ connected to ${OWNER}/${REPO} with write access</span>`
+        :`<span class="status-err">✗ token connects but has NO write access — when creating it, make sure the repo is selected under "Only select repositories" and Contents is Read and write</span>`;
+      if(canWrite){await loadExisting();}
+    }catch(e){$('tokStatus').innerHTML=`<span class="status-err">✗ ${esc(e.message)}</span>`;}
+    renderQueue();
+  }
+  $('saveTok').onclick=()=>{token=$('tok').value.trim();localStorage.setItem('carPortalTok',token);connect();};
+  $('forgetTok').onclick=()=>{token='';localStorage.removeItem('carPortalTok');$('tok').value='';$('tokStatus').textContent='not connected (token forgotten)';};
+  if(token){$('tok').value=token;connect();}
+
+  /* ---------- queue ui ---------- */
+  const drop=$('drop');
+  drop.onclick=()=>$('fileIn').click();
+  ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('over');}));
+  ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over');}));
+  drop.addEventListener('drop',e=>{
+    const files=[...e.dataTransfer.files];
+    if(!files.length){
+      log('⚠ that drop contained no readable files. Dragging straight from the Photos app sometimes hands the browser nothing — drag the photo to your Desktop first (or File → Export in Photos), then drop it here. Clicking the box to browse also works.','status-warn');
+      return;
+    }
+    addFiles(files);
+  });
+  $('fileIn').onchange=e=>addFiles([...e.target.files]);
+
+  async function addFiles(files){
+    for(const f of files){
+      if(!/image|hei[cf]/.test(f.type)&&!/\.(hei[cf]|jpe?g|png|webp)$/i.test(f.name)){log(`skipped ${esc(f.name)} (not an image)`,'status-warn');continue;}
+      const item={file:f,name:`${slug(f.name)}-${Date.now().toString(36)}${(seq++).toString(36)}.jpg`,caption:'',status:'processing…',blob:null,url:''};
+      queue.push(item);renderQueue();
+      try{
+        item.blob=await toJpegBlob(f);
+        item.url=URL.createObjectURL(item.blob);
+        item.status=`ready · ${(item.blob.size/1024).toFixed(0)} KB`;
+      }catch(e){item.status='failed: '+e.message;log(`✗ ${esc(f.name)}: ${esc(e.message)}`,'status-err');}
+      renderQueue();
+    }
+  }
+  function renderQueue(){
+    const q=$('queue');q.innerHTML='';
+    queue.forEach((it,i)=>{
+      const c=document.createElement('div');c.className='card';
+      c.innerHTML=`${it.url?`<img src="${it.url}">`:'<div style="height:130px;display:flex;align-items:center;justify-content:center;color:var(--ink-faint);font-size:11px">processing…</div>'}
+        <div class="meta">
+          <div class="nm">${it.name}</div>
+          <input type="text" placeholder="caption (optional)" value="${it.caption.replace(/"/g,'&quot;')}" data-i="${i}" class="qcap"/>
+          <div class="st ${it.status.startsWith('failed')?'status-err':'status-ok'}">${esc(it.status)}</div>
+          <div class="actions"><button class="danger qrm" data-i="${i}">remove</button></div>
+        </div>`;
+      q.appendChild(c);
+    });
+    q.querySelectorAll('.qcap').forEach(inp=>inp.oninput=e=>{queue[+e.target.dataset.i].caption=e.target.value;});
+    q.querySelectorAll('.qrm').forEach(b=>b.onclick=e=>{queue.splice(+e.target.dataset.i,1);renderQueue();});
+    const ready=queue.filter(x=>x.blob).length;
+    $('uploadAll').disabled=!ready||!canWrite||busy;
+    $('uploadAll').textContent=`upload ${ready} photo${ready===1?'':'s'} →`;
+    if(ready&&!canWrite)$('uploadAll').title='connect a token with write access first';
+  }
+  $('clearQ').onclick=()=>{queue=[];renderQueue();};
+
+  /* ---------- upload ---------- */
+  $('uploadAll').onclick=async()=>{
+    if(busy)return; busy=true; renderQueue();
+    try{
+      const items=queue.filter(x=>x.blob);
+      log(`uploading ${items.length} photo(s)…`);
+      const newEntries=[];
+      for(const it of items){
+        log(`  ↑ ${it.name}`);
+        const b64=await b64of(it.blob);
+        await putImage(it.name,b64);   // idempotent: retries overwrite via sha on 422
+        newEntries.push({src:`${DIR}/${it.name}`,caption:it.caption||''});
+        await sleep(350);              // stay clear of secondary rate limits
+      }
+      const current=await getManifest();
+      await putManifest([...newEntries.reverse(),...current],`cars: add ${items.length} photo(s)`);
+      log(`✓ done — ${items.length} photo(s) live in a few minutes (GitHub Pages rebuild)`,'status-ok');
+      queue=[];await loadExisting();
+    }catch(e){
+      log(`✗ upload failed: ${esc(e.message)} — your queue is intact; hitting upload again will resume safely`,'status-err');
+    }
+    busy=false; renderQueue();
+  };
+
+  /* ---------- existing photos ---------- */
+  async function loadExisting(){
+    try{
+      existing=await getManifest();
+      const g=$('existing');g.innerHTML='';
+      $('existingHint').textContent=existing.length?`${existing.length} photo(s) on the site`:'no photos on the site yet';
+      existing.forEach((e,i)=>{
+        const c=document.createElement('div');c.className='card';
+        c.innerHTML=`<img src="https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${e.src}" loading="lazy">
+          <div class="meta">
+            <input type="text" value="${(e.caption||'').replace(/"/g,'&quot;')}" data-i="${i}" class="ecap" placeholder="caption"/>
+            <div class="actions"><button class="danger edel" data-i="${i}">delete from site</button></div>
+          </div>`;
+        g.appendChild(c);
+      });
+      g.querySelectorAll('.ecap').forEach(inp=>inp.oninput=e=>{existing[+e.target.dataset.i].caption=e.target.value;capsDirty=true;$('saveCaps').disabled=false;});
+      g.querySelectorAll('.edel').forEach(b=>b.onclick=async e=>{
+        if(busy)return;
+        const i=+e.target.dataset.i,entry=existing[i];
+        if(!confirm(`Delete ${entry.src} from the site?`))return;
+        busy=true;
+        g.querySelectorAll('.edel').forEach(x=>x.disabled=true);
+        try{
+          const fname=entry.src.split('/').pop();
+          // manifest FIRST: if this fails, nothing was destroyed and the site stays consistent
+          const fresh=await getManifest();
+          const next=fresh.filter(x=>x.src!==entry.src);
+          await putManifest(next,`cars: remove ${fname}`);
+          // then the file itself: a failure here only leaves an invisible orphan in the repo
+          const shas=await dirShas();
+          if(shas[fname])await deleteImage(fname,shas[fname]);
+          else log(`(file ${esc(fname)} was already absent from the repo)`,'status-warn');
+          log(`✓ removed ${esc(fname)}`,'status-ok');
+        }catch(err){
+          log(`✗ delete failed: ${esc(err.message)}`,'status-err');
+        }
+        busy=false;
+        await loadExisting();   // always resync UI + manifestSha with GitHub
+      });
+    }catch(e){log(`✗ couldn't load existing photos: ${esc(e.message)}`,'status-err');}
+  }
+  $('saveCaps').onclick=async()=>{
+    if(busy)return; busy=true;
+    try{await putManifest(existing,'cars: update captions');capsDirty=false;$('saveCaps').disabled=true;log('✓ captions saved','status-ok');}
+    catch(e){log(`✗ ${esc(e.message)}`,'status-err');}
+    busy=false;
+  };
+})();
+</script>
+</body>
+</html>

@@ -643,7 +643,7 @@ window.TESTIMONIALS = [
 
 /* ============================================================
    CAR PHOTOGRAPHY
-   Drop images into uploads/cars/ then add an entry here:
-   { src: "uploads/cars/porsche.jpg", caption: "911 · golden hour" }
+   Fallback only — the real list lives in cars-data.js, which is
+   managed via /car-portal.html (drag-and-drop HEIC uploader).
    ============================================================ */
 window.CARS = [];
