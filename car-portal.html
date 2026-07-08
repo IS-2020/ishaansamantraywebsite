@@ -279,27 +279,54 @@
   $('clearQ').onclick=()=>{queue=[];renderQueue();};
 
   /* ---------- upload ---------- */
+  // Merge the given entries into the live manifest, deduped by src. Safe to call repeatedly.
+  async function mergeIntoManifest(entries){
+    if(!entries.length) return;
+    const current=await getManifest();
+    const have=new Set(current.map(c=>c.src));
+    const fresh=entries.filter(e=>!have.has(e.src));
+    if(!fresh.length) return;
+    await putManifest([...fresh.slice().reverse(),...current],`cars: add ${fresh.length} photo(s)`);
+  }
+  async function retry(fn,label){
+    let last;
+    for(let a=1;a<=3;a++){
+      try{ return await fn(); }
+      catch(e){ last=e; if(!/Failed to fetch|Load failed|network|502|503|504/i.test(e.message)) throw e; log(`  ⟳ ${label} — network hiccup, retry ${a}/3`,'status-warn'); await sleep(1200*a); }
+    }
+    throw last;
+  }
   $('uploadAll').onclick=async()=>{
     if(busy)return; busy=true; renderQueue();
+    const items=queue.filter(x=>x.blob && !x._uploaded);
+    log(`uploading ${items.length} photo(s)…`);
+    const done=[];              // entries confirmed uploaded this run
+    let pending=[];             // entries not yet flushed to the manifest
     try{
-      const items=queue.filter(x=>x.blob);
-      log(`uploading ${items.length} photo(s)…`);
-      const newEntries=[];
       for(const it of items){
         log(`  ↑ ${it.name}`);
         const b64=await b64of(it.blob);
-        await putImage(it.name,b64);   // idempotent: retries overwrite via sha on 422
-        newEntries.push({src:`${DIR}/${it.name}`,caption:it.caption||''});
-        await sleep(350);              // stay clear of secondary rate limits
+        await retry(()=>putImage(it.name,b64), it.name);   // idempotent + network-retry
+        it._uploaded=true;
+        const entry={src:`${DIR}/${it.name}`,caption:it.caption||''};
+        done.push(entry); pending.push(entry);
+        // flush the manifest every 8 images so progress is never lost to a mid-batch drop
+        if(pending.length>=8){ await retry(()=>mergeIntoManifest(pending),'manifest'); pending=[]; }
+        await sleep(350);
       }
-      const current=await getManifest();
-      await putManifest([...newEntries.reverse(),...current],`cars: add ${items.length} photo(s)`);
-      log(`✓ done — ${items.length} photo(s) live in a few minutes (GitHub Pages rebuild)`,'status-ok');
-      queue=[];await loadExisting();
+      await retry(()=>mergeIntoManifest(pending),'manifest'); pending=[];
+      log(`✓ done — ${done.length} photo(s) live in a few minutes (GitHub Pages rebuild)`,'status-ok');
+      queue=queue.filter(q=>!q._uploaded);
+      await loadExisting();
     }catch(e){
-      log(`✗ upload failed: ${esc(e.message)} — your queue is intact; hitting upload again will resume safely`,'status-err');
+      // save whatever succeeded so it isn't orphaned
+      try{ await mergeIntoManifest(pending); }catch(_){}
+      queue=queue.filter(q=>!q._uploaded);
+      const left=queue.filter(q=>q.blob).length;
+      log(`✗ upload interrupted: ${esc(e.message)}`,'status-err');
+      log(`  ↳ ${done.length} photo(s) saved to the site, ${left} left in the queue. Hit "upload" again to resume — it picks up where it stopped.`,'status-warn');
       if(/^403/.test(e.message)&&/not accessible/i.test(e.message)){
-        log(`  ↳ this means the token can't write to the repo. Recreate it while logged in as ${OWNER}, with "Only select repositories" → ${REPO} and Contents: Read and write. Then paste the new token above and reconnect.`,'status-warn');
+        log(`  ↳ 403 = the token can't write. Recreate it as ${OWNER} with "Only select repositories" → ${REPO} and Contents: Read and write, then reconnect.`,'status-warn');
       }
     }
     busy=false; renderQueue();
