@@ -373,8 +373,8 @@
 
     window.CONTRIBUTIONS.forEach((o, i) => {
       const prRows = o.prs.map(p => `
-        <a class="contrib-pr-row" href="https://github.com/${o.repo}/pull/${p.num}" target="_blank" rel="noopener">
-          <span class="contrib-pr-num">#${p.num}</span>
+        <a class="contrib-pr-row" href="https://github.com/${p.repo || o.repo}/pull/${p.num}" target="_blank" rel="noopener">
+          <span class="contrib-pr-num">${p.label ? p.label : '#' + p.num}</span>
           <span class="contrib-pr-fix">${p.fix}</span>
           <span class="contrib-pr-arrow">↗</span>
         </a>

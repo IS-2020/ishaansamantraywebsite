@@ -396,6 +396,29 @@ window.PROJECTS.push(
    ============================================================ */
 window.CONTRIBUTIONS = [
   {
+    org: "ION",
+    badge: "",
+    desc: "ion.design — AI design engineer, plus Ditto, its open-source AI website cloner",
+    repo: "ion-design/ion",
+    site: "https://ion.design",
+    siteLabel: "ion.design",
+    prs: [
+      { num: "899", repo: "ion-design/ion", label: "ion #899", fix: "Bullet and numbered lists weren't rendering in the agent's <code>AssistantText</code> — the <code>list-disc</code> styling was scoped to <code>[&_li]</code> instead of <code>[&_ul]</code>, so markdown lists showed no bullets. Moved styling to <code>[&_ul]:list-disc [&_ul]:pl-5</code> and added ordered-list support." },
+      { num: "9", repo: "ion-design/ditto.site", label: "ditto #9", fix: "Added <strong>Lottie</strong> animation capture and replay to Ditto's compiler. lottie-web renders vector animations from runtime JSON, so it fell outside the declarative CSS path and clones shipped an empty container with the animation gone. This captures the source JSON plus playback config and replays it with a fixed client component, for single- and multi-page output." }
+    ]
+  },
+  {
+    org: "GPyTorch",
+    badge: "",
+    desc: "Gaussian process library built on PyTorch (Cornell / Columbia)",
+    repo: "cornellius-gp/gpytorch",
+    site: "https://gpytorch.ai",
+    siteLabel: "gpytorch.ai",
+    prs: [
+      { num: "2756", fix: "<code>PiecewisePolynomialKernel(q=2)</code> (the default) returned incorrect covariances — the q=2 polynomial coefficient dropped the square on the <code>j</code> term, computing <code>(j + 4j + 3)</code> instead of <code>(j² + 4j + 3)</code>. This contradicted the kernel's own docstring, Rasmussen &amp; Williams Eq. 4.21, and the correct q=3 branch beside it. Restored the squared term." }
+    ]
+  },
+  {
     org: "LanceDB",
     badge: "",
     desc: "Multimodal vector database for AI applications",
@@ -602,17 +625,6 @@ window.CONTRIBUTIONS = [
     siteLabel: "dottxt.ai",
     prs: [
       { num: "1869", fix: "<code>python_types_to_terms</code> raised <code>TypeError</code> on <code>Literal[True]</code>, <code>Literal[False]</code>, or <code>Literal[True, False]</code> — bool args fell through every branch since <code>is_int_instance</code> explicitly excludes bool and no bool branch existed. Added explicit handling so boolean literals compile to valid structured-generation terms." }
-    ]
-  },
-  {
-    org: "Ditto (ion.design)",
-    badge: "",
-    desc: "AI website cloner — turns any link into a Next.js + Tailwind clone",
-    repo: "ion-design/ditto.site",
-    site: "https://www.ditto.site",
-    siteLabel: "ditto.site",
-    prs: [
-      { num: "9", fix: "Added <strong>Lottie</strong> animation capture and replay to the compiler's motion stage. lottie-web renders vector animations from runtime JSON, so it fell outside the declarative CSS path and clones shipped an empty container with the animation gone. This captures the source JSON plus playback config and replays it with a fixed client component, for both single-page and multi-page output." }
     ]
   },
   {
