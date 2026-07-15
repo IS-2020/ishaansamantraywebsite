@@ -2907,6 +2907,11 @@ body.game-active .noise {
   padding: 1px 7px; border-radius: 3px;
   text-transform: uppercase; letter-spacing: .06em;
 }
+.contrib-org-stars {
+  font-size: 11px; font-weight: 600;
+  color: var(--accent-2);
+  letter-spacing: .03em;
+}
 .contrib-org-count {
   font-size: 11px; color: var(--accent);
   letter-spacing: .04em;

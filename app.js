@@ -387,6 +387,7 @@
           <div class="contrib-org-left">
             <span class="contrib-org-dot"></span>
             <span class="contrib-org-name">${o.org}</span>
+            ${o.stars ? `<span class="contrib-org-stars">★ ${o.stars}</span>` : ''}
             ${o.badge ? `<span class="contrib-org-badge">${o.badge}</span>` : ''}
             <span class="contrib-org-count">${o.prs.length} merged</span>
           </div>

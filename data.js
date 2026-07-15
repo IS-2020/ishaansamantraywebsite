@@ -396,246 +396,407 @@ window.PROJECTS.push(
    ============================================================ */
 window.CONTRIBUTIONS = [
   {
-    org: "ION",
-    badge: "",
-    desc: "ion.design — AI design engineer, plus Ditto, its open-source AI website cloner",
-    repo: "ion-design/ion",
-    site: "https://ion.design",
-    siteLabel: "ion.design",
-    prs: [
-      { num: "899", repo: "ion-design/ion", label: "ion #899", fix: "Bullet and numbered lists weren't rendering in the agent's <code>AssistantText</code> — the <code>list-disc</code> styling was scoped to <code>[&_li]</code> instead of <code>[&_ul]</code>, so markdown lists showed no bullets. Moved styling to <code>[&_ul]:list-disc [&_ul]:pl-5</code> and added ordered-list support." },
-      { num: "9", repo: "ion-design/ditto.site", label: "ditto #9", fix: "Added <strong>Lottie</strong> animation capture and replay to Ditto's compiler. lottie-web renders vector animations from runtime JSON, so it fell outside the declarative CSS path and clones shipped an empty container with the animation gone. This captures the source JSON plus playback config and replays it with a fixed client component, for single- and multi-page output." }
+    "org": "Agno",
+    "badge": "",
+    "stars": "41k",
+    "desc": "High-performance Python framework for multi-modal AI agents",
+    "repo": "agno-agi/agno",
+    "site": "https://www.agno.com",
+    "siteLabel": "agno.com",
+    "prs": [
+      {
+        "num": "8094",
+        "fix": "The guidance-retry cap was bypassed when a plain retry preceded a <code>RetryableModelProviderError</code> \u2014 the counter logic let retries exceed the configured limit instead of stopping."
+      },
+      {
+        "num": "8329",
+        "fix": "Registering a tool with an <code>Optional[Literal[1, \"a\"]]</code> dataclass field crashed schema generation \u2014 <code>schema[\"type\"]</code> on an <code>anyOf</code> member that legitimately has none. The caller swallowed it, silently dropping the entire parameter so the model never saw it."
+      },
+      {
+        "num": "8187",
+        "fix": "<code>AgentSession.from_dict</code> / <code>TeamSession.from_dict</code> hit <code>IndexError</code> on an empty runs list \u2014 <code>runs is not None</code> short-circuited True, then <code>runs[0]</code> was reached unguarded. Breaks round-tripping any freshly created session."
+      },
+      {
+        "num": "8136",
+        "fix": "<code>acontinue_run</code> with <code>background=True, stream=True</code> threw <code>AttributeError</code> \u2014 <code>_acontinue_run_background_stream</code> didn't exist, so raw event objects hit Starlette's <code>.encode()</code> call."
+      }
     ]
   },
   {
-    org: "GPyTorch",
-    badge: "",
-    desc: "Gaussian process library built on PyTorch (Cornell / Columbia)",
-    repo: "cornellius-gp/gpytorch",
-    site: "https://gpytorch.ai",
-    siteLabel: "gpytorch.ai",
-    prs: [
-      { num: "2756", fix: "<code>PiecewisePolynomialKernel(q=2)</code> (the default) returned incorrect covariances — the q=2 polynomial coefficient dropped the square on the <code>j</code> term, computing <code>(j + 4j + 3)</code> instead of <code>(j² + 4j + 3)</code>. This contradicted the kernel's own docstring, Rasmussen &amp; Williams Eq. 4.21, and the correct q=3 branch beside it. Restored the squared term." }
+    "org": "Tiptap",
+    "badge": "",
+    "stars": "38k",
+    "desc": "Headless rich-text editor framework \u2014 2M+ downloads/month",
+    "repo": "ueberdosis/tiptap",
+    "site": "https://tiptap.dev",
+    "siteLabel": "tiptap.dev",
+    "prs": [
+      {
+        "num": "7935",
+        "fix": "<code>rewriteUnknownContent</code> (the helper that sanitizes untrusted/old-schema JSON before loading the editor) threw a <code>TypeError</code> on a <code>null</code> entry in a <code>marks</code> or <code>content</code> array instead of cleaning it out \u2014 reading <code>null.type</code> or <code>null.marks</code>. It now strips the bad entries safely."
+      }
     ]
   },
   {
-    org: "LanceDB",
-    badge: "",
-    desc: "Multimodal vector database for AI applications",
-    repo: "lancedb/lancedb",
-    site: "https://lancedb.com",
-    siteLabel: "lancedb.com",
-    prs: [
-      { num: "3437", fix: "<code>LinearCombinationReranker</code> was inverting relevance scores — worst results ranked first. Also fixed the missing-FTS penalty logic that was rewarding non-matching documents." },
-      { num: "3467", fix: "<code>RRFReranker.rerank_multivector([])</code> crashed with <code>IndexError</code> on empty input — <code>all()</code> passes vacuously, so <code>vector_results[0]</code> was reached unchecked." },
-      { num: "3469", fix: "<code>MRRReranker.rerank_multivector([])</code> shared the same root cause — added an explicit <code>ValueError</code> guard before any indexing." },
-      { num: "3522", fix: "<code>Table.update()</code> raised <code>NotImplementedError</code> on numpy scalars (<code>np.int64</code>, <code>np.int32</code>, <code>np.float32</code>, <code>np.bool_</code>) — values that arise naturally from indexing an ndarray or pandas column. Added scalar conversion in <code>value_to_sql</code>." }
+    "org": "Hono",
+    "badge": "",
+    "stars": "31k",
+    "desc": "Ultrafast web framework for the edge",
+    "repo": "honojs/hono",
+    "site": "https://hono.dev",
+    "siteLabel": "hono.dev",
+    "prs": [
+      {
+        "num": "5096",
+        "fix": "<code>replaceUrlParam</code> built a per-param regex with no end boundary, so a param whose name prefixes another (e.g. <code>id</code> vs <code>idType</code>) matched inside the longer token. Via the <code>hc</code> client, <code>replaceUrlParam('/:idType/:id', {id:'1', idType:'2'})</code> returned <code>/1Type/:id</code> instead of <code>/2/1</code>. Added a boundary so params match exactly."
+      }
     ]
   },
   {
-    org: "Sentry",
-    badge: "",
-    desc: "Error tracking & performance monitoring · ~50M Python SDK downloads/month",
-    repo: "getsentry/sentry-python",
-    site: "https://sentry.io",
-    siteLabel: "sentry.io",
-    prs: [
-      { num: "6450", fix: "W3C Baggage values containing <code>=</code> (base64, JWTs) were silently dropped from distributed traces — <code>split(\"=\")</code> without <code>maxsplit=1</code>, exception swallowed by Sentry's own handler." },
-      { num: "6452", fix: "A dotless function name in <code>functions_to_trace</code> crashed <code>sentry_sdk.init()</code> entirely — the <code>rsplit(\".\", 1)</code> unpack sat before the try/except, so <code>ValueError</code> escaped and killed SDK init." },
-      { num: "6478", fix: "<code>_is_image_type_with_blob_content</code> crashed with <code>AttributeError</code> on string-shorthand <code>image_url</code> values — called <code>.get()</code> on a string instead of a dict." }
+    "org": "Supermemory",
+    "badge": "",
+    "stars": "28k",
+    "desc": "Memory infrastructure layer for AI apps",
+    "repo": "supermemoryai/supermemory",
+    "site": "https://supermemory.ai",
+    "siteLabel": "supermemory.ai",
+    "prs": [
+      {
+        "num": "999",
+        "fix": "Empty system prompt injected into every LLM call when memory lookup returned nothing \u2014 corrupted model context and wasted tokens on blank system messages."
+      }
     ]
   },
   {
-    org: "Agno",
-    badge: "",
-    desc: "High-performance Python framework for multi-modal AI agents",
-    repo: "agno-agi/agno",
-    site: "https://www.agno.com",
-    siteLabel: "agno.com",
-    prs: [
-      { num: "8136", fix: "<code>acontinue_run</code> with <code>background=True, stream=True</code> threw <code>AttributeError</code> — <code>_acontinue_run_background_stream</code> didn't exist, so raw event objects hit Starlette's <code>.encode()</code> call." },
-      { num: "8187", fix: "<code>AgentSession.from_dict</code> / <code>TeamSession.from_dict</code> hit <code>IndexError</code> on an empty runs list — <code>runs is not None</code> short-circuited True, then <code>runs[0]</code> was reached unguarded. Breaks round-tripping any freshly created session." },
-      { num: "8329", fix: "Registering a tool with an <code>Optional[Literal[1, \"a\"]]</code> dataclass field crashed schema generation — <code>schema[\"type\"]</code> on an <code>anyOf</code> member that legitimately has none. The caller swallowed it, silently dropping the entire parameter so the model never saw it." },
-      { num: "8094", fix: "The guidance-retry cap was bypassed when a plain retry preceded a <code>RetryableModelProviderError</code> — the counter logic let retries exceed the configured limit instead of stopping." }
+    "org": "MCP Python SDK",
+    "badge": "",
+    "stars": "24k",
+    "desc": "Official Python SDK for the Model Context Protocol",
+    "repo": "modelcontextprotocol/python-sdk",
+    "site": "https://modelcontextprotocol.io",
+    "siteLabel": "modelcontextprotocol.io",
+    "prs": [
+      {
+        "num": "2656",
+        "fix": "Renamed the misspelled <code>.gitattribute</code> to <code>.gitattributes</code> \u2014 the typo'd filename was a silent no-op, so <code>uv.lock</code> was never flagged as generated for GitHub Linguist."
+      }
     ]
   },
   {
-    org: "Supermemory",
-    badge: "",
-    desc: "Memory infrastructure layer for AI apps",
-    repo: "supermemoryai/supermemory",
-    site: "https://supermemory.ai",
-    siteLabel: "supermemory.ai",
-    prs: [
-      { num: "999", fix: "Empty system prompt injected into every LLM call when memory lookup returned nothing — corrupted model context and wasted tokens on blank system messages." }
+    "org": "Prefect",
+    "badge": "",
+    "stars": "23k",
+    "desc": "Workflow orchestration platform",
+    "repo": "PrefectHQ/prefect",
+    "site": "https://www.prefect.io",
+    "siteLabel": "prefect.io",
+    "prs": [
+      {
+        "num": "22188",
+        "fix": "<code>parse_obj_as()</code> raised <code>StopIteration</code> on an empty dict \u2014 <code>next(iter({}))</code> escaped the <code>except ValueError</code> handler, bypassing all error-handling callers."
+      },
+      {
+        "num": "22071",
+        "fix": "<code>ZeroDivisionError</code> in the retry scheduler when <code>retry_jitter_factor</code> was set without <code>retry_delay</code> \u2014 jitter applied to a zero-length delay caused a divide-by-zero in the orchestration server."
+      }
     ]
   },
   {
-    org: "Prefect",
-    badge: "",
-    desc: "Workflow orchestration platform",
-    repo: "PrefectHQ/prefect",
-    site: "https://www.prefect.io",
-    siteLabel: "prefect.io",
-    prs: [
-      { num: "22071", fix: "<code>ZeroDivisionError</code> in the retry scheduler when <code>retry_jitter_factor</code> was set without <code>retry_delay</code> — jitter applied to a zero-length delay caused a divide-by-zero in the orchestration server." },
-      { num: "22188", fix: "<code>parse_obj_as()</code> raised <code>StopIteration</code> on an empty dict — <code>next(iter({}))</code> escaped the <code>except ValueError</code> handler, bypassing all error-handling callers." }
+    "org": "Pydantic AI",
+    "badge": "",
+    "stars": "19k",
+    "desc": "Agent framework from the team behind Pydantic",
+    "repo": "pydantic/pydantic-ai",
+    "site": "https://ai.pydantic.dev",
+    "siteLabel": "ai.pydantic.dev",
+    "prs": [
+      {
+        "num": "5779",
+        "fix": "<code>BinaryContent.from_data_uri</code> crashed on valid non-base64 data URIs \u2014 RFC 2397 permits URIs without the <code>;base64,</code> marker, but the unpack expected two parts. The public method is called on client-supplied URIs in the Vercel AI and AG-UI adapters."
+      }
     ]
   },
   {
-    org: "Cohere",
-    badge: "",
-    desc: "Enterprise AI platform",
-    repo: "cohere-ai/cohere-python",
-    site: "https://cohere.com",
-    siteLabel: "cohere.com",
-    prs: [
-      { num: "771", fix: "<code>merge_embed_responses</code> crashed batched embedding jobs — iterated <code>None</code> fields from later sub-batches that were absent in the first response." },
-      { num: "773", fix: "<code>sum_fields_if_not_none</code> called <code>getattr(None, 'input_tokens')</code> — <code>billed_units</code> is Optional and can be None, but the guard only checked field values, not the object itself." },
-      { num: "778", fix: "<code>embed(texts=[])</code> crashed with <code>IndexError</code> on empty input — the batch-merge path indexed the first response before checking the list was non-empty." }
+    "org": "LangChain.js",
+    "badge": "",
+    "stars": "18k",
+    "desc": "JavaScript / TypeScript LLM framework",
+    "repo": "langchain-ai/langchainjs",
+    "site": "https://js.langchain.com",
+    "siteLabel": "js.langchain.com",
+    "prs": [
+      {
+        "num": "10940",
+        "fix": "Removed duplicate-word typos (\"the the\", \"a a\") from JSDoc comments across the source."
+      }
     ]
   },
   {
-    org: "SkyPilot",
-    badge: "",
-    desc: "Cloud-agnostic AI/ML compute framework",
-    repo: "skypilot-org/skypilot",
-    site: "https://skypilot.co",
-    siteLabel: "skypilot.co",
-    prs: [
-      { num: "9768", fix: "<code>is_az_container_endpoint()</code> accepted bare storage-account URLs with no container segment — regex <code>*</code> vs <code>+</code> — causing <code>IndexError: pop from empty list</code> downstream in Azure storage code." }
+    "org": "Outlines",
+    "badge": "",
+    "stars": "15k",
+    "desc": "Structured LLM generation \u2014 guaranteed-valid model outputs",
+    "repo": "dottxt-ai/outlines",
+    "site": "https://dottxt.ai",
+    "siteLabel": "dottxt.ai",
+    "prs": [
+      {
+        "num": "1869",
+        "fix": "<code>python_types_to_terms</code> raised <code>TypeError</code> on <code>Literal[True]</code>, <code>Literal[False]</code>, or <code>Literal[True, False]</code> \u2014 bool args fell through every branch since <code>is_int_instance</code> explicitly excludes bool and no bool branch existed. Added explicit handling so boolean literals compile to valid structured-generation terms."
+      }
     ]
   },
   {
-    org: "PaySponge",
-    badge: "",
-    desc: "Crypto payments SDK — wallet & chain abstraction for developers",
-    repo: "paysponge/paysponge-sdk",
-    site: "https://paysponge.com",
-    siteLabel: "paysponge.com",
-    prs: [
-      { num: "1", fix: "Client silently proceeded with an uninitialised wallet address, causing silent downstream failures — now throws immediately on unloaded state. Also fixed an explicit <code>testnet: true</code> flag being overridden by auto-detection." }
+    "org": "OpenAI Node SDK",
+    "badge": "",
+    "stars": "11k",
+    "desc": "Official OpenAI SDK for TypeScript / JavaScript",
+    "repo": "openai/openai-node",
+    "site": "https://github.com/openai/openai-node",
+    "siteLabel": "openai-node",
+    "prs": [
+      {
+        "num": "1892",
+        "fix": "Removed a \"the the\" duplicate-word typo from the <code>AbstractChatCompletionRunner</code> JSDoc."
+      }
     ]
   },
   {
-    org: "Langfuse",
-    badge: "",
-    desc: "Open-source LLM engineering & observability platform (acquired by ClickHouse)",
-    repo: "langfuse/langfuse-python",
-    site: "https://langfuse.com",
-    siteLabel: "langfuse.com",
-    prs: [
-      { num: "1683", fix: "<code>EventSerializer</code> serialized <code>float('-inf')</code> as <code>\"Infinity\"</code> (wrong sign) — <code>math.isinf()</code> is True for both infinities, but the code returned <code>\"Infinity\"</code> unconditionally. Any metric or metadata field with negative infinity was silently corrupted on the way to the server." }
+    "org": "LanceDB",
+    "badge": "",
+    "stars": "11k",
+    "desc": "Multimodal vector database for AI applications",
+    "repo": "lancedb/lancedb",
+    "site": "https://lancedb.com",
+    "siteLabel": "lancedb.com",
+    "prs": [
+      {
+        "num": "3522",
+        "fix": "<code>Table.update()</code> raised <code>NotImplementedError</code> on numpy scalars (<code>np.int64</code>, <code>np.int32</code>, <code>np.float32</code>, <code>np.bool_</code>) \u2014 values that arise naturally from indexing an ndarray or pandas column. Added scalar conversion in <code>value_to_sql</code>."
+      },
+      {
+        "num": "3467",
+        "fix": "<code>RRFReranker.rerank_multivector([])</code> crashed with <code>IndexError</code> on empty input \u2014 <code>all()</code> passes vacuously, so <code>vector_results[0]</code> was reached unchecked."
+      },
+      {
+        "num": "3469",
+        "fix": "<code>MRRReranker.rerank_multivector([])</code> shared the same root cause \u2014 added an explicit <code>ValueError</code> guard before any indexing."
+      },
+      {
+        "num": "3437",
+        "fix": "<code>LinearCombinationReranker</code> was inverting relevance scores \u2014 worst results ranked first. Also fixed the missing-FTS penalty logic that was rewarding non-matching documents."
+      }
     ]
   },
   {
-    org: "Pydantic AI",
-    badge: "",
-    desc: "Agent framework from the team behind Pydantic",
-    repo: "pydantic/pydantic-ai",
-    site: "https://ai.pydantic.dev",
-    siteLabel: "ai.pydantic.dev",
-    prs: [
-      { num: "5779", fix: "<code>BinaryContent.from_data_uri</code> crashed on valid non-base64 data URIs — RFC 2397 permits URIs without the <code>;base64,</code> marker, but the unpack expected two parts. The public method is called on client-supplied URIs in the Vercel AI and AG-UI adapters." }
+    "org": "SkyPilot",
+    "badge": "",
+    "stars": "10k",
+    "desc": "Cloud-agnostic AI/ML compute framework",
+    "repo": "skypilot-org/skypilot",
+    "site": "https://skypilot.co",
+    "siteLabel": "skypilot.co",
+    "prs": [
+      {
+        "num": "9768",
+        "fix": "<code>is_az_container_endpoint()</code> accepted bare storage-account URLs with no container segment \u2014 regex <code>*</code> vs <code>+</code> \u2014 causing <code>IndexError: pop from empty list</code> downstream in Azure storage code."
+      }
     ]
   },
   {
-    org: "Lightly",
-    badge: "",
-    desc: "Self-supervised learning & ML data curation (ETH Zürich spinout)",
-    repo: "lightly-ai/lightly",
-    site: "https://www.lightly.ai",
-    siteLabel: "lightly.ai",
-    prs: [
-      { num: "1938", fix: "<code>DINOLoss</code> returned a silent <code>NaN</code> for the single-view case shown in its own docstring — a 1×1 loss matrix zeroed by <code>fill_diagonal_(0)</code>. Silent NaN poisons training, so I made it raise a clear error instead." }
+    "org": "Stanford NLP \u00b7 Stanza",
+    "badge": "",
+    "stars": "7.8k",
+    "desc": "Stanford's NLP toolkit for 70+ human languages",
+    "repo": "stanfordnlp/stanza",
+    "site": "https://stanfordnlp.github.io/stanza/",
+    "siteLabel": "stanfordnlp.github.io",
+    "prs": [
+      {
+        "num": "1628",
+        "fix": "When serializing a Document to CoNLL-U, coreference-chain annotations were written under the MISC key <code>ner=</code> instead of <code>coref_chains=</code>. If a token also had a real NER label, the output contained two colliding <code>ner=</code> entries, corrupting the annotation. Routed coref chains back to the correct key."
+      }
     ]
   },
   {
-    org: "Opentrons",
-    badge: "",
-    desc: "Lab automation robotics — used by 70% of top-10 pharma & 90% of top-50 bio research universities",
-    repo: "Opentrons/opentrons",
-    site: "https://opentrons.com",
-    siteLabel: "opentrons.com",
-    prs: [
-      { num: "21717", fix: "<code>wells_covered_sparse</code> threw <code>IndexError</code> when a 96-channel pipette ran a row (H1) configuration into a sparse reservoir with more rows than columns — the H1 branch bounds-checked the column index against row count, then indexed past the grid." }
+    "org": "docTR",
+    "badge": "",
+    "stars": "6.2k",
+    "desc": "Document text recognition / OCR deep-learning library",
+    "repo": "mindee/doctr",
+    "site": "https://mindee.github.io/doctr/",
+    "siteLabel": "doctr docs",
+    "prs": [
+      {
+        "num": "2071",
+        "fix": "<code>extract_crops</code> added its inclusive <code>+1</code> to the wrong axis \u2014 <code>_boxes[2:] += 1</code> shifted all four coordinates of every box from index 2 onward instead of nudging the xmax/ymax columns. With 3+ boxes per page, every crop from index 2 on was cut one pixel off in both x and y, silently misaligning the detection\u2192recognition pipeline."
+      }
     ]
   },
   {
-    org: "Svix",
-    badge: "",
-    desc: "Enterprise webhook infrastructure (a16z, YC)",
-    repo: "svix/svix-webhooks",
-    site: "https://www.svix.com",
-    siteLabel: "svix.com",
-    prs: [
-      { num: "2393", fix: "The C# SDK's <code>Webhook.Verify</code> silently dropped the <em>last</em> signature in a multi-signature header, so a legitimate webhook was rejected if its only matching signature came last. Multi-sig headers happen during normal signing-secret rotation, so this rejected valid production traffic." }
+    "org": "Algolia",
+    "badge": "",
+    "stars": "5.3k",
+    "desc": "Search & discovery API \u2014 autocomplete UI library",
+    "repo": "algolia/autocomplete",
+    "site": "https://www.algolia.com",
+    "siteLabel": "algolia.com",
+    "prs": [
+      {
+        "num": "1348",
+        "fix": "In the reverse-highlight sibling strategy, <code>isPartHighlighted</code> computed neighbor state with <code>parts[i\u00b11]?.isHighlighted || true</code>, which is always <code>true</code> even when the neighbor genuinely is <code>false</code>. The equality guard then always passed, dropping separator highlights between mismatched siblings."
+      }
     ]
   },
   {
-    org: "Tiptap",
-    badge: "",
-    desc: "Headless rich-text editor framework — 2M+ downloads/month (Substack, GitLab)",
-    repo: "ueberdosis/tiptap",
-    site: "https://tiptap.dev",
-    siteLabel: "tiptap.dev",
-    prs: [
-      { num: "7935", fix: "<code>rewriteUnknownContent</code> (the helper that sanitizes untrusted/old-schema JSON before loading the editor) threw a <code>TypeError</code> on a <code>null</code> entry in a <code>marks</code> or <code>content</code> array instead of cleaning it out — reading <code>null.type</code> or <code>null.marks</code>. It now strips the bad entries safely." }
+    "org": "GPyTorch",
+    "badge": "",
+    "stars": "3.9k",
+    "desc": "Gaussian process library built on PyTorch (Cornell / Columbia)",
+    "repo": "cornellius-gp/gpytorch",
+    "site": "https://gpytorch.ai",
+    "siteLabel": "gpytorch.ai",
+    "prs": [
+      {
+        "num": "2756",
+        "fix": "<code>PiecewisePolynomialKernel(q=2)</code> (the default) returned incorrect covariances \u2014 the q=2 polynomial coefficient dropped the square on the <code>j</code> term, computing <code>(j + 4j + 3)</code> instead of <code>(j\u00b2 + 4j + 3)</code>. This contradicted the kernel's own docstring, Rasmussen &amp; Williams Eq. 4.21, and the correct q=3 branch beside it. Restored the squared term."
+      }
     ]
   },
   {
-    org: "docTR",
-    badge: "",
-    desc: "Document text recognition / OCR deep-learning library (Mindee)",
-    repo: "mindee/doctr",
-    site: "https://mindee.github.io/doctr/",
-    siteLabel: "doctr docs",
-    prs: [
-      { num: "2071", fix: "<code>extract_crops</code> added its inclusive <code>+1</code> to the wrong axis — <code>_boxes[2:] += 1</code> shifted all four coordinates of every box from index 2 onward instead of nudging the xmax/ymax columns. With 3+ boxes per page, every crop from index 2 on was cut one pixel off in both x and y, silently misaligning the detection→recognition pipeline." }
+    "org": "Lightly",
+    "badge": "",
+    "stars": "3.8k",
+    "desc": "Self-supervised learning & ML data curation",
+    "repo": "lightly-ai/lightly",
+    "site": "https://www.lightly.ai",
+    "siteLabel": "lightly.ai",
+    "prs": [
+      {
+        "num": "1938",
+        "fix": "<code>DINOLoss</code> returned a silent <code>NaN</code> for the single-view case shown in its own docstring \u2014 a 1\u00d71 loss matrix zeroed by <code>fill_diagonal_(0)</code>. Silent NaN poisons training, so I made it raise a clear error instead."
+      }
     ]
   },
   {
-    org: "Rigetti",
-    badge: "",
-    desc: "Quantum computing — public (NYSE: RGTI)",
-    repo: "rigetti/pyquil",
-    site: "https://www.rigetti.com",
-    siteLabel: "rigetti.com",
-    prs: [
-      { num: "1850", fix: "<code>format_parameter</code> raised <code>ValueError</code> on a complex number with a nonzero real part and an imaginary part of exactly <code>±1</code> (e.g. <code>2+1j</code>). It's reached through the live noise path <code>_create_kraus_pragmas</code>, which serializes Kraus operators into <code>PRAGMA ADD-KRAUS</code> strings — and Kraus entries like <code>2+1j</code> are common, so this broke noisy-gate simulation." }
+    "org": "Svix",
+    "badge": "",
+    "stars": "3.3k",
+    "desc": "Enterprise webhook infrastructure",
+    "repo": "svix/svix-webhooks",
+    "site": "https://www.svix.com",
+    "siteLabel": "svix.com",
+    "prs": [
+      {
+        "num": "2393",
+        "fix": "The C# SDK's <code>Webhook.Verify</code> silently dropped the <em>last</em> signature in a multi-signature header, so a legitimate webhook was rejected if its only matching signature came last. Multi-sig headers happen during normal signing-secret rotation, so this rejected valid production traffic."
+      }
     ]
   },
   {
-    org: "Algolia",
-    badge: "",
-    desc: "Search & discovery API — autocomplete UI library",
-    repo: "algolia/autocomplete",
-    site: "https://www.algolia.com",
-    siteLabel: "algolia.com",
-    prs: [
-      { num: "1348", fix: "In the reverse-highlight sibling strategy, <code>isPartHighlighted</code> computed neighbor state with <code>parts[i±1]?.isHighlighted || true</code>, which is always <code>true</code> even when the neighbor genuinely is <code>false</code>. The equality guard then always passed, dropping separator highlights between mismatched siblings." }
+    "org": "Sentry",
+    "badge": "",
+    "stars": "2.2k",
+    "desc": "Error tracking & performance monitoring \u00b7 ~50M downloads/month",
+    "repo": "getsentry/sentry-python",
+    "site": "https://sentry.io",
+    "siteLabel": "sentry.io",
+    "prs": [
+      {
+        "num": "6478",
+        "fix": "<code>_is_image_type_with_blob_content</code> crashed with <code>AttributeError</code> on string-shorthand <code>image_url</code> values \u2014 called <code>.get()</code> on a string instead of a dict."
+      },
+      {
+        "num": "6450",
+        "fix": "W3C Baggage values containing <code>=</code> (base64, JWTs) were silently dropped from distributed traces \u2014 <code>split(\"=\")</code> without <code>maxsplit=1</code>, exception swallowed by Sentry's own handler."
+      },
+      {
+        "num": "6452",
+        "fix": "A dotless function name in <code>functions_to_trace</code> crashed <code>sentry_sdk.init()</code> entirely \u2014 the <code>rsplit(\".\", 1)</code> unpack sat before the try/except, so <code>ValueError</code> escaped and killed SDK init."
+      }
     ]
   },
   {
-    org: "Outlines",
-    badge: "",
-    desc: "Structured LLM generation — guaranteed-valid model outputs",
-    repo: "dottxt-ai/outlines",
-    site: "https://dottxt.ai",
-    siteLabel: "dottxt.ai",
-    prs: [
-      { num: "1869", fix: "<code>python_types_to_terms</code> raised <code>TypeError</code> on <code>Literal[True]</code>, <code>Literal[False]</code>, or <code>Literal[True, False]</code> — bool args fell through every branch since <code>is_int_instance</code> explicitly excludes bool and no bool branch existed. Added explicit handling so boolean literals compile to valid structured-generation terms." }
+    "org": "Rigetti",
+    "badge": "",
+    "stars": "1.5k",
+    "desc": "Quantum computing \u2014 public (NYSE: RGTI)",
+    "repo": "rigetti/pyquil",
+    "site": "https://www.rigetti.com",
+    "siteLabel": "rigetti.com",
+    "prs": [
+      {
+        "num": "1850",
+        "fix": "<code>format_parameter</code> raised <code>ValueError</code> on a complex number with a nonzero real part and an imaginary part of exactly <code>\u00b11</code> (e.g. <code>2+1j</code>). It's reached through the live noise path <code>_create_kraus_pragmas</code>, which serializes Kraus operators into <code>PRAGMA ADD-KRAUS</code> strings \u2014 and Kraus entries like <code>2+1j</code> are common, so this broke noisy-gate simulation."
+      }
     ]
   },
   {
-    org: "Stanford NLP · Stanza",
-    badge: "",
-    desc: "Stanford's NLP toolkit for 70+ human languages",
-    repo: "stanfordnlp/stanza",
-    site: "https://stanfordnlp.github.io/stanza/",
-    siteLabel: "stanfordnlp.github.io",
-    prs: [
-      { num: "1628", fix: "When serializing a Document to CoNLL-U, coreference-chain annotations were written under the MISC key <code>ner=</code> instead of <code>coref_chains=</code>. If a token also had a real NER label, the output contained two colliding <code>ner=</code> entries, corrupting the annotation. Routed coref chains back to the correct key." }
+    "org": "Ditto (ion.design)",
+    "badge": "",
+    "stars": "525",
+    "desc": "ion.design's open-source (MIT) AI website cloner \u2014 also my internship",
+    "repo": "ion-design/ditto.site",
+    "site": "https://www.ditto.site",
+    "siteLabel": "ditto.site",
+    "prs": [
+      {
+        "num": "9",
+        "fix": "Added <strong>Lottie</strong> animation capture and replay to Ditto's compiler. lottie-web renders vector animations from runtime JSON, so it fell outside the declarative CSS path and clones shipped an empty container with the animation gone. This captures the source JSON plus playback config and replays it with a fixed client component, for single- and multi-page output."
+      }
+    ]
+  },
+  {
+    "org": "Opentrons",
+    "badge": "",
+    "stars": "512",
+    "desc": "Lab automation robotics",
+    "repo": "Opentrons/opentrons",
+    "site": "https://opentrons.com",
+    "siteLabel": "opentrons.com",
+    "prs": [
+      {
+        "num": "21717",
+        "fix": "<code>wells_covered_sparse</code> threw <code>IndexError</code> when a 96-channel pipette ran a row (H1) configuration into a sparse reservoir with more rows than columns \u2014 the H1 branch bounds-checked the column index against row count, then indexed past the grid."
+      }
+    ]
+  },
+  {
+    "org": "Langfuse",
+    "badge": "",
+    "stars": "437",
+    "desc": "Open-source LLM engineering & observability platform",
+    "repo": "langfuse/langfuse-python",
+    "site": "https://langfuse.com",
+    "siteLabel": "langfuse.com",
+    "prs": [
+      {
+        "num": "1683",
+        "fix": "<code>EventSerializer</code> serialized <code>float('-inf')</code> as <code>\"Infinity\"</code> (wrong sign) \u2014 <code>math.isinf()</code> is True for both infinities, but the code returned <code>\"Infinity\"</code> unconditionally. Any metric or metadata field with negative infinity was silently corrupted on the way to the server."
+      }
+    ]
+  },
+  {
+    "org": "Cohere",
+    "badge": "",
+    "stars": "394",
+    "desc": "Enterprise AI platform",
+    "repo": "cohere-ai/cohere-python",
+    "site": "https://cohere.com",
+    "siteLabel": "cohere.com",
+    "prs": [
+      {
+        "num": "778",
+        "fix": "<code>embed(texts=[])</code> crashed with <code>IndexError</code> on empty input \u2014 the batch-merge path indexed the first response before checking the list was non-empty."
+      },
+      {
+        "num": "771",
+        "fix": "<code>merge_embed_responses</code> crashed batched embedding jobs \u2014 iterated <code>None</code> fields from later sub-batches that were absent in the first response."
+      },
+      {
+        "num": "773",
+        "fix": "<code>sum_fields_if_not_none</code> called <code>getattr(None, 'input_tokens')</code> \u2014 <code>billed_units</code> is Optional and can be None, but the guard only checked field values, not the object itself."
+      }
     ]
   }
 ];
