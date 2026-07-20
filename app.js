@@ -561,9 +561,14 @@
       const x = track.scrollLeft;
       const atStart = x <= 2;
       const atEnd = x >= max - 2 || max <= 0;
+      const active = document.activeElement;
       if (prevBtn) prevBtn.disabled = atStart;
       if (nextBtn) nextBtn.disabled = atEnd;
       if (viewer) { viewer.classList.toggle('at-start', atStart); viewer.classList.toggle('at-end', atEnd); }
+      // if the arrow the keyboard user was operating just got disabled, keep focus
+      // near the album instead of letting it fall back to <body> (WCAG 2.4.3)
+      if (active === nextBtn && atEnd) (prevBtn && !prevBtn.disabled ? prevBtn : track).focus();
+      else if (active === prevBtn && atStart) (nextBtn && !nextBtn.disabled ? nextBtn : track).focus();
     };
     const pageScroll = dir => {
       const amount = Math.max(track.clientWidth * 0.82, 240);
@@ -579,6 +584,34 @@
       if (e.key === 'ArrowRight') { e.preventDefault(); pageScroll(1); }
       else if (e.key === 'ArrowLeft') { e.preventDefault(); pageScroll(-1); }
     });
+
+    // mouse drag-to-pan (touch already scrolls/swipes natively, so mouse only)
+    let dragStart = null, dragMoved = false;
+    track.addEventListener('pointerdown', e => {
+      if (e.pointerType !== 'mouse' || e.button !== 0) return;
+      dragStart = { x: e.clientX, left: track.scrollLeft };
+      dragMoved = false;
+      track.setPointerCapture(e.pointerId);
+      track.classList.add('dragging');
+    });
+    track.addEventListener('pointermove', e => {
+      if (!dragStart) return;
+      const dx = e.clientX - dragStart.x;
+      if (Math.abs(dx) > 6) dragMoved = true;
+      track.scrollLeft = dragStart.left - dx;
+    });
+    const endDrag = e => {
+      if (!dragStart) return;
+      try { track.releasePointerCapture(e.pointerId); } catch {}
+      track.classList.remove('dragging');
+      dragStart = null;
+    };
+    track.addEventListener('pointerup', endDrag);
+    track.addEventListener('pointercancel', endDrag);
+    // swallow the click that ends a real drag so it doesn't open the lightbox
+    track.addEventListener('click', e => {
+      if (dragMoved) { e.stopPropagation(); e.preventDefault(); dragMoved = false; }
+    }, true);
 
     const renderCars = (list) => {
       carList = list || [];
@@ -612,15 +645,19 @@
       track.appendChild(frag);
       updateArrows();
     };
-    // Always fetch the manifest fresh (bypasses GitHub Pages' 10-min cache),
-    // falling back to the window.CARS baked in at load time.
+    // Paint immediately from the data already in memory so the strip is never
+    // empty, then revalidate against a fresh copy (GitHub Pages caches 10 min)
+    // and only re-render if the manifest actually changed.
+    renderCars(window.CARS || []);
     fetch(`cars-data.js?t=${Date.now()}`, { cache: 'no-store' })
       .then(r => r.ok ? r.text() : Promise.reject())
       .then(txt => {
         const m = txt.match(/window\.CARS\s*=\s*(\[[\s\S]*\]);\s*$/);
-        renderCars(m ? JSON.parse(m[1]) : (window.CARS || []));
+        if (!m) return;
+        const fresh = JSON.parse(m[1]);
+        if (JSON.stringify(fresh) !== JSON.stringify(carList)) renderCars(fresh);
       })
-      .catch(() => renderCars(window.CARS || []));
+      .catch(() => {});
   }
 
   /* ---------- RENDER REFERENCES / TESTIMONIALS ---------- */

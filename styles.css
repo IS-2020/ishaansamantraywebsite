@@ -3204,6 +3204,19 @@ body.game-active .noise {
   scrollbar-color: var(--line-strong) transparent;
 }
 .cars-track:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--radius); }
+/* mouse drag-to-pan feedback (touch scrolls natively) */
+.cars-track.dragging { scroll-snap-type: none; user-select: none; }
+.cars-track.dragging, .cars-track.dragging * { cursor: grabbing !important; }
+.cars-track img { -webkit-user-drag: none; user-select: none; }
+
+/* keyboard bypass so users don't have to Tab through all 127 photos */
+.skip-album { position: absolute; left: -9999px; }
+.skip-album:focus {
+  position: static; left: auto; display: inline-block; margin: 0 0 12px;
+  padding: 6px 12px; font-family: var(--mono); font-size: 12px;
+  color: var(--accent); background: var(--bg-panel);
+  border: 1px solid var(--accent); border-radius: var(--radius);
+}
 .cars-track::-webkit-scrollbar { height: 8px; }
 .cars-track::-webkit-scrollbar-track { background: transparent; }
 .cars-track::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 4px; }
