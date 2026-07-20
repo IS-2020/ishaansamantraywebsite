@@ -399,6 +399,49 @@
     });
   }
 
+  /* ---------- RENDER ION INTERNSHIP ---------- */
+  const ionBlock = $('#ionBlock');
+  if (ionBlock && window.ION) {
+    const d = window.ION;
+    const total = d.groups.reduce((s, g) => s + g.items.length, 0);
+    const ionCount = $('#ionCount');
+    if (ionCount) ionCount.textContent = `[${total} merged PRs]`;
+
+    const stats = d.stats.map(s => `
+      <div class="ion-stat"><span class="ion-stat-num">${s.val}</span><span class="ion-stat-label">${s.label}</span></div>
+    `).join('');
+
+    const groups = d.groups.map((g, gi) => `
+      <div class="ion-group reveal-el" style="--i:${gi}">
+        <div class="ion-group-head ion-accent-${g.accent}">
+          <span class="ion-group-dot"></span>
+          <span class="ion-group-title">${g.title}</span>
+          <span class="ion-group-count">${g.items.length}</span>
+        </div>
+        <div class="ion-items">
+          ${g.items.map(it => `
+            <div class="ion-item">
+              <span class="ion-item-num">#${it.num}</span>
+              <span class="ion-item-text">${it.text}</span>
+            </div>`).join('')}
+        </div>
+      </div>`).join('');
+
+    ionBlock.innerHTML = `
+      <div class="ion-card">
+        <div class="ion-head">
+          <div>
+            <div class="ion-org">${d.org}</div>
+            <div class="ion-role">${d.role}</div>
+          </div>
+          <a class="ion-site" href="${d.site}" target="_blank" rel="noopener">${d.siteLabel} ↗</a>
+        </div>
+        <div class="ion-stats">${stats}</div>
+        <div class="ion-note">${d.note}</div>
+        <div class="ion-groups">${groups}</div>
+      </div>`;
+  }
+
   /* ---------- DITTO LIVE STAR COUNT ---------- */
   const dittoStars = $('#dittoStars');
   if (dittoStars) {

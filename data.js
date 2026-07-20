@@ -820,3 +820,72 @@ window.TESTIMONIALS = [
    managed via /car-portal.html (drag-and-drop HEIC uploader).
    ============================================================ */
 window.CARS = [];
+
+/* ============================================================
+   ion.design — internship engineering (private production repo)
+   Merged into ion-design/ion. Repo is private, so no public PR links.
+   ============================================================ */
+window.ION = {
+  org: "ion.design",
+  role: "Software Engineering Intern",
+  site: "https://ion.design",
+  siteLabel: "ion.design",
+  note: "Merged into ion's private production codebase, so these PRs aren't publicly linkable — but the work is real and shipped.",
+  stats: [
+    { val: "19", label: "merged PRs" },
+    { val: "4",  label: "security fixes" },
+    { val: "2",  label: "perf wins" },
+    { val: "6",  label: "dead-code removals" }
+  ],
+  groups: [
+    {
+      title: "Security & access control",
+      accent: "red",
+      items: [
+        { num: "912", text: "Fixed an <strong>IDOR</strong> — <code>get-status</code> didn't enforce organization access, letting a caller read another org's status." },
+        { num: "910", text: "Enforced organization access across the agents router, closing the same class of cross-tenant read." },
+        { num: "915", text: "Scoped workspace reads to the caller's organization instead of returning across tenants." },
+        { num: "914", text: "Signed and expired the Slack OAuth <code>state</code> parameter, closing a CSRF window in the notifications flow." }
+      ]
+    },
+    {
+      title: "Performance",
+      accent: "amber",
+      items: [
+        { num: "963", text: "Parallelized independent reads in <code>getChatSession</code> — the home path was awaiting sequentially for no reason." },
+        { num: "965", text: "Same pattern in <code>draft.get</code>: independent queries now run concurrently." }
+      ]
+    },
+    {
+      title: "Reliability",
+      accent: "green",
+      items: [
+        { num: "962", text: "Stranded provisioning states reported as <em>failed</em> instead of spinning as \"running\" forever." },
+        { num: "966", text: "Resolved stale run status in <code>listRuns</code> and <code>getRunReport</code>, so finished runs stopped showing as in-flight." },
+        { num: "936", text: "Added explicit <code>::text</code> casts to <code>jsonb_build_object</code> bind parameters, fixing a Postgres type-inference failure." }
+      ]
+    },
+    {
+      title: "Frontend & UX",
+      accent: "blue",
+      items: [
+        { num: "899", text: "Bullet and numbered lists weren't rendering in the agent's <code>AssistantText</code> — list styling was scoped to <code>[&amp;_li]</code> instead of <code>[&amp;_ul]</code>." },
+        { num: "904", text: "Unified focus states behind a global soft focus glow, starting with the chat input." },
+        { num: "911", text: "Themed the unauthorized and not-found pages so they match the product instead of falling back to defaults." },
+        { num: "917", text: "Attachment strips now scroll horizontally instead of stacking and blowing out the composer layout." }
+      ]
+    },
+    {
+      title: "Codebase simplification",
+      accent: "dim",
+      items: [
+        { num: "913", text: "Removed the deprecated cold-outreach SEO pipeline and its simulation leftovers." },
+        { num: "957", text: "Deleted the dead <code>RepositoryFileFetcher</code> and legacy <code>SentryService</code> from the Hatchet worker." },
+        { num: "958", text: "Removed five dead thread-router procedures from the API." },
+        { num: "956", text: "Removed legacy Ruby AI prompts no longer referenced anywhere." },
+        { num: "955", text: "Removed the dead <code>adsPagesSuggestions</code> endpoint." },
+        { num: "959", text: "Removed an undispatched <code>opencode-test-workflow</code> from the production worker." }
+      ]
+    }
+  ]
+};
