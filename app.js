@@ -479,9 +479,7 @@
   const carsCollage = $('#carsCollage');
   if (carsCollage) {
     const carCount = $('#carCount');
-    const CARS_FIRST = 24; // render a first batch, then a "load more" button
     let carList = [];
-    let carShown = 0;
     let lastFocus = null;
 
     // ----- centered lightbox (built once, reused for all photos) -----
@@ -552,13 +550,55 @@
       if (Math.abs(dx) > 45 && Math.abs(dy) < 60) clbStep(dx < 0 ? 1 : -1);
     });
 
-    const appendCars = (from, to) => {
-      for (let i = from; i < to && i < carList.length; i++) {
-        const c = carList[i];
+    // ----- horizontal album (filmstrip) navigation -----
+    const track = carsCollage;
+    const viewer = $('#carsViewer');
+    const prevBtn = $('#carsPrev');
+    const nextBtn = $('#carsNext');
+
+    const updateArrows = () => {
+      const max = track.scrollWidth - track.clientWidth;
+      const x = track.scrollLeft;
+      const atStart = x <= 2;
+      const atEnd = x >= max - 2 || max <= 0;
+      if (prevBtn) prevBtn.disabled = atStart;
+      if (nextBtn) nextBtn.disabled = atEnd;
+      if (viewer) { viewer.classList.toggle('at-start', atStart); viewer.classList.toggle('at-end', atEnd); }
+    };
+    const pageScroll = dir => {
+      const amount = Math.max(track.clientWidth * 0.82, 240);
+      track.scrollBy({ left: dir * amount, behavior: scrollBehavior });
+    };
+    if (prevBtn) prevBtn.addEventListener('click', () => pageScroll(-1));
+    if (nextBtn) nextBtn.addEventListener('click', () => pageScroll(1));
+    // scroll events are already frame-throttled by the browser; updateArrows is cheap
+    track.addEventListener('scroll', updateArrows, { passive: true });
+    addEventListener('resize', updateArrows);
+    // left/right keys page the strip when it (not a lightbox) holds focus
+    track.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight') { e.preventDefault(); pageScroll(1); }
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); pageScroll(-1); }
+    });
+
+    const renderCars = (list) => {
+      carList = list || [];
+      track.innerHTML = '';
+      const empty = $('#carsEmpty');
+      if (!carList.length) {
+        if (empty) empty.style.display = 'block';
+        if (viewer) viewer.style.display = 'none';
+        if (carCount) carCount.textContent = '[0 shots]';
+        return;
+      }
+      if (empty) empty.style.display = 'none';
+      if (viewer) viewer.style.display = '';
+      if (carCount) carCount.textContent = `[${carList.length} shots]`;
+      const frag = document.createDocumentFragment();
+      carList.forEach((c, i) => {
         const fig = document.createElement('figure');
-        fig.className = 'car-photo reveal-el';
-        fig.style.setProperty('--i', Math.min(i - from, 8));
-        // width/height reserve correct space so loading="lazy" actually defers
+        fig.className = 'car-photo';
+        // width/height give the true aspect ratio so the strip reserves the
+        // right width per photo (no stretch, no shift) and lazy-load can defer
         const dim = (c.w && c.h) ? `width="${c.w}" height="${c.h}"` : '';
         fig.innerHTML = `
           <button type="button" class="car-photo-btn" aria-label="Open car photo ${i + 1} of ${carList.length}">
@@ -566,41 +606,11 @@
                  onerror="this.closest('.car-photo').classList.add('car-photo-missing')">
           </button>
           ${c.caption ? `<figcaption>${c.caption}</figcaption>` : ''}`;
-        const idx = i;
-        fig.querySelector('.car-photo-btn').addEventListener('click', () => clbOpen(idx));
-        carsCollage.appendChild(fig);
-        io.observe(fig);
-      }
-      carShown = Math.min(to, carList.length);
-    };
-
-    const renderCars = (list) => {
-      carList = list || [];
-      carsCollage.innerHTML = '';
-      carShown = 0;
-      const oldBtn = $('#carsMoreBtn'); if (oldBtn) oldBtn.remove();
-      const empty = $('#carsEmpty');
-      if (!carList.length) {
-        if (empty) empty.style.display = 'block';
-        if (carCount) carCount.textContent = '[0 shots]';
-        return;
-      }
-      if (empty) empty.style.display = 'none';
-      if (carCount) carCount.textContent = `[${carList.length} shots]`;
-      appendCars(0, CARS_FIRST);
-      if (carList.length > CARS_FIRST) {
-        const more = document.createElement('button');
-        more.id = 'carsMoreBtn';
-        more.className = 'cars-more-btn';
-        const remaining = () => carList.length - carShown;
-        more.textContent = `[ load ${remaining()} more ]`;
-        more.addEventListener('click', () => {
-          appendCars(carShown, carShown + CARS_FIRST);
-          if (carShown >= carList.length) more.remove();
-          else more.textContent = `[ load ${remaining()} more ]`;
-        });
-        carsCollage.insertAdjacentElement('afterend', more);
-      }
+        fig.querySelector('.car-photo-btn').addEventListener('click', () => clbOpen(i));
+        frag.appendChild(fig);
+      });
+      track.appendChild(frag);
+      updateArrows();
     };
     // Always fetch the manifest fresh (bypasses GitHub Pages' 10-min cache),
     // falling back to the window.CARS baked in at load time.

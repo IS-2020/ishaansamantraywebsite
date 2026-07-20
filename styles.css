@@ -3183,41 +3183,82 @@ body.game-active .noise {
 .ditto-video .twitter-tweet { margin: 0 !important; max-width: 100% !important; }
 
 /* ============================================================
-   CAR PHOTOGRAPHY (masonry collage)
+   CAR PHOTOGRAPHY (horizontal album / filmstrip)
    ============================================================ */
-.cars-intro { font-family: var(--mono); font-size: 12px; color: var(--ink-faint); margin: 0 0 24px; }
-.cars-collage {
-  column-count: 3; column-gap: 14px;
+.cars-intro { font-family: var(--mono); font-size: 12px; color: var(--ink-faint); margin: 0 0 20px; }
+
+/* one fixed-height row you page through left/right — no infinite vertical scroll */
+.cars-viewer { --car-h: 440px; position: relative; }
+@media (max-width: 1100px) { .cars-viewer { --car-h: 380px; } }
+@media (max-width: 700px)  { .cars-viewer { --car-h: 320px; } }
+@media (max-width: 480px)  { .cars-viewer { --car-h: 260px; } }
+
+.cars-track {
+  display: flex; gap: 12px;
+  overflow-x: auto; overflow-y: hidden;
+  scroll-snap-type: x proximity;
+  padding: 2px 2px 14px;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
 }
-@media (max-width: 900px) { .cars-collage { column-count: 2; } }
-/* keep 2 columns on phones (tap opens the lightbox anyway) so the section
-   doesn't become a 50k-px single-file scroll */
-@media (max-width: 560px) { .cars-collage { column-count: 2; column-gap: 8px; } }
+.cars-track:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: var(--radius); }
+.cars-track::-webkit-scrollbar { height: 8px; }
+.cars-track::-webkit-scrollbar-track { background: transparent; }
+.cars-track::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 4px; }
+.cars-track::-webkit-scrollbar-thumb:hover { background: var(--ink-faint); }
+
 .car-photo {
-  break-inside: avoid; margin: 0 0 14px;
+  flex: 0 0 auto; margin: 0;
   border: 1px solid var(--line); border-radius: var(--radius-lg);
   overflow: hidden; background: var(--bg-elev);
+  scroll-snap-align: start;
   transition: border-color .2s, transform .2s;
 }
 .car-photo:hover { border-color: var(--accent-2); transform: translateY(-2px); }
 /* keyboard-reachable trigger wrapping each image */
-.car-photo-btn { all: unset; display: block; width: 100%; cursor: zoom-in; }
+.car-photo-btn { all: unset; display: block; cursor: zoom-in; }
 .car-photo-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
-.car-photo img { width: 100%; display: block; cursor: zoom-in; transition: filter .3s; }
+/* fixed height + width:auto keeps each photo's true aspect ratio (the
+   width/height attrs supply the ratio) — no stretching, no layout shift */
+.car-photo img {
+  height: var(--car-h); width: auto; display: block;
+  cursor: zoom-in; transition: filter .3s;
+}
 .car-photo:hover img { filter: brightness(1.06); }
 .car-photo figcaption {
   font-family: var(--mono); font-size: 11px; color: var(--ink-dim);
   padding: 8px 12px; border-top: 1px solid var(--line);
 }
 .car-photo-missing { display: none; }
-.cars-more-btn {
-  display: block; margin: 8px auto 0; padding: 10px 22px;
-  font-family: var(--mono); font-size: 12px; letter-spacing: .04em;
-  color: var(--accent); background: transparent;
-  border: 1px solid var(--line-strong); border-radius: var(--radius);
-  cursor: pointer; transition: border-color .18s, background .18s;
+
+/* edge fades hint that the strip keeps going (toggled by JS at the ends) */
+.cars-viewer::before, .cars-viewer::after {
+  content: ''; position: absolute; top: 0; bottom: 14px; width: 48px;
+  z-index: 2; pointer-events: none; opacity: 1; transition: opacity .2s;
 }
-.cars-more-btn:hover { border-color: var(--accent); background: var(--accent-soft); }
+.cars-viewer::before { left: 0; background: linear-gradient(90deg, var(--bg), transparent); }
+.cars-viewer::after  { right: 0; background: linear-gradient(270deg, var(--bg), transparent); }
+.cars-viewer.at-start::before { opacity: 0; }
+.cars-viewer.at-end::after   { opacity: 0; }
+
+.cars-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  z-index: 3; width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(15,17,20,.82); color: var(--ink);
+  border: 1px solid var(--line-strong); border-radius: 50%;
+  font-size: 24px; line-height: 1; cursor: pointer;
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  transition: background .15s, color .15s, border-color .15s, opacity .2s;
+}
+[data-theme="light"] .cars-arrow { background: rgba(251,250,246,.85); }
+.cars-arrow:hover { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.cars-arrow-prev { left: -6px; }
+.cars-arrow-next { right: -6px; }
+.cars-arrow[disabled] { opacity: 0; pointer-events: none; }
+@media (max-width: 700px) { .cars-arrow { width: 38px; height: 38px; font-size: 20px; } }
 .cars-empty { font-family: var(--mono); border: 1px dashed var(--line); border-radius: var(--radius-lg); padding: 24px; }
 .cars-empty-prompt { font-size: 13px; color: var(--ink); margin-bottom: 8px; }
 .cars-empty-cmd { color: var(--accent); }
