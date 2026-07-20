@@ -9,9 +9,10 @@
   let activeCategory = 'all'
   let lightboxIndex  = -1
   let filteredPhotos = []
+  let lbLastFocus    = null
 
   // ── DOM refs (populated on DOMContentLoaded) ─────────────────────────────
-  let grid, filters, countEl, emptyEl, hintEl
+  let grid, filters, countEl, emptyEl
 
   // ── Helpers ───────────────────────────────────────────────────────────────
   function escapeHtml(s) {
@@ -65,12 +66,10 @@
     if (filteredPhotos.length === 0) {
       grid.innerHTML = ''
       if (emptyEl) emptyEl.style.display = 'block'
-      if (hintEl)  hintEl.style.display  = 'none'
       return
     }
 
     if (emptyEl) emptyEl.style.display = 'none'
-    if (hintEl)  hintEl.style.display  = 'block'
 
     grid.innerHTML = filteredPhotos.map((photo, i) => `
       <div class="gallery-item${photo.featured ? ' gallery-item-featured' : ''}"
@@ -164,8 +163,13 @@
     lightboxIndex = index
     const lb = document.getElementById('galleryLightbox')
     if (!lb) return
+    lbLastFocus = document.activeElement
     lb.style.display = 'flex'
-    requestAnimationFrame(() => lb.classList.add('lb-visible'))
+    requestAnimationFrame(() => {
+      lb.classList.add('lb-visible')
+      const close = document.getElementById('lbClose')
+      if (close) close.focus()
+    })
     document.body.style.overflow = 'hidden'
     populateLightbox()
   }
@@ -177,6 +181,7 @@
     setTimeout(() => { lb.style.display = 'none' }, 300)
     document.body.style.overflow = ''
     lightboxIndex = -1
+    if (lbLastFocus && lbLastFocus.focus) lbLastFocus.focus()
   }
 
   function stepLightbox(dir) {
@@ -226,7 +231,6 @@
     filters = document.getElementById('galleryFilters')
     countEl = document.getElementById('photoCount')
     emptyEl = document.getElementById('galleryEmpty')
-    hintEl  = document.getElementById('galleryHint')
 
     if (!grid) return // photos section not on this page
 

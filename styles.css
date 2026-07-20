@@ -12,7 +12,7 @@
   --line-strong: #2a2f38;
   --ink: #e6e8ec;
   --ink-dim: #9aa0a9;
-  --ink-faint: #5c616c;
+  --ink-faint: #808691;       /* bumped from #5c616c → passes AA (~4.5:1) */
   --accent: #7cf29a;          /* terminal green */
   --accent-soft: #7cf29a22;
   --accent-2: #ffb454;        /* amber for highlights */
@@ -58,8 +58,11 @@ html, body {
   font-feature-settings: 'ss01', 'zero';
 }
 
+html { -webkit-text-size-adjust: 100%; }
+
 body {
   min-height: 100vh;
+  min-height: 100svh;
   overflow-x: hidden;
   transition: background .4s ease, color .4s ease;
   cursor: none;
@@ -69,10 +72,35 @@ body {
 @media (hover: none), (pointer: coarse) {
   body { cursor: auto; }
   .cursor-dot, .cursor-ring { display: none !important; }
+  .theme-toggle { cursor: auto; }
 }
 
 a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--line-strong); transition: border-color .2s, color .2s; }
 a:hover { color: var(--accent); border-color: var(--accent); }
+
+/* in-prose links read as links (nav/card links keep their own styling) */
+.about-copy a, .ditto-desc a, .hero-sub a, .lede a, p a {
+  color: var(--accent);
+  border-bottom-color: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+/* visible keyboard focus everywhere (native cursor is hidden globally) */
+a:focus-visible, button:focus-visible, [tabindex]:focus-visible,
+.project-card:focus-visible, .contact-card:focus-visible,
+.award:focus-visible, .pub:focus-visible, .car-photo-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: var(--radius);
+}
+section:focus { outline: none; }
+
+/* skip link — small terminal-styled delight on Tab */
+.skip-link { position: absolute; left: -9999px; }
+.skip-link:focus {
+  left: var(--gutter); top: 12px; z-index: 200;
+  background: var(--bg-panel); color: var(--accent);
+  border: 1px solid var(--accent); padding: 8px 14px; border-radius: var(--radius);
+}
 
 b, strong { color: var(--ink); font-weight: 600; }
 code { font-family: var(--mono); background: var(--bg-elev); padding: 1px 5px; border-radius: 3px; font-size: .92em; }
@@ -100,7 +128,9 @@ kbd {
   opacity: .25;
   pointer-events: none;
   z-index: 0;
-  mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 20%, transparent 80%);
+  /* mask follows the cursor (--mx/--my set in app.js) so the grid breathes */
+  mask-image: radial-gradient(ellipse 72% 55% at var(--mx, 50%) var(--my, 40%), black 18%, transparent 78%);
+  -webkit-mask-image: radial-gradient(ellipse 72% 55% at var(--mx, 50%) var(--my, 40%), black 18%, transparent 78%);
 }
 [data-theme="light"] .grid-bg { opacity: .35; }
 
@@ -170,6 +200,9 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 1; }
   color: var(--ink-dim);
 }
 .topbar-path::before { content: '▸ '; color: var(--accent); }
+.topbar-hint { display: inline-flex; align-items: center; gap: 4px; color: var(--ink-faint); font-size: 10.5px; letter-spacing: .02em; }
+.topbar-hint kbd { padding: 0 5px; font-size: 10px; }
+@media (max-width: 900px) { .topbar-hint { display: none; } }
 
 .status {
   color: var(--ink-faint);
@@ -251,10 +284,8 @@ body.cursor-hover .cursor-ring { width: 48px; height: 48px; opacity: 1; }
 .sidenav a.active .nav-num { color: var(--accent); }
 .nav-label { text-transform: lowercase; }
 
-@media (max-width: 1100px) {
-  .sidenav { display: none; }
-}
-@media (max-width: 900px) {
+/* hide the vertical rail on mid widths; below 768px it becomes a bottom bar */
+@media (min-width: 769px) and (max-width: 1100px) {
   .sidenav { display: none; }
 }
 
@@ -320,6 +351,7 @@ main {
 /* ============ HERO ============ */
 .hero {
   min-height: calc(100vh - 40px);
+  min-height: calc(100svh - 40px);
   display: flex; flex-direction: column; justify-content: center;
   position: relative;
   padding-top: 40px;
@@ -410,8 +442,14 @@ main {
   background: var(--accent-soft);
   font-family: var(--mono); font-size: 12.5px;
   color: var(--ink); text-decoration: none;
-  transition: background .15s, transform .15s;
+  transition: background .15s, transform .15s, opacity .6s ease;
 }
+/* avail + highlights join the hero reveal cascade instead of pre-empting it */
+.hero-avail, .hero-highlights {
+  opacity: 0; transform: translateY(8px);
+  transition: opacity .6s ease, transform .6s cubic-bezier(.2,.8,.2,1);
+}
+.hero-avail.reveal, .hero-highlights.reveal { opacity: 1; transform: none; }
 .hero-avail:hover { background: var(--accent); color: var(--bg); transform: translateY(-1px); border-color: var(--accent); }
 .hero-avail:hover .hero-avail-text strong,
 .hero-avail:hover .hero-avail-arr { color: var(--bg); }
@@ -471,14 +509,19 @@ main {
   letter-spacing: .04em;
   color: var(--ink);
   background: transparent;
-  transition: all .2s ease;
+  /* scope the slow timing to the reveal props so hover stays snappy */
+  transition: opacity .5s ease, transform .5s cubic-bezier(.2,.8,.2,1),
+              background .18s ease, color .18s ease, border-color .18s ease;
   opacity: 0;
   transform: translateY(8px);
 }
 .hero-cta.reveal .btn { opacity: 1; transform: none; }
-.hero-cta.reveal .btn:nth-child(1) { transition-delay: .3s; }
-.hero-cta.reveal .btn:nth-child(2) { transition-delay: .4s; }
-.hero-cta.reveal .btn:nth-child(3) { transition-delay: .5s; }
+.hero-cta.reveal .btn:nth-child(1) { transition-delay: .28s; }
+.hero-cta.reveal .btn:nth-child(2) { transition-delay: .36s; }
+.hero-cta.reveal .btn:nth-child(3) { transition-delay: .44s; }
+.hero-cta.reveal .btn:nth-child(4) { transition-delay: .52s; }
+/* clear the reveal delay once revealed so hover never lags */
+.hero-cta.reveal .btn:hover { transition-delay: 0s; }
 
 .btn-primary {
   background: var(--accent);
@@ -491,42 +534,17 @@ main {
 .btn .arr { transition: transform .2s; }
 .btn:hover .arr { transform: translateX(3px); }
 
-.hero-stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  max-width: 720px;
+/* hero-stats removed — the numbers now live in the .hero-proof line + highlight
+   cards, which keeps the hero within one fold and drops the duplicate "35". */
+.hero-proof {
+  margin: -12px 0 26px;
+  font-family: var(--mono); font-size: 12px;
+  color: var(--ink-faint); letter-spacing: .02em;
+  opacity: 0; transform: translateY(8px);
+  transition: opacity .6s ease, transform .6s cubic-bezier(.2,.8,.2,1);
 }
-.stat {
-  padding: 16px 20px 16px 0;
-  border-right: 1px dashed var(--line);
-  opacity: 0;
-  transform: translateY(8px);
-  transition: all .6s ease;
-}
-.stat:last-child { border-right: 0; }
-.hero-stats.reveal .stat { opacity: 1; transform: none; }
-.hero-stats.reveal .stat:nth-child(1) { transition-delay: .6s; }
-.hero-stats.reveal .stat:nth-child(2) { transition-delay: .7s; }
-.hero-stats.reveal .stat:nth-child(3) { transition-delay: .8s; }
-.hero-stats.reveal .stat:nth-child(4) { transition-delay: .9s; }
-
-.stat-num {
-  display: block;
-  font-size: 26px;
-  font-weight: 600;
-  color: var(--ink);
-  letter-spacing: -.02em;
-  margin-bottom: 2px;
-}
-.stat-label {
-  font-size: 10.5px;
-  color: var(--ink-faint);
-  letter-spacing: .06em;
-  text-transform: uppercase;
-}
+.hero-proof.reveal { opacity: 1; transform: none; }
+.hero-proof b { color: var(--ink-dim); font-weight: 600; }
 
 .scroll-hint {
   position: absolute;
@@ -536,15 +554,12 @@ main {
   letter-spacing: .06em;
   animation: bounce 2.4s ease-in-out infinite;
 }
+.scroll-hint kbd { font-size: 10px; padding: 0 5px; }
+/* the hero is too short on phones for an absolute bottom hint — it collides */
+@media (max-width: 820px) { .scroll-hint { display: none; } }
 @keyframes bounce {
   0%, 100% { transform: translateY(0); opacity: .5; }
   50% { transform: translateY(4px); opacity: 1; }
-}
-
-@media (max-width: 600px) {
-  .hero-stats { grid-template-columns: repeat(2, 1fr); }
-  .stat:nth-child(2) { border-right: 0; }
-  .stat:nth-child(1), .stat:nth-child(2) { border-bottom: 1px dashed var(--line); }
 }
 
 /* ============ ABOUT ============ */
@@ -754,6 +769,8 @@ main {
 }
 .project-card:hover { background: var(--bg-elev); }
 .project-card a { border: 0; }
+/* cards without a public link aren't destinations — don't imply clickability */
+.project-card--static { cursor: default; }
 
 .pc-head {
   display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;
@@ -1080,12 +1097,14 @@ main {
 .reveal-el {
   opacity: 0;
   transform: translateY(20px);
-  transition: opacity .7s ease, transform .7s cubic-bezier(.2,.8,.2,1);
+  /* include background/border so component hovers (e.g. project cards) fade
+     instead of snapping — this rule would otherwise clobber their transition */
+  transition: opacity .7s ease, transform .7s cubic-bezier(.2,.8,.2,1),
+              background .25s ease, border-color .25s ease;
 }
 .reveal-el.reveal { opacity: 1; transform: none; }
-
-/* stagger for list children */
-.reveal-list .reveal-el { transition-delay: calc(var(--i, 0) * 60ms); }
+/* stagger is applied in JS (per-element delay on reveal) so it never leaks
+   into hover transitions the way a blanket transition-delay would */
 
 /* ============ STARTUPS ============ */
 .startups { display: flex; flex-direction: column; gap: 32px; }
@@ -1489,6 +1508,7 @@ main {
   pointer-events: none;
   opacity: 0;
   transition: opacity .25s;
+  overscroll-behavior: contain;
 }
 .hk-lightbox.open { pointer-events: all; opacity: 1; }
 .hk-lb-bg {
@@ -2346,6 +2366,7 @@ body.game-active .noise {
   justify-content: center;
   opacity: 0;
   transition: opacity 0.3s ease;
+  overscroll-behavior: contain;
 }
 
 .gallery-lightbox.lb-visible {
@@ -2994,17 +3015,24 @@ body.game-active .noise {
 @media (max-width: 768px) {
   /* sidenav: collapse to bottom bar on mobile */
   .sidenav {
+    display: block;
+    position: fixed;
     top: auto;
     bottom: 0;
     left: 0;
     right: 0;
     width: 100%;
     height: auto;
+    z-index: 80;
+    background: color-mix(in srgb, var(--bg-elev) 88%, transparent);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border-right: none;
     border-top: 1px solid var(--line);
-    padding: 8px 0;
+    padding: 6px 0 calc(6px + env(safe-area-inset-bottom));
     overflow-x: auto;
     overflow-y: hidden;
+    transform: none;
   }
   .sidenav ol {
     display: flex;
@@ -3034,9 +3062,6 @@ body.game-active .noise {
   .hero-inner { padding-top: 40px; }
   .hero-name { font-size: clamp(36px, 12vw, 64px); }
   .hero-cta { flex-wrap: wrap; gap: 8px; }
-  .hero-stats { grid-template-columns: repeat(2, 1fr); }
-  .stat:nth-child(2) { border-right: 0; }
-  .stat:nth-child(1), .stat:nth-child(2) { border-bottom: 1px dashed var(--line); }
 
   /* hackathon dossier photo grid */
   .hk-photos { grid-template-columns: repeat(2, 1fr); }
@@ -3137,7 +3162,7 @@ body.game-active .noise {
   text-decoration: none; border-bottom: none;
   transition: transform .12s, background .15s;
 }
-.ditto-btn:hover { transform: translateY(-1px); background: #9ffab2; color: var(--bg); }
+.ditto-btn:hover { transform: translateY(-1px); filter: brightness(1.12); }
 .ditto-btn-ghost { background: transparent; color: var(--ink); border: 1px solid var(--line-strong); }
 .ditto-btn-ghost:hover { background: transparent; border-color: var(--accent); color: var(--accent); }
 .ditto-btn .arr { font-size: 12px; }
@@ -3154,7 +3179,7 @@ body.game-active .noise {
 .ditto-star-count { color: var(--ink); font-size: 14px; font-weight: 700; }
 .ditto-star-label { color: var(--ink-faint); font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }
 
-.ditto-video { display: flex; justify-content: center; min-width: 0; }
+.ditto-video { display: flex; justify-content: center; min-width: 0; min-height: 240px; }
 .ditto-video .twitter-tweet { margin: 0 !important; max-width: 100% !important; }
 
 /* ============================================================
@@ -3165,7 +3190,9 @@ body.game-active .noise {
   column-count: 3; column-gap: 14px;
 }
 @media (max-width: 900px) { .cars-collage { column-count: 2; } }
-@media (max-width: 560px) { .cars-collage { column-count: 1; } }
+/* keep 2 columns on phones (tap opens the lightbox anyway) so the section
+   doesn't become a 50k-px single-file scroll */
+@media (max-width: 560px) { .cars-collage { column-count: 2; column-gap: 8px; } }
 .car-photo {
   break-inside: avoid; margin: 0 0 14px;
   border: 1px solid var(--line); border-radius: var(--radius-lg);
@@ -3173,6 +3200,9 @@ body.game-active .noise {
   transition: border-color .2s, transform .2s;
 }
 .car-photo:hover { border-color: var(--accent-2); transform: translateY(-2px); }
+/* keyboard-reachable trigger wrapping each image */
+.car-photo-btn { all: unset; display: block; width: 100%; cursor: zoom-in; }
+.car-photo-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .car-photo img { width: 100%; display: block; cursor: zoom-in; transition: filter .3s; }
 .car-photo:hover img { filter: brightness(1.06); }
 .car-photo figcaption {
@@ -3180,6 +3210,14 @@ body.game-active .noise {
   padding: 8px 12px; border-top: 1px solid var(--line);
 }
 .car-photo-missing { display: none; }
+.cars-more-btn {
+  display: block; margin: 8px auto 0; padding: 10px 22px;
+  font-family: var(--mono); font-size: 12px; letter-spacing: .04em;
+  color: var(--accent); background: transparent;
+  border: 1px solid var(--line-strong); border-radius: var(--radius);
+  cursor: pointer; transition: border-color .18s, background .18s;
+}
+.cars-more-btn:hover { border-color: var(--accent); background: var(--accent-soft); }
 .cars-empty { font-family: var(--mono); border: 1px dashed var(--line); border-radius: var(--radius-lg); padding: 24px; }
 .cars-empty-prompt { font-size: 13px; color: var(--ink); margin-bottom: 8px; }
 .cars-empty-cmd { color: var(--accent); }
@@ -3206,6 +3244,7 @@ body.game-active .noise {
   position: fixed; inset: 0; z-index: 9000;
   display: flex; align-items: center; justify-content: center;
   opacity: 0; pointer-events: none; transition: opacity .22s ease;
+  overscroll-behavior: contain;
 }
 .car-lightbox.open { opacity: 1; pointer-events: auto; }
 .clb-bg { position: absolute; inset: 0; background: rgba(3,5,8,.92); backdrop-filter: blur(8px); }
@@ -3217,9 +3256,14 @@ body.game-active .noise {
 }
 .car-lightbox.open .clb-inner { transform: scale(1); }
 .clb-img {
-  max-width: 92vw; max-height: 80vh; object-fit: contain;
+  max-width: 92vw; max-height: 80dvh; max-height: 80vh; object-fit: contain;
   border-radius: var(--radius); border: 1px solid var(--line-strong);
   box-shadow: 0 24px 80px rgba(0,0,0,.6);
+  opacity: 0; transition: opacity .18s ease;
+}
+.clb-spinner {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  font-family: var(--mono); font-size: 12px; color: var(--ink-faint);
 }
 .clb-cap { font-family: var(--mono); font-size: 12px; color: var(--ink-dim); text-align: center; }
 .clb-counter { font-family: var(--mono); font-size: 11px; color: var(--ink-faint); }
@@ -3235,8 +3279,12 @@ body.game-active .noise {
 .clb-prev, .clb-next { top: 50%; transform: translateY(-50%); width: 48px; height: 48px; font-size: 26px; }
 .clb-prev { left: 20px; } .clb-next { right: 20px; }
 @media (max-width: 600px) {
-  .clb-prev, .clb-next { width: 40px; height: 40px; font-size: 22px; }
-  .clb-prev { left: 8px; } .clb-next { right: 8px; }
+  /* arrows off the photo, along the bottom edge, so they don't cover it */
+  .clb-prev, .clb-next {
+    width: 44px; height: 44px; font-size: 22px;
+    top: auto; bottom: 16px; transform: none;
+  }
+  .clb-prev { left: 24px; } .clb-next { right: 24px; }
   .clb-close { top: 12px; right: 12px; }
 }
 
@@ -3304,4 +3352,55 @@ body.game-active .noise {
 @media (max-width: 600px) {
   .ion-item { grid-template-columns: 46px 1fr; padding: 7px 16px; }
   .ion-head, .ion-note, .ion-group-head { padding-left: 16px; padding-right: 16px; }
+}
+
+/* ============================================================
+   MOBILE POLISH (topbar, spacing, tap targets, touch feedback)
+   ============================================================ */
+@media (max-width: 600px) {
+  /* topbar: stop the path text from wrapping/colliding */
+  .topbar { gap: 8px; }
+  .topbar-left { min-width: 0; }
+  .topbar-path {
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
+  }
+  .topbar-left .dot-amber, .topbar-left .dot-green { display: none; }
+
+  /* hero meta reads better stacked as terminal status lines */
+  .hero-meta { flex-direction: column; align-items: flex-start; gap: 6px; margin-bottom: 20px; }
+
+  /* reclaim vertical space the long mobile page was wasting */
+  .section { padding: 64px 0 48px; }
+  .section-head { margin-bottom: 28px; }
+}
+
+/* touch feedback — every hover-only affordance gets an :active response */
+@media (hover: none) {
+  a, button, .project-card, .car-photo, .contrib-pr-row { -webkit-tap-highlight-color: transparent; }
+  .project-card:active, .contrib-pr-row:active { background: var(--bg-elev); }
+  .btn:active, .section-action:active, .hl:active { border-color: var(--accent); color: var(--accent); }
+  .car-photo:active { border-color: var(--accent-2); transform: scale(.98); }
+}
+
+/* bigger tap targets on phones for the small text links */
+@media (max-width: 768px) {
+  .theme-toggle, .contrib-org-site, .hk-org-link, .hk-link,
+  .resume-open, .section-action, .gallery-filter-btn, .tl-links a {
+    min-height: 44px; display: inline-flex; align-items: center;
+  }
+}
+
+/* respect reduced-motion — animations off, gated content still shows */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal-el, .hero-name .hn-word, .hero-sub-line, .hero-cta .btn,
+  .hero-avail, .hero-highlights, .hero-proof {
+    opacity: 1 !important; transform: none !important;
+  }
 }

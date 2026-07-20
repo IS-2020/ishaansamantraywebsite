@@ -251,6 +251,11 @@
       try{
         item.blob=await toJpegBlob(f);
         item.url=URL.createObjectURL(item.blob);
+        // capture intrinsic dimensions so the manifest can reserve layout space
+        try{
+          const dim=await new Promise((res,rej)=>{const im=new Image();im.onload=()=>res({w:im.naturalWidth,h:im.naturalHeight});im.onerror=rej;im.src=item.url;});
+          item.w=dim.w; item.h=dim.h;
+        }catch{}
         item.status=`ready · ${(item.blob.size/1024).toFixed(0)} KB`;
       }catch(e){item.status='failed: '+e.message;log(`✗ ${esc(f.name)}: ${esc(e.message)}`,'status-err');}
       renderQueue();
@@ -308,7 +313,7 @@
         const b64=await b64of(it.blob);
         await retry(()=>putImage(it.name,b64), it.name);   // idempotent + network-retry
         it._uploaded=true;
-        const entry={src:`${DIR}/${it.name}`,caption:it.caption||''};
+        const entry={src:`${DIR}/${it.name}`,caption:it.caption||'',...(it.w&&it.h?{w:it.w,h:it.h}:{})};
         done.push(entry); pending.push(entry);
         // flush the manifest every 8 images so progress is never lost to a mid-batch drop
         if(pending.length>=8){ await retry(()=>mergeIntoManifest(pending),'manifest'); pending=[]; }

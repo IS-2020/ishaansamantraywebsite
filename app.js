@@ -6,6 +6,10 @@
   const $  = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
+  const motionOK = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const scrollBehavior = motionOK ? 'smooth' : 'auto';
+
   /* ---------- THEME ---------- */
   const themeKey = 'is-theme';
   const setTheme = (t) => {
@@ -21,36 +25,43 @@
 
   /* ---------- CLOCK ---------- */
   const clockEl = $('#statusClock');
-  const tick = () => {
-    const d = new Date();
-    const pad = (n) => String(n).padStart(2, '0');
-    clockEl.textContent = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())} EDT`;
-  };
+  // show Ithaca time (not the visitor's), with the zone abbreviation auto-switching EDT/EST
+  const clockFmt = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York', hour: '2-digit', minute: '2-digit',
+    second: '2-digit', hour12: false, timeZoneName: 'short'
+  });
+  const tick = () => { clockEl.textContent = clockFmt.format(new Date()); };
   tick(); setInterval(tick, 1000);
 
-  /* ---------- CURSOR ---------- */
-  const dot = $('#cursorDot'), ring = $('#cursorRing');
-  let mx = innerWidth / 2, my = innerHeight / 2;
-  let rx = mx, ry = my;
-  addEventListener('mousemove', (e) => { mx = e.clientX; my = e.clientY; dot.style.transform = `translate(${mx}px, ${my}px) translate(-50%, -50%)`; });
-  const raf = () => {
-    rx += (mx - rx) * 0.18;
-    ry += (my - ry) * 0.18;
-    ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%, -50%)`;
-    requestAnimationFrame(raf);
-  };
-  raf();
+  /* ---------- CURSOR + LIVE GRID (fine pointers only) ---------- */
+  if (finePointer) {
+    const dot = $('#cursorDot'), ring = $('#cursorRing');
+    const root = document.documentElement;
+    let mx = innerWidth / 2, my = innerHeight / 2;
+    let rx = mx, ry = my;
+    addEventListener('mousemove', (e) => { mx = e.clientX; my = e.clientY; dot.style.transform = `translate(${mx}px, ${my}px) translate(-50%, -50%)`; });
+    const raf = () => {
+      rx += (mx - rx) * 0.18;
+      ry += (my - ry) * 0.18;
+      ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%, -50%)`;
+      // the background grid mask trails the cursor
+      root.style.setProperty('--mx', (rx / innerWidth * 100) + '%');
+      root.style.setProperty('--my', (ry / innerHeight * 100) + '%');
+      requestAnimationFrame(raf);
+    };
+    raf();
 
-  // cursor hover states
-  document.addEventListener('mouseover', (e) => {
-    const t = e.target.closest('a, button, .project-card, .contact-card, .award, .pub, [data-cursor="link"]');
-    if (t) document.body.classList.add('cursor-hover');
-  });
-  document.addEventListener('mouseout', (e) => {
-    if (!e.relatedTarget?.closest?.('a, button, .project-card, .contact-card, .award, .pub, [data-cursor="link"]')) {
-      document.body.classList.remove('cursor-hover');
-    }
-  });
+    // cursor hover states
+    const hoverSel = 'a, button, .project-card:not(.project-card--static), .contact-card, .award, .pub, [data-cursor="link"]';
+    document.addEventListener('mouseover', (e) => {
+      if (e.target.closest(hoverSel)) document.body.classList.add('cursor-hover');
+    });
+    document.addEventListener('mouseout', (e) => {
+      if (!e.relatedTarget?.closest?.(hoverSel)) document.body.classList.remove('cursor-hover');
+    });
+    // don't get stuck in hover state if the window loses focus
+    addEventListener('blur', () => document.body.classList.remove('cursor-hover'));
+  }
 
   /* ---------- RENDER NOW / NEWS PANEL ---------- */
   const nowCards = document.getElementById('nowCards');
@@ -154,14 +165,13 @@
   window.PROJECTS.forEach((p, i) => {
     const tags = p.tags.map(t => `<span class="pc-tag ${t === 'featured' ? 'featured' : ''}">${t === 'featured' ? '★ featured' : t}</span>`).join('');
     const links = p.links.map(l => `<a href="${l.href}" target="_blank" rel="noopener">${l.label}</a>`).join('');
-    const card = document.createElement('a');
-    card.className = 'project-card reveal-el';
+    const hasLink = !!p.links[0];
+    const card = document.createElement(hasLink ? 'a' : 'article');
+    card.className = 'project-card reveal-el' + (hasLink ? '' : ' project-card--static');
     card.style.setProperty('--i', i);
     card.dataset.preview = JSON.stringify(p.preview || {});
     card.dataset.title = p.title;
-    if (p.links[0]) card.href = p.links[0].href;
-    else card.href = '#';
-    if (p.links[0]) { card.target = '_blank'; card.rel = 'noopener'; }
+    if (hasLink) { card.href = p.links[0].href; card.target = '_blank'; card.rel = 'noopener'; }
     card.innerHTML = `
       <div class="pc-head">
         <div class="pc-index">${p.index}</div>
@@ -174,7 +184,7 @@
       <p class="pc-desc">${p.desc}</p>
       <div class="pc-foot">
         <div class="pc-links">${links || '<span style="color:var(--ink-faint);font-size:11px">no public link</span>'}</div>
-        <span class="pc-arrow">↗</span>
+        ${hasLink ? '<span class="pc-arrow">↗</span>' : ''}
       </div>
     `;
     pg.appendChild(card);
@@ -196,8 +206,10 @@
       hp.classList.add('visible');
     });
     card.addEventListener('mousemove', (e) => {
-      hp.style.left = e.clientX + 'px';
-      hp.style.top = e.clientY + 'px';
+      // clamp so the panel never clips off the viewport at grid edges
+      const w = 280, h = 200, pad = 12;
+      hp.style.left = Math.min(Math.max(e.clientX, w / 2 + pad), innerWidth - w / 2 - pad) + 'px';
+      hp.style.top = Math.max(e.clientY, h + 60) + 'px';
     });
     card.addEventListener('mouseleave', () => hp.classList.remove('visible'));
   });
@@ -317,11 +329,14 @@
     const lb = document.createElement('div');
     lb.id = 'hkLightbox';
     lb.className = 'hk-lightbox';
+    lb.setAttribute('role', 'dialog');
+    lb.setAttribute('aria-modal', 'true');
+    lb.setAttribute('aria-label', 'Hackathon photo viewer');
     lb.innerHTML = `
       <div class="hk-lb-bg"></div>
-      <button class="hk-lb-close">✕</button>
-      <button class="hk-lb-prev">‹</button>
-      <button class="hk-lb-next">›</button>
+      <button class="hk-lb-close" aria-label="Close">✕</button>
+      <button class="hk-lb-prev" aria-label="Previous photo">‹</button>
+      <button class="hk-lb-next" aria-label="Next photo">›</button>
       <div class="hk-lb-inner">
         <img class="hk-lb-img" src="" alt="">
         <div class="hk-lb-cap"></div>
@@ -330,14 +345,19 @@
     `;
     document.body.appendChild(lb);
 
-    let lbPhotos = [], lbIdx = 0;
+    let lbPhotos = [], lbIdx = 0, lbLastFocus = null;
     const openLb = (photos, idx) => {
+      lbLastFocus = document.activeElement;
       lbPhotos = photos; lbIdx = idx;
       showLb();
       lb.classList.add('open');
       document.body.style.overflow = 'hidden';
+      lb.querySelector('.hk-lb-close').focus();
     };
-    const closeLb = () => { lb.classList.remove('open'); document.body.style.overflow = ''; };
+    const closeLb = () => {
+      lb.classList.remove('open'); document.body.style.overflow = '';
+      if (lbLastFocus && lbLastFocus.focus) lbLastFocus.focus();
+    };
     const showLb = () => {
       lb.querySelector('.hk-lb-img').src = lbPhotos[lbIdx].src;
       lb.querySelector('.hk-lb-img').alt = lbPhotos[lbIdx].caption;
@@ -356,11 +376,15 @@
     });
 
     document.querySelectorAll('.hk-photo').forEach(el => {
-      el.addEventListener('click', () => {
+      el.setAttribute('role', 'button');
+      el.setAttribute('tabindex', '0');
+      const open = () => {
         const hi = parseInt(el.dataset.hackidx);
         const pi = parseInt(el.dataset.idx);
         openLb(window.HACKATHONS[hi].photos, pi);
-      });
+      };
+      el.addEventListener('click', open);
+      el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
     });
   }
 
@@ -455,33 +479,59 @@
   const carsCollage = $('#carsCollage');
   if (carsCollage) {
     const carCount = $('#carCount');
+    const CARS_FIRST = 24; // render a first batch, then a "load more" button
     let carList = [];
+    let carShown = 0;
+    let lastFocus = null;
 
     // ----- centered lightbox (built once, reused for all photos) -----
     const clb = document.createElement('div');
     clb.className = 'car-lightbox';
+    clb.setAttribute('role', 'dialog');
+    clb.setAttribute('aria-modal', 'true');
+    clb.setAttribute('aria-label', 'Car photo viewer');
     clb.innerHTML = `
       <div class="clb-bg"></div>
-      <button class="clb-close" aria-label="close">✕</button>
-      <button class="clb-prev" aria-label="previous">‹</button>
-      <button class="clb-next" aria-label="next">›</button>
+      <button class="clb-close" aria-label="Close">✕</button>
+      <button class="clb-prev" aria-label="Previous photo">‹</button>
+      <button class="clb-next" aria-label="Next photo">›</button>
       <figure class="clb-inner">
         <img class="clb-img" src="" alt="">
+        <div class="clb-spinner">// loading…</div>
         <figcaption class="clb-cap"></figcaption>
         <div class="clb-counter"></div>
       </figure>`;
     document.body.appendChild(clb);
+    const clbImg = clb.querySelector('.clb-img');
+    const clbSpin = clb.querySelector('.clb-spinner');
     let clbIdx = 0;
     const clbShow = () => {
       const c = carList[clbIdx]; if (!c) return;
-      clb.querySelector('.clb-img').src = c.src;
-      clb.querySelector('.clb-img').alt = c.caption || 'car';
+      clbImg.style.opacity = '0';
+      if (clbSpin) { clbSpin.textContent = '// loading…'; clbSpin.style.display = 'block'; }
+      clbImg.onload = () => { clbImg.style.opacity = '1'; if (clbSpin) clbSpin.style.display = 'none'; };
+      clbImg.onerror = () => { if (clbSpin) clbSpin.textContent = '// image not found'; };
+      clbImg.src = c.src;
+      clbImg.alt = c.caption || `Car photo ${clbIdx + 1}`;
       const cap = clb.querySelector('.clb-cap');
       cap.textContent = c.caption || ''; cap.style.display = c.caption ? '' : 'none';
       clb.querySelector('.clb-counter').textContent = `${clbIdx + 1} / ${carList.length}`;
+      // preload the neighbours so stepping feels instant
+      [clbIdx - 1, clbIdx + 1].forEach(n => {
+        const nb = carList[(n + carList.length) % carList.length];
+        if (nb) new Image().src = nb.src;
+      });
     };
-    const clbOpen = i => { clbIdx = i; clbShow(); clb.classList.add('open'); document.body.style.overflow = 'hidden'; };
-    const clbClose = () => { clb.classList.remove('open'); document.body.style.overflow = ''; };
+    const clbOpen = i => {
+      lastFocus = document.activeElement;
+      clbIdx = i; clbShow();
+      clb.classList.add('open'); document.body.style.overflow = 'hidden';
+      clb.querySelector('.clb-close').focus();
+    };
+    const clbClose = () => {
+      clb.classList.remove('open'); document.body.style.overflow = '';
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    };
     const clbStep = d => { clbIdx = (clbIdx + d + carList.length) % carList.length; clbShow(); };
     clb.querySelector('.clb-bg').addEventListener('click', clbClose);
     clb.querySelector('.clb-close').addEventListener('click', clbClose);
@@ -493,10 +543,42 @@
       else if (e.key === 'ArrowLeft') clbStep(-1);
       else if (e.key === 'ArrowRight') clbStep(1);
     });
+    // swipe on touch
+    let clbTX = 0, clbTY = 0;
+    clb.addEventListener('touchstart', e => { clbTX = e.touches[0].clientX; clbTY = e.touches[0].clientY; }, { passive: true });
+    clb.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - clbTX;
+      const dy = e.changedTouches[0].clientY - clbTY;
+      if (Math.abs(dx) > 45 && Math.abs(dy) < 60) clbStep(dx < 0 ? 1 : -1);
+    });
+
+    const appendCars = (from, to) => {
+      for (let i = from; i < to && i < carList.length; i++) {
+        const c = carList[i];
+        const fig = document.createElement('figure');
+        fig.className = 'car-photo reveal-el';
+        fig.style.setProperty('--i', Math.min(i - from, 8));
+        // width/height reserve correct space so loading="lazy" actually defers
+        const dim = (c.w && c.h) ? `width="${c.w}" height="${c.h}"` : '';
+        fig.innerHTML = `
+          <button type="button" class="car-photo-btn" aria-label="Open car photo ${i + 1} of ${carList.length}">
+            <img src="${c.src}" alt="" ${dim} loading="lazy" decoding="async"
+                 onerror="this.closest('.car-photo').classList.add('car-photo-missing')">
+          </button>
+          ${c.caption ? `<figcaption>${c.caption}</figcaption>` : ''}`;
+        const idx = i;
+        fig.querySelector('.car-photo-btn').addEventListener('click', () => clbOpen(idx));
+        carsCollage.appendChild(fig);
+        io.observe(fig);
+      }
+      carShown = Math.min(to, carList.length);
+    };
 
     const renderCars = (list) => {
       carList = list || [];
       carsCollage.innerHTML = '';
+      carShown = 0;
+      const oldBtn = $('#carsMoreBtn'); if (oldBtn) oldBtn.remove();
       const empty = $('#carsEmpty');
       if (!carList.length) {
         if (empty) empty.style.display = 'block';
@@ -505,17 +587,20 @@
       }
       if (empty) empty.style.display = 'none';
       if (carCount) carCount.textContent = `[${carList.length} shots]`;
-      carList.forEach((c, i) => {
-        const fig = document.createElement('figure');
-        fig.className = 'car-photo reveal-el reveal';
-        fig.style.setProperty('--i', Math.min(i, 12));
-        fig.innerHTML = `
-          <img src="${c.src}" alt="${c.caption || 'car'}" loading="lazy"
-               onerror="this.closest('.car-photo').classList.add('car-photo-missing')">
-          ${c.caption ? `<figcaption>${c.caption}</figcaption>` : ''}`;
-        fig.querySelector('img').addEventListener('click', () => clbOpen(i));
-        carsCollage.appendChild(fig);
-      });
+      appendCars(0, CARS_FIRST);
+      if (carList.length > CARS_FIRST) {
+        const more = document.createElement('button');
+        more.id = 'carsMoreBtn';
+        more.className = 'cars-more-btn';
+        const remaining = () => carList.length - carShown;
+        more.textContent = `[ load ${remaining()} more ]`;
+        more.addEventListener('click', () => {
+          appendCars(carShown, carShown + CARS_FIRST);
+          if (carShown >= carList.length) more.remove();
+          else more.textContent = `[ load ${remaining()} more ]`;
+        });
+        carsCollage.insertAdjacentElement('afterend', more);
+      }
     };
     // Always fetch the manifest fresh (bypasses GitHub Pages' 10-min cache),
     // falling back to the window.CARS baked in at load time.
@@ -578,57 +663,77 @@
     el.innerHTML = `
       <div class="award-year">${a.year}</div>
       ${a.badge ? `<div class="award-badge">${a.badge}</div>` : ''}
-      <h4 class="award-title">${a.title}</h4>
+      <h3 class="award-title">${a.title}</h3>
       <div class="award-desc">${a.desc}</div>
       ${a.link ? '<span class="award-link">read ↗</span>' : ''}
     `;
     ag.appendChild(el);
   });
 
-  /* ---------- SCROLL REVEAL ---------- */
+  /* ---------- SCROLL REVEAL (with staggered entrance) ---------- */
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('reveal');
-        io.unobserve(e.target);
-      }
+      if (!e.isIntersecting) return;
+      io.unobserve(e.target);
+      const i = parseInt(getComputedStyle(e.target).getPropertyValue('--i')) || 0;
+      const delay = motionOK ? Math.min(i, 8) * 55 : 0;
+      setTimeout(() => e.target.classList.add('reveal'), delay);
     });
   }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
   $$('.reveal-el').forEach(el => io.observe(el));
 
   /* ---------- HERO ANIMATED INTRO ---------- */
+  // The reveal cascade is DECOUPLED from typing so the name never waits on it.
   const cmdEl = $('#heroCmd');
   const typeCmd = 'cat about.md && whoami';
-  let ci = 0;
-  const typeTick = () => {
-    if (ci <= typeCmd.length) {
-      cmdEl.textContent = typeCmd.slice(0, ci);
-      ci++;
-      setTimeout(typeTick, 35 + Math.random() * 40);
-    } else {
-      // trigger hero reveals
-      $('#heroName').classList.add('reveal');
-      $$('.hero-sub-line').forEach(el => el.classList.add('reveal'));
-      $('.hero-cta').classList.add('reveal');
-      setTimeout(() => $('.hero-stats').classList.add('reveal'), 400);
-    }
-  };
-  setTimeout(typeTick, 400);
+  const revealSeq = [
+    ['#heroName', 0],
+    ['.hero-sub-line', 120],
+    ['.hero-avail', 220],
+    ['.hero-highlights', 320],
+    ['.hero-proof', 400],
+    ['.hero-cta', 480],
+  ];
+  const runReveal = () => revealSeq.forEach(([sel, delay]) => {
+    setTimeout(() => $$(sel).forEach(el => el.classList.add('reveal')), motionOK ? delay : 0);
+  });
+
+  if (motionOK) {
+    // name paints almost immediately; typing runs in parallel as flavour
+    setTimeout(runReveal, 150);
+    let ci = 0;
+    const typeTick = () => {
+      if (ci <= typeCmd.length) {
+        cmdEl.textContent = typeCmd.slice(0, ci);
+        ci++;
+        setTimeout(typeTick, 18 + Math.random() * 22);
+      }
+    };
+    setTimeout(typeTick, 250);
+  } else {
+    cmdEl.textContent = typeCmd;
+    runReveal();
+  }
 
   /* ---------- SIDE NAV ACTIVE STATE ---------- */
+  // Center-line detector: fires when a section crosses the viewport midline,
+  // so it works regardless of section height (the old threshold:0.3 could never
+  // be met by the 5000px+ contributions list).
   const navLinks = $$('.sidenav a');
-  const sections = $$('section[id]');
+  const navIds = new Set(navLinks.map(a => a.getAttribute('href').slice(1)));
+  const sections = $$('section[id]').filter(s => navIds.has(s.id));
+  let activeNavId = null;
+  const setActiveNav = (id) => {
+    if (id === activeNavId) return;
+    activeNavId = id;
+    navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === `#${id}`));
+  };
   const navIo = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        const id = e.target.id;
-        navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === `#${id}`));
-      }
-    });
-  }, { threshold: 0.3 });
+    entries.forEach(e => { if (e.isIntersecting) setActiveNav(e.target.id); });
+  }, { threshold: 0, rootMargin: '-45% 0px -50% 0px' });
   sections.forEach(s => navIo.observe(s));
 
-  /* smooth scroll for in-page anchors */
+  /* smooth scroll for in-page anchors + shareable hash + focus move */
   document.addEventListener('click', (e) => {
     const a = e.target.closest('a[href^="#"]');
     if (!a) return;
@@ -637,20 +742,31 @@
     const target = document.getElementById(id);
     if (!target) return;
     e.preventDefault();
-    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    target.scrollIntoView({ behavior: scrollBehavior, block: 'start' });
+    history.pushState(null, '', '#' + id);
+    target.setAttribute('tabindex', '-1');
+    target.focus({ preventScroll: true });
   });
+  // honour a hash on load (deep links)
+  if (location.hash.length > 1) {
+    const t = document.getElementById(location.hash.slice(1));
+    if (t) setTimeout(() => t.scrollIntoView({ behavior: 'auto', block: 'start' }), 60);
+  }
 
   /* ---------- KEYBOARD ---------- */
+  const lightboxOpen = () => document.querySelector('.car-lightbox.open, .hk-lightbox.open, #galleryLightbox.lb-visible');
   addEventListener('keydown', (e) => {
-    if (e.target.matches('input, textarea')) return;
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.target.closest('input, textarea, [contenteditable], a, button')) return;
+    if (lightboxOpen()) return; // let the open lightbox own the keys
     if (e.key === 'j' || e.key === 'ArrowDown') {
-      scrollBy({ top: innerHeight * 0.9, behavior: 'smooth' });
+      e.preventDefault(); scrollBy({ top: innerHeight * 0.9, behavior: scrollBehavior });
     } else if (e.key === 'k' || e.key === 'ArrowUp') {
-      scrollBy({ top: -innerHeight * 0.9, behavior: 'smooth' });
+      e.preventDefault(); scrollBy({ top: -innerHeight * 0.9, behavior: scrollBehavior });
     } else if (e.key === 't') {
       setTheme(document.body.dataset.theme === 'dark' ? 'light' : 'dark');
     } else if (e.key === 'g') {
-      scrollTo({ top: 0, behavior: 'smooth' });
+      e.preventDefault(); scrollTo({ top: 0, behavior: scrollBehavior });
     }
   });
 
@@ -662,40 +778,60 @@
     visitor.textContent = `session: 0x${hash} · ${now.toISOString().slice(0, 10)}`;
   }
 
-  /* ---------- PDF RESUME RENDER (via PDF.js) ---------- */
+  /* ---------- PDF RESUME RENDER (via PDF.js, lazy-loaded) ---------- */
   const resumeCanvas = document.getElementById('resumeCanvas');
   const resumeViewer = document.getElementById('resumeViewer');
   if (resumeCanvas && resumeViewer) {
-    const script = document.createElement('script');
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
-    script.onload = async () => {
+    resumeCanvas.setAttribute('role', 'img');
+    resumeCanvas.setAttribute('aria-label',
+      'Resume preview — use the open or download links above to read the PDF');
+
+    let started = false;
+    const renderResume = async () => {
       try {
         const pdfjsLib = window['pdfjs-dist/build/pdf'] || window.pdfjsLib;
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-        const loadingTask = pdfjsLib.getDocument('assets/IshaanSamantray-Resume.pdf?v=2');
-        const pdf = await loadingTask.promise;
-        // render all pages
+        const pdf = await pdfjsLib.getDocument('assets/IshaanSamantray-Resume.pdf?v=2').promise;
+        resumeViewer.querySelectorAll('canvas:not(#resumeCanvas)').forEach(c => c.remove());
         for (let p = 1; p <= pdf.numPages; p++) {
           const page = await pdf.getPage(p);
           const canvas = p === 1 ? resumeCanvas : document.createElement('canvas');
-          if (p !== 1) { canvas.style.cssText = resumeCanvas.style.cssText; resumeViewer.insertBefore(canvas, document.querySelector('.resume-fallback')); }
-          const vw = Math.min(resumeViewer.clientWidth - 48, 900);
+          if (p !== 1) { canvas.style.cssText = resumeCanvas.style.cssText; resumeViewer.insertBefore(canvas, resumeViewer.querySelector('.resume-fallback')); }
+          const vw = Math.max(280, Math.min((resumeViewer.clientWidth || 800) - 48, 900));
           const viewport0 = page.getViewport({ scale: 1 });
-          const scale = vw / viewport0.width;
-          const viewport = page.getViewport({ scale: scale * 2 }); // 2x for retina
+          const viewport = page.getViewport({ scale: (vw / viewport0.width) * 2 }); // 2x for retina
           canvas.width = viewport.width;
           canvas.height = viewport.height;
           canvas.style.width = (viewport.width / 2) + 'px';
           canvas.style.height = (viewport.height / 2) + 'px';
-          const ctx = canvas.getContext('2d');
-          await page.render({ canvasContext: ctx, viewport }).promise;
+          await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
         }
         const fb = resumeViewer.querySelector('.resume-fallback');
-        if (fb) fb.style.display = 'none';
+        if (fb && resumeCanvas.width > 0) fb.style.display = 'none';
       } catch (e) {
         console.warn('PDF render failed', e);
       }
     };
-    document.head.appendChild(script);
+
+    const startResume = () => {
+      if (started) return; started = true;
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+      script.onload = renderResume;
+      document.head.appendChild(script);
+    };
+
+    // only pull the 380 KB library when the resume section is near the viewport
+    const resObs = new IntersectionObserver((entries) => {
+      if (entries.some(e => e.isIntersecting)) { startResume(); resObs.disconnect(); }
+    }, { rootMargin: '600px' });
+    resObs.observe(resumeViewer);
+
+    // re-rasterise on resize/rotate so it stays crisp (debounced)
+    let rzT;
+    addEventListener('resize', () => {
+      if (!started || !window.pdfjsLib && !window['pdfjs-dist/build/pdf']) return;
+      clearTimeout(rzT); rzT = setTimeout(renderResume, 250);
+    });
   }
 })();

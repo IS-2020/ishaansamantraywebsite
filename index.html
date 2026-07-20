@@ -12,15 +12,18 @@
 <meta property="og:url" content="https://ishaansamantray.com/" />
 <meta property="og:title" content="Ishaan Samantray — Biomedical Engineering + CS @ Cornell" />
 <meta property="og:description" content="35 merged open-source PRs · AI hackathon builds · peer-reviewed research. Seeking a SWE internship — Summer 2027." />
-<meta property="og:image" content="https://ishaansamantray.com/assets/profile.jpg" />
-<meta property="og:image:alt" content="Ishaan Samantray" />
+<meta property="og:image" content="https://ishaansamantray.com/assets/og-card.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Ishaan Samantray — Biomedical Engineering + CS at Cornell" />
 <meta property="og:site_name" content="Ishaan Samantray" />
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Ishaan Samantray — Biomedical Engineering + CS @ Cornell" />
 <meta name="twitter:description" content="35 merged open-source PRs · AI hackathon builds · peer-reviewed research. Seeking a SWE internship — Summer 2027." />
-<meta name="twitter:image" content="https://ishaansamantray.com/assets/profile.jpg" />
+<meta name="twitter:image" content="https://ishaansamantray.com/assets/og-card.png" />
+<meta name="twitter:image:alt" content="Ishaan Samantray — Biomedical Engineering + CS at Cornell" />
 
 <!-- Favicon (SVG monogram — IS in terminal green) -->
 <link rel="icon" type="image/svg+xml" href="favicon.svg" />
@@ -29,16 +32,37 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=15">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=16">
 
 <!-- Privacy-friendly analytics (GoatCounter). To activate: register the free
      subdomain "ishaansamantray" at https://www.goatcounter.com/ — once claimed,
      this records visits with no cookies and no banner needed. -->
 <script data-goatcounter="https://ishaansamantray.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
+
+<!-- Structured data so search engines can build a Person entity -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Ishaan Samantray",
+  "url": "https://ishaansamantray.com/",
+  "email": "is455@cornell.edu",
+  "image": "https://ishaansamantray.com/assets/profile.jpg",
+  "jobTitle": "Biomedical Engineering + Computer Science Student",
+  "alumniOf": { "@type": "CollegeOrUniversity", "name": "Cornell University" },
+  "sameAs": [
+    "https://www.linkedin.com/in/ishaan-samantray1/",
+    "https://github.com/devteamaegis",
+    "https://x.com/IshaanSamantray",
+    "https://www.instagram.com/ishaan.s06/"
+  ]
+}
+</script>
 </head>
 <body data-theme="dark">
+<a href="#home" class="skip-link">skip to content</a>
 
 <!-- ============ CURSOR ORBS ============ -->
 <div class="cursor-dot" id="cursorDot"></div>
@@ -57,6 +81,7 @@
     <span class="topbar-path">~/ishaan-samantray/portfolio.sh</span>
   </div>
   <div class="topbar-right">
+    <span class="topbar-hint"><kbd>j</kbd><kbd>k</kbd> scroll · <kbd>t</kbd> theme · <kbd>g</kbd> top</span>
     <span class="status" id="statusClock">--:--:--</span>
     <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
       <span class="theme-toggle-track">
@@ -142,6 +167,8 @@
         </a>
       </div>
 
+      <div class="hero-proof">// <b>5+</b> research internships · <b>10k+</b> students reached across 37 states &amp; 11 countries</div>
+
       <div class="hero-cta">
         <a href="#projects" class="btn btn-primary" data-cursor="link">
           <span>view_projects</span><span class="arr">→</span>
@@ -156,14 +183,9 @@
           <span>send_mail</span><span class="arr">✉</span>
         </a>
       </div>
-
-      <div class="hero-stats">
-        <div class="stat"><span class="stat-num">5+</span><span class="stat-label">research internships</span></div>
-        <div class="stat"><span class="stat-num">2</span><span class="stat-label">peer-reviewed pubs</span></div>
-        <div class="stat"><span class="stat-num">10k+</span><span class="stat-label">students reached</span></div>
-        <div class="stat"><span class="stat-num">35</span><span class="stat-label">merged OSS PRs</span></div>
-      </div>
     </div>
+
+    <div class="scroll-hint">▼ scroll — or press <kbd>j</kbd></div>
 
   </section>
 
@@ -232,7 +254,7 @@
             <span class="ph-text">[ your_photo.jpg ]</span>
             <span class="ph-sub">drop a photo in <code>assets/profile.jpg</code></span>
           </div>
-          <img id="profileImg" src="assets/profile.jpg?v=1" alt="Ishaan Samantray">
+          <img id="profileImg" src="assets/profile.jpg?v=1" alt="Ishaan Samantray" loading="lazy" decoding="async">
           <div class="photo-overlay"></div>
         </div>
         <div class="photo-caption">
@@ -433,11 +455,6 @@
       <div class="gallery-empty-out">// no photos yet — add some with ./scripts/add-photo.sh</div>
     </div>
 
-    <!-- Upload hint (shown at bottom of gallery) -->
-    <div class="gallery-hint" id="galleryHint" style="display:none">
-      <span class="comment">// to add a photo: </span>
-      <code>./scripts/add-photo.sh uploads/photos/img.jpg "lab" "caption here"</code>
-    </div>
   </section>
 
   <!-- ============ CAR PHOTOGRAPHY ============ -->
@@ -452,7 +469,7 @@
     <div class="cars-collage" id="carsCollage"></div>
     <div class="cars-empty" id="carsEmpty" style="display:none">
       <div class="cars-empty-prompt"><span class="prompt-dollar">$</span> <span class="cars-empty-cmd">ls uploads/cars/</span></div>
-      <div class="cars-empty-out">// no photos yet — drop images into <code>uploads/cars/</code> and list them in <code>window.CARS</code></div>
+      <div class="cars-empty-out">// no photos here yet — check back soon.</div>
     </div>
   </section>
 
@@ -543,11 +560,11 @@
 <!-- ============ PROJECT HOVER PREVIEW ============ -->
 <div class="hover-preview" id="hoverPreview" aria-hidden="true"></div>
 
-<script src="data.js?v=20"></script>
-<script src="cars-data.js"></script>
-<script src="gallery.js"></script>
-<script src="app.js?v=14"></script>
-<script src="gallery-app.js"></script>
+<script defer src="data.js?v=20"></script>
+<script defer src="cars-data.js?v=2"></script>
+<script defer src="gallery.js"></script>
+<script defer src="app.js?v=15"></script>
+<script defer src="gallery-app.js"></script>
 <!-- Twitter/X embed widget for the Ditto video -->
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 <!-- space-game.js temporarily disabled — restore by re-adding Three.js + space-game.js scripts and game HTML section -->
