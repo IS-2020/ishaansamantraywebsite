@@ -651,6 +651,17 @@ main {
 .chip:hover { border-color: var(--accent); color: var(--accent); }
 .stack-chips.ghost .chip { background: transparent; color: var(--ink-faint); border-style: dashed; }
 
+/* tech-stack chips with brand logos */
+.chip-logo { display: inline-flex; align-items: center; gap: 7px; padding: 3px 10px 3px 5px; }
+.chip-logo img {
+  width: 18px; height: 18px; flex-shrink: 0; object-fit: contain;
+  background: #fbfbfd; border-radius: 4px; padding: 2px; box-sizing: border-box;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.05);
+}
+/* monochrome marks (OpenAI, LangChain) read as black on the light tile */
+.chip-logo img.tech-mono { filter: none; }
+.chip-logo:hover img { box-shadow: inset 0 0 0 1px rgba(0,0,0,.05), 0 0 0 1px var(--accent); }
+
 /* ============ EXPERIENCE / TIMELINE ============ */
 .timeline {
   display: flex;
@@ -1127,6 +1138,8 @@ main {
   opacity: .6;
   font-weight: 700;
 }
+/* live products aren't confidential — drop the stealth badge */
+.startup--live::before { content: none; }
 
 .su-head {
   display: grid;
@@ -1154,6 +1167,9 @@ main {
   filter: invert(0);
 }
 [data-theme="dark"] .su-logo { filter: invert(1); }
+/* real colored logos (e.g. Roam) — never invert or pixelate */
+.su-logo-raw,
+[data-theme="dark"] .su-logo-raw { filter: none; image-rendering: auto; padding: 10px; }
 .su-scanline {
   position: absolute;
   inset: 0;
@@ -1180,6 +1196,9 @@ main {
   border-radius: 50%;
   animation: pulse 2s infinite;
 }
+/* live products get a green status instead of the stealth red */
+.su-status.su-live { color: var(--accent); }
+.su-status.su-live .su-dot { background: var(--accent); }
 
 .su-name {
   margin: 0 0 6px;
@@ -1264,6 +1283,11 @@ main {
 .su-pipeline { color: var(--ink-dim); letter-spacing: .02em; }
 .su-pipeline::first-letter { color: var(--accent); }
 .su-redact { color: var(--ink-faint); font-style: italic; }
+.su-link {
+  color: var(--accent); font-weight: 600; letter-spacing: .02em;
+  border-bottom: 1px solid transparent; transition: border-color .15s;
+}
+.su-link:hover { border-bottom-color: var(--accent); color: var(--accent); }
 
 @media (max-width: 700px) {
   .su-head { grid-template-columns: 64px 1fr; }

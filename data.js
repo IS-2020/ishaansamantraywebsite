@@ -4,6 +4,16 @@
 
 window.EXPERIENCE = [
   {
+    date: "Jun 2026 — Present",
+    org: "Ion (YC W24)",
+    role: "Software Engineer",
+    logoText: "ion",
+    logoColor: "#7cf29a",
+    desc: "Software engineer at Ion (YC W24) — ion.design's AI design platform. Shipping to the production codebase across security, performance, reliability, and frontend.",
+    location: "Remote",
+    links: [{label: "ion.design ↗", href: "https://ion.design"}]
+  },
+  {
     date: "Feb 2026 — Present",
     org: "Impact Investing at Cornell",
     role: "Analyst · Associate Development Program",
@@ -149,16 +159,6 @@ window.PROJECTS = [
   },
   {
     index: "P.02",
-    title: "AstraZeneca Business Development",
-    org: "AstraZeneca · Gaithersburg",
-    tags: ["industry", "strategy", "featured"],
-    featured: true,
-    desc: "Shadowed R&D strategy, pipeline progression, and cross-functional decision making across commercial, clinical, and research project pipelines.",
-    links: [],
-    preview: { label: "internship", img: "assets/logos/astrazeneca.png", meta: "Summer 2024 · pharma · drug dev lifecycle" }
-  },
-  {
-    index: "P.03",
     title: "Kids For Code",
     org: "Global nonprofit · co-founded",
     tags: ["nonprofit", "founded", "featured"],
@@ -294,23 +294,21 @@ window.AWARDS = [
 
 window.STARTUPS = [
   {
-    name: "Aegis",
-    status: "stealth",
-    logo: "assets/logos/aegis.png",
-    tagline: "AI-powered school safety platform for county school districts.",
-    desc: "Replaces 8 fragmented safety vendors with a single intelligence layer. Gives administrators one defensible probability score when a threat call comes in.",
+    name: "Roam",
+    status: "live",
+    logo: "assets/logos/roam.png",
+    logoRaw: true,
+    tagline: "Google for AI agents — the discovery, trust, and payment layer for the agent web.",
+    desc: "When an AI agent needs to act on the internet — buy a product, book a service, call an API — Roam lets it find the right service, prove who it is, and complete a real action. Install it in one line (an MCP server) and your AI can suddenly find, access, and transact with services across the web, with no custom integration per site.",
     features: [
-      { title: "Swatting triage engine", detail: "Monte Carlo–backed probability score in <90s to distinguish hoaxes from credible threats." },
-      { title: "BTAM engine", detail: "Behavioral threat assessment & management — WAVR-21 framework, at-risk student tracking, intervention timelines." },
-      { title: "Camera AI detection", detail: "Real-time video analysis across up to 30 feeds per school — flags anomalies automatically." },
-      { title: "Emergency broadcast", detail: "One-click mass notifications to staff and parents with scenario-specific AI-generated messaging." },
-      { title: "Panic button system", detail: "Staff-worn hardware with live event tracking, ack workflows, and incident report generation." },
-      { title: "Online monitoring", detail: "Flags concerning student activity across social platforms before it escalates." },
-      { title: "Legal audit trail", detail: "Full compliance logging for every decision made during an incident." },
-      { title: "Live incident feed", detail: "District-wide real-time event stream for superintendent-level oversight across all schools." }
+      { title: "Find it", detail: "A crawled, searchable index of every agent and service on the web, ranked by what actually works (AgentRank) — so your agent lands on the right one instead of a broken one." },
+      { title: "Get in", detail: "A secure vault hands over the credentials so the agent can act as you: log in and be authorized." },
+      { title: "Pay", detail: "Routes the payment so the action actually completes." },
+      { title: "One-line install", detail: "Drop in the MCP server and any AI can suddenly find, access, and transact with services across the web — no per-site integration." }
     ],
-    metric: { big: "$300K+", label: "annual vendor consolidation / large county system" },
-    pipeline: "pilot development · targeting districts like MCPS"
+    metric: { big: "1 line", label: "MCP install · find + trust + pay for agents" },
+    pipeline: "live · useroam.dev",
+    link: { label: "useroam.dev ↗", href: "https://useroam.dev/" }
   }
 ];
 
@@ -371,25 +369,11 @@ window.HACKATHONS = [
     ],
     photos: [
       { src: "assets/hackathon/h1.jpg", caption: "at the YC × AgentPhone Call My Agent Hackathon · SF" },
-      { src: "assets/hackathon/h2.jpg", caption: "deep in the build · Cornell squad" },
+      { src: "assets/hackathon/h2.jpg", caption: "<a href=\"https://sinamatian.com/\" target=\"_blank\" rel=\"noopener\">Sina Matian ↗</a>" },
       { src: "assets/hackathon/h3.jpg", caption: "kairos threat graph visualization · live" }
     ]
   }
 ];
-
-window.PROJECTS.push(
-  {
-    index: "P.09",
-    title: "Encore Tickets — Redesign",
-    org: "Encore Tickets",
-    tags: ["cs", "redesign", "web"],
-    desc: "Full-stack redesign of the Encore Tickets platform — modernized UI, refactored booking flow, improved ticketing experience.",
-    links: [
-      { label: "live site ↗", href: "https://encoretix.com/" }
-    ],
-    preview: { label: "redesign · shipped", img: "assets/logos/encore.png", meta: "Next.js · full-stack · DC ticketing" }
-  }
-);
 
 /* ============================================================
    OPEN-SOURCE CONTRIBUTIONS
@@ -820,72 +804,3 @@ window.TESTIMONIALS = [
    managed via /car-portal.html (drag-and-drop HEIC uploader).
    ============================================================ */
 window.CARS = [];
-
-/* ============================================================
-   ion.design — internship engineering (private production repo)
-   Merged into ion-design/ion. Repo is private, so no public PR links.
-   ============================================================ */
-window.ION = {
-  org: "ion.design",
-  role: "Software Engineering Intern",
-  site: "https://ion.design",
-  siteLabel: "ion.design",
-  note: "Merged into ion's private production codebase, so these PRs aren't publicly linkable — but the work is real and shipped.",
-  stats: [
-    { val: "19", label: "merged PRs" },
-    { val: "4",  label: "security fixes" },
-    { val: "2",  label: "perf wins" },
-    { val: "6",  label: "dead-code removals" }
-  ],
-  groups: [
-    {
-      title: "Security & access control",
-      accent: "red",
-      items: [
-        { num: "912", text: "Fixed an <strong>IDOR</strong> — <code>get-status</code> didn't enforce organization access, letting a caller read another org's status." },
-        { num: "910", text: "Enforced organization access across the agents router, closing the same class of cross-tenant read." },
-        { num: "915", text: "Scoped workspace reads to the caller's organization instead of returning across tenants." },
-        { num: "914", text: "Signed and expired the Slack OAuth <code>state</code> parameter, closing a CSRF window in the notifications flow." }
-      ]
-    },
-    {
-      title: "Performance",
-      accent: "amber",
-      items: [
-        { num: "963", text: "Parallelized independent reads in <code>getChatSession</code> — the home path was awaiting sequentially for no reason." },
-        { num: "965", text: "Same pattern in <code>draft.get</code>: independent queries now run concurrently." }
-      ]
-    },
-    {
-      title: "Reliability",
-      accent: "green",
-      items: [
-        { num: "962", text: "Stranded provisioning states reported as <em>failed</em> instead of spinning as \"running\" forever." },
-        { num: "966", text: "Resolved stale run status in <code>listRuns</code> and <code>getRunReport</code>, so finished runs stopped showing as in-flight." },
-        { num: "936", text: "Added explicit <code>::text</code> casts to <code>jsonb_build_object</code> bind parameters, fixing a Postgres type-inference failure." }
-      ]
-    },
-    {
-      title: "Frontend & UX",
-      accent: "blue",
-      items: [
-        { num: "899", text: "Bullet and numbered lists weren't rendering in the agent's <code>AssistantText</code> — list styling was scoped to <code>[&amp;_li]</code> instead of <code>[&amp;_ul]</code>." },
-        { num: "904", text: "Unified focus states behind a global soft focus glow, starting with the chat input." },
-        { num: "911", text: "Themed the unauthorized and not-found pages so they match the product instead of falling back to defaults." },
-        { num: "917", text: "Attachment strips now scroll horizontally instead of stacking and blowing out the composer layout." }
-      ]
-    },
-    {
-      title: "Codebase simplification",
-      accent: "dim",
-      items: [
-        { num: "913", text: "Removed the deprecated cold-outreach SEO pipeline and its simulation leftovers." },
-        { num: "957", text: "Deleted the dead <code>RepositoryFileFetcher</code> and legacy <code>SentryService</code> from the Hatchet worker." },
-        { num: "958", text: "Removed five dead thread-router procedures from the API." },
-        { num: "956", text: "Removed legacy Ruby AI prompts no longer referenced anywhere." },
-        { num: "955", text: "Removed the dead <code>adsPagesSuggestions</code> endpoint." },
-        { num: "959", text: "Removed an undispatched <code>opencode-test-workflow</code> from the production worker." }
-      ]
-    }
-  ]
-};

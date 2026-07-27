@@ -174,7 +174,7 @@
     if (hasLink) { card.href = p.links[0].href; card.target = '_blank'; card.rel = 'noopener'; }
     card.innerHTML = `
       <div class="pc-head">
-        <div class="pc-index">${p.index}</div>
+        <div class="pc-index">P.${String(i + 1).padStart(2, '0')}</div>
         <div class="pc-tags">${tags}</div>
       </div>
       <div>
@@ -225,16 +225,19 @@
         </div>
       `).join('');
       const el = document.createElement('div');
-      el.className = 'startup reveal-el';
+      el.className = 'startup reveal-el' + (s.status === 'live' ? ' startup--live' : '');
       el.style.setProperty('--i', i);
+      const foot = s.link
+        ? `<a class="su-link" href="${s.link.href}" target="_blank" rel="noopener">${s.link.label}</a>`
+        : `<span class="su-redact">// building in stealth — contact for more</span>`;
       el.innerHTML = `
         <div class="su-head">
           <div class="su-logo-wrap">
-            <img class="su-logo" src="${s.logo}" alt="${s.name} logo (redacted)">
+            <img class="su-logo${s.logoRaw ? ' su-logo-raw' : ''}" src="${s.logo}" alt="${s.name} logo">
             <div class="su-scanline"></div>
           </div>
           <div class="su-headline">
-            <div class="su-status"><span class="su-dot"></span> ${s.status}</div>
+            <div class="su-status${s.status === 'live' ? ' su-live' : ''}"><span class="su-dot"></span> ${s.status}</div>
             <h3 class="su-name">${s.name}</h3>
             <p class="su-tagline">${s.tagline}</p>
           </div>
@@ -247,7 +250,7 @@
         <div class="su-grid">${features}</div>
         <div class="su-foot">
           <span class="su-pipeline">▸ ${s.pipeline}</span>
-          <span class="su-redact">// building in stealth — contact for more</span>
+          ${foot}
         </div>
       `;
       startupsEl.appendChild(el);
@@ -265,13 +268,15 @@
       `).join('');
       const stack = h.stack.map(s => `<span class="chip">${s}</span>`).join('');
       const links = h.links.map(l => `<a class="hk-link" href="${l.href}" target="_blank" rel="noopener">${l.label}</a>`).join('');
-      const photos = h.photos.map((p, pi) => `
+      const photos = h.photos.map((p, pi) => {
+        const altText = (p.caption || '').replace(/<[^>]+>/g, ''); // strip any link markup for alt
+        return `
         <div class="hk-photo" data-idx="${pi}" data-hackidx="${hi}" style="--pi:${pi}">
-          <img src="${p.src}" alt="${p.caption}" loading="lazy" onerror="this.closest('.hk-photo').classList.add('hk-photo-missing')">
+          <img src="${p.src}" alt="${altText}" loading="lazy" onerror="this.closest('.hk-photo').classList.add('hk-photo-missing')">
           <div class="hk-photo-cap">${p.caption}</div>
           <div class="hk-photo-zoom">⤢</div>
         </div>
-      `).join('');
+      `;}).join('');
 
       const card = document.createElement('div');
       card.className = 'hackathon reveal-el';
@@ -359,9 +364,10 @@
       if (lbLastFocus && lbLastFocus.focus) lbLastFocus.focus();
     };
     const showLb = () => {
+      const cap = lbPhotos[lbIdx].caption || '';
       lb.querySelector('.hk-lb-img').src = lbPhotos[lbIdx].src;
-      lb.querySelector('.hk-lb-img').alt = lbPhotos[lbIdx].caption;
-      lb.querySelector('.hk-lb-cap').textContent = lbPhotos[lbIdx].caption;
+      lb.querySelector('.hk-lb-img').alt = cap.replace(/<[^>]+>/g, '');
+      lb.querySelector('.hk-lb-cap').innerHTML = cap; // caption may contain a link
       lb.querySelector('.hk-lb-counter').textContent = `${lbIdx + 1} / ${lbPhotos.length}`;
     };
     lb.querySelector('.hk-lb-close').addEventListener('click', closeLb);
@@ -383,8 +389,8 @@
         const pi = parseInt(el.dataset.idx);
         openLb(window.HACKATHONS[hi].photos, pi);
       };
-      el.addEventListener('click', open);
-      el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+      el.addEventListener('click', (e) => { if (e.target.closest('a')) return; open(); }); // let caption links win
+      el.addEventListener('keydown', (e) => { if (e.target.closest('a')) return; if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
     });
   }
 
@@ -423,48 +429,6 @@
     });
   }
 
-  /* ---------- RENDER ION INTERNSHIP ---------- */
-  const ionBlock = $('#ionBlock');
-  if (ionBlock && window.ION) {
-    const d = window.ION;
-    const total = d.groups.reduce((s, g) => s + g.items.length, 0);
-    const ionCount = $('#ionCount');
-    if (ionCount) ionCount.textContent = `[${total} merged PRs]`;
-
-    const stats = d.stats.map(s => `
-      <div class="ion-stat"><span class="ion-stat-num">${s.val}</span><span class="ion-stat-label">${s.label}</span></div>
-    `).join('');
-
-    const groups = d.groups.map((g, gi) => `
-      <div class="ion-group reveal-el" style="--i:${gi}">
-        <div class="ion-group-head ion-accent-${g.accent}">
-          <span class="ion-group-dot"></span>
-          <span class="ion-group-title">${g.title}</span>
-          <span class="ion-group-count">${g.items.length}</span>
-        </div>
-        <div class="ion-items">
-          ${g.items.map(it => `
-            <div class="ion-item">
-              <span class="ion-item-num">#${it.num}</span>
-              <span class="ion-item-text">${it.text}</span>
-            </div>`).join('')}
-        </div>
-      </div>`).join('');
-
-    ionBlock.innerHTML = `
-      <div class="ion-card">
-        <div class="ion-head">
-          <div>
-            <div class="ion-org">${d.org}</div>
-            <div class="ion-role">${d.role}</div>
-          </div>
-          <a class="ion-site" href="${d.site}" target="_blank" rel="noopener">${d.siteLabel} ↗</a>
-        </div>
-        <div class="ion-stats">${stats}</div>
-        <div class="ion-note">${d.note}</div>
-        <div class="ion-groups">${groups}</div>
-      </div>`;
-  }
 
   /* ---------- DITTO LIVE STAR COUNT ---------- */
   const dittoStars = $('#dittoStars');
@@ -585,24 +549,29 @@
       else if (e.key === 'ArrowLeft') { e.preventDefault(); pageScroll(-1); }
     });
 
-    // mouse drag-to-pan (touch already scrolls/swipes natively, so mouse only)
-    let dragStart = null, dragMoved = false;
+    // mouse drag-to-pan (touch already scrolls/swipes natively, so mouse only).
+    // Capture is engaged ONLY after real movement — capturing on pointerdown
+    // would swallow a plain click and stop a photo from opening the lightbox.
+    let dragStart = null, dragMoved = false, dragCaptured = false;
     track.addEventListener('pointerdown', e => {
       if (e.pointerType !== 'mouse' || e.button !== 0) return;
-      dragStart = { x: e.clientX, left: track.scrollLeft };
+      dragStart = { x: e.clientX, left: track.scrollLeft, id: e.pointerId };
       dragMoved = false;
-      track.setPointerCapture(e.pointerId);
-      track.classList.add('dragging');
+      dragCaptured = false;
     });
     track.addEventListener('pointermove', e => {
       if (!dragStart) return;
       const dx = e.clientX - dragStart.x;
-      if (Math.abs(dx) > 6) dragMoved = true;
-      track.scrollLeft = dragStart.left - dx;
+      if (!dragMoved && Math.abs(dx) > 6) {
+        dragMoved = true;
+        track.classList.add('dragging');
+        try { track.setPointerCapture(dragStart.id); dragCaptured = true; } catch {}
+      }
+      if (dragMoved) track.scrollLeft = dragStart.left - dx;
     });
-    const endDrag = e => {
+    const endDrag = () => {
       if (!dragStart) return;
-      try { track.releasePointerCapture(e.pointerId); } catch {}
+      if (dragCaptured) { try { track.releasePointerCapture(dragStart.id); } catch {} }
       track.classList.remove('dragging');
       dragStart = null;
     };
