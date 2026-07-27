@@ -7,8 +7,10 @@ window.EXPERIENCE = [
     date: "Jun 2026 — Present",
     org: "Ion (YC W24)",
     role: "Software Engineer",
+    logo: "assets/logos/ion.svg",
+    logoBg: "#0f1114",
     logoText: "ion",
-    logoColor: "#7cf29a",
+    logoColor: "#F1C115",
     desc: "Software engineer at Ion (YC W24) — ion.design's AI design platform. Shipping to the production codebase across security, performance, reliability, and frontend.",
     location: "Remote",
     links: [{label: "ion.design ↗", href: "https://ion.design"}]

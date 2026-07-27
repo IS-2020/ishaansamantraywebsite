@@ -138,8 +138,9 @@
   /* ---------- RENDER EXPERIENCE ---------- */
   const tl = $('#timeline');
   window.EXPERIENCE.forEach((x, i) => {
+    const logoStyle = x.logoBg ? ` style="background:${x.logoBg}"` : '';
     const logoHTML = x.logo
-      ? `<div class="tl-logo"><img src="${x.logo}" alt="${x.org} logo" onerror="this.parentNode.classList.add('tl-logo-dark'); this.parentNode.textContent='${x.logoText || '•'}'"></div>`
+      ? `<div class="tl-logo"${logoStyle}><img src="${x.logo}" alt="${x.org} logo" onerror="this.parentNode.classList.add('tl-logo-dark'); this.parentNode.textContent='${x.logoText || '•'}'"></div>`
       : `<div class="tl-logo tl-logo-dark" style="color:${x.logoColor || 'var(--accent)'}">${x.logoText || '•'}</div>`;
     const links = x.links.map(l => `<a href="${l.href}" target="_blank" rel="noopener">${l.label}</a>`).join('');
     const row = document.createElement('div');
@@ -807,7 +808,7 @@
       try {
         const pdfjsLib = window['pdfjs-dist/build/pdf'] || window.pdfjsLib;
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-        const pdf = await pdfjsLib.getDocument('assets/IshaanSamantray-Resume.pdf?v=2').promise;
+        const pdf = await pdfjsLib.getDocument('assets/IshaanSamantray-Resume.pdf?v=3').promise;
         resumeViewer.querySelectorAll('canvas:not(#resumeCanvas)').forEach(c => c.remove());
         for (let p = 1; p <= pdf.numPages; p++) {
           const page = await pdf.getPage(p);
