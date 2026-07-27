@@ -745,6 +745,15 @@
       }
     };
     addEventListener('hashchange', () => routeBlog(false));
+    // The global in-page-anchor handler updates #blog via history.pushState,
+    // which does NOT fire 'hashchange' — so switch back to the list directly
+    // when a back link is clicked. (The global handler still scrolls + sets the URL.)
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.blog-back')) return;
+      blogArticle.style.display = 'none';
+      blogList.style.display = '';
+      blogList.querySelectorAll('.blog-card').forEach(c => c.classList.add('reveal'));
+    });
     routeBlog(true);
   }
 
