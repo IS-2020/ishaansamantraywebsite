@@ -144,7 +144,7 @@ window.PROJECTS = [
       { label: "youtube ↗",   href: "https://www.youtube.com/watch?v=6oZcUjKFwf4" },
       { label: "hackathon ↗", href: "https://agentphone.ai/callmyagent" }
     ],
-    preview: { label: "built in 1 day · sf 2025", meta: "Anthropic · Gemini · Twilio · Supabase" }
+    preview: { label: "built in 1 day · sf 2026", meta: "Anthropic · Gemini · Twilio · Supabase" }
   },
   {
     index: "P.01",
@@ -348,10 +348,10 @@ window.HACKATHONS = [
     id: "yc-call-my-agent",
     event: "YC Call My Agent Hackathon",
     organizer: "Y Combinator × AgentPhone",
-    date: "May 17, 2025",
+    date: "May 17, 2026",
     location: "San Francisco, CA",
     eventHref: "https://agentphone.ai/callmyagent",
-    footer: "built in 1 day · sf 2025",
+    footer: "built in 1 day · sf 2026",
     youtubeId: "6oZcUjKFwf4",
     project: "Kairos",
     tagline: "Live AI command center for anonymous school threat reporting & triage.",
@@ -806,3 +806,70 @@ window.TESTIMONIALS = [
    managed via /car-portal.html (drag-and-drop HEIC uploader).
    ============================================================ */
 window.CARS = [];
+
+/* ============================================================
+   BLOG — articles rendered in the #blog section (cards + reader).
+   Dates are display dates; posts sort newest-first.
+   ============================================================ */
+window.BLOG = [
+  {
+    slug: "ditto-keeping-the-motion",
+    title: "Teaching Ditto to keep its motion",
+    date: "2026-07-25",
+    dateLabel: "Jul 25, 2026",
+    read: "3 min",
+    tags: ["Ion", "open source", "compilers"],
+    excerpt: "Ditto clones any website into clean code in a few minutes. But the clones kept losing their animations. Here is how I taught the compiler to capture and replay them.",
+    body: `
+      <p><a href="https://www.ditto.site" target="_blank" rel="noopener">Ditto</a> is ion.design's open-source AI website cloner. You give it a link and it turns the page into a clean Next.js and Tailwind codebase in a few minutes, with real components, design tokens, and interactions. I work on it at Ion.</p>
+      <p>For a while one thing kept bugging me. A clone could look pixel perfect on the first paint and still feel dead. A hero that gently drifted on the real site would sit frozen on the clone. A little loading animation would be a static shape. The problem was motion, and specifically it was Lottie.</p>
+      <p>Lottie animations are driven by a small runtime that plays a JSON file at load time. A cloner that only reads the finished HTML and CSS sees the box the animation lives in, but not the animation itself, because the motion is created by JavaScript after the page loads. So the clone shipped an empty container where the animation used to be.</p>
+      <p>So I added a Lottie capture and replay stage to the compiler. It works in three steps:</p>
+      <ul>
+        <li><strong>Detect.</strong> While we load the real page, find the Lottie players and the animation data each one is using.</li>
+        <li><strong>Capture.</strong> Pull that animation data and any assets it needs, and save them alongside the clone.</li>
+        <li><strong>Generate.</strong> In the output codebase, drop in a small player pointed at the captured data so the clone plays the same motion the original did.</li>
+      </ul>
+      <p>The hard part was not playing the animation back. It was finding it reliably across all the different ways sites load Lottie, and doing it without slowing the capture down. Sites embed it a dozen ways, and the capture has to be robust to all of them or the feature quietly fails on the sites that need it most.</p>
+      <p>The result is that cloned sites keep their motion instead of shipping an empty box. It is a small feature, but it is the kind of detail that decides whether a clone feels real or not.</p>
+      <p>Ditto is open source if you want to try it. <a href="https://www.ditto.site" target="_blank" rel="noopener">ditto.site</a></p>
+    `
+  },
+  {
+    slug: "my-journey-with-kids-for-code",
+    title: "My journey with Kids For Code",
+    date: "2026-06-14",
+    dateLabel: "Jun 14, 2026",
+    read: "3 min",
+    tags: ["nonprofit", "teaching", "founding"],
+    excerpt: "I co-founded Kids For Code in high school. It has now reached more than 10,000 students across 37 states and 11 countries. Here is what building it taught me.",
+    body: `
+      <p>I co-founded <a href="https://kids4code.org/teachers" target="_blank" rel="noopener">Kids For Code</a> a few years ago, back in high school, with a simple idea. Teach kids to code for free, and make it good enough that they actually stick with it.</p>
+      <p>It started small and local. A few lessons, a few friends teaching them. Then it grew in a way none of us really planned for. Today it has reached more than <strong>10,000 students across 37 states and 11 countries</strong>, with over 100 instructors and a YouTube channel that has racked up tens of thousands of views.</p>
+      <p>A few things stuck with me from building it:</p>
+      <ul>
+        <li><strong>Teaching forces clarity.</strong> You do not really understand something until you can explain it to a twelve year old and watch it land.</li>
+        <li><strong>Scaling a volunteer group is mostly about people.</strong> The curriculum mattered less than keeping instructors motivated and giving them real ownership of their chapters.</li>
+        <li><strong>Distribution beats polish.</strong> Reaching 11 countries was not about writing better lessons. It was about making it easy for one motivated person to start something where they lived.</li>
+      </ul>
+      <p>The code was never really the point. The point was giving a kid the feeling that they could build something real. That is the same feeling that keeps me building today.</p>
+    `
+  },
+  {
+    slug: "building-kairos-in-a-day",
+    title: "Building a school-threat triage AI in a day",
+    date: "2026-05-26",
+    dateLabel: "May 26, 2026",
+    read: "3 min",
+    tags: ["hackathon", "multi-agent AI", "YC"],
+    excerpt: "At Y Combinator's Call My Agent hackathon I built Kairos, a live command center that takes anonymous school threat tips and triages each one in about eight seconds.",
+    body: `
+      <p>On May 17th I went to Y Combinator's Call My Agent hackathon and built <strong>Kairos</strong> in a single day.</p>
+      <p>The problem I picked: schools get anonymous threat tips over text and phone, and a person has to read each one, judge how serious it is, and decide what to do, fast and under stress. I wanted to see if a set of AI agents could do the first pass and hand a human a clear, ranked picture instead of a pile of raw messages.</p>
+      <p>Tips come in over SMS and phone calls. A multi-agent pipeline built on Anthropic Claude and Gemini Live reads each one, pulls context, and triages it, then pushes the result to a live dashboard with a threat feed, a heatmap, escalation status, and multilingual call support. Under the hood it wires together AgentPhone, AgentMail, Supermemory, Twilio, and Supabase.</p>
+      <p>The two numbers I cared about: an average triage time of <strong>8.2 seconds</strong>, and about <strong>three cents per tip</strong>. Fast enough to matter in a real moment, cheap enough to actually run.</p>
+      <p>The biggest lesson was that with multiple agents, most of the work is not the model. It is the plumbing and the routing: deciding which agent handles what, keeping latency down, and making the whole thing legible on a dashboard so a person can trust it. Building in one day forces you to cut everything except the part that has to work.</p>
+      <p>Kairos is a hackathon build, not a product. But it made me believe multi-agent systems are genuinely useful for triage problems where speed and clarity are the whole game. <a href="https://www.youtube.com/watch?v=6oZcUjKFwf4" target="_blank" rel="noopener">Watch the demo</a>.</p>
+    `
+  }
+];

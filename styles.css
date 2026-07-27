@@ -3303,7 +3303,7 @@ body.game-active .noise {
 .cars-empty-out code { color: var(--accent-2); }
 
 /* ============================================================
-   BLOG (placeholder)
+   BLOG (cards + in-page reader)
    ============================================================ */
 .blog-empty {
   font-family: var(--mono);
@@ -3313,6 +3313,50 @@ body.game-active .noise {
 .blog-empty-prompt { font-size: 14px; color: var(--ink); margin-bottom: 10px; }
 .blog-empty-cmd { color: var(--accent); }
 .blog-empty-out { font-size: 12.5px; color: var(--ink-faint); line-height: 1.6; }
+
+/* ---- post cards ---- */
+.blog-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.blog-card {
+  display: flex; flex-direction: column; gap: 12px;
+  padding: 22px 24px;
+  border: 1px solid var(--line); border-radius: var(--radius-lg);
+  background: var(--bg-panel);
+  text-decoration: none; border-bottom: 1px solid var(--line);
+  transition: border-color .2s, transform .2s, background .2s;
+}
+.blog-card:hover { border-color: var(--accent); transform: translateY(-3px); background: var(--bg-elev); }
+.blog-card-top { display: flex; align-items: center; justify-content: space-between; font-family: var(--mono); font-size: 11px; color: var(--ink-faint); letter-spacing: .04em; }
+.blog-card-title { font-size: 18px; font-weight: 600; color: var(--ink); line-height: 1.3; margin: 0; letter-spacing: -.01em; }
+.blog-card:hover .blog-card-title { color: var(--accent); }
+.blog-card-excerpt { font-size: 13px; color: var(--ink-dim); line-height: 1.6; margin: 0; flex: 1; }
+.blog-card-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 2px; }
+.blog-card-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.blog-tag {
+  font-family: var(--mono); font-size: 10px; letter-spacing: .04em;
+  color: var(--ink-faint); background: var(--bg-elev);
+  border: 1px solid var(--line); border-radius: 2px; padding: 2px 7px;
+}
+.blog-card-arrow { font-family: var(--mono); font-size: 12px; color: var(--accent); white-space: nowrap; }
+
+/* ---- reader ---- */
+.blog-back {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--mono); font-size: 12px; color: var(--ink-dim);
+  border-bottom: 1px solid transparent; transition: color .15s, border-color .15s;
+}
+.blog-back:hover { color: var(--accent); border-bottom-color: var(--accent); }
+.blog-back-bottom { margin-top: 40px; }
+.blog-post { max-width: 720px; margin: 20px 0 0; }
+.blog-post-meta { font-family: var(--mono); font-size: 11.5px; color: var(--ink-faint); letter-spacing: .04em; margin-bottom: 12px; }
+.blog-post-title { font-size: clamp(26px, 4vw, 38px); font-weight: 700; color: var(--ink); line-height: 1.15; letter-spacing: -.02em; margin: 0 0 16px; }
+.blog-post-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 28px; }
+.blog-post-body { font-size: 15px; line-height: 1.75; color: var(--ink-dim); }
+.blog-post-body p { margin: 0 0 18px; }
+.blog-post-body ul { margin: 0 0 18px; padding-left: 22px; display: flex; flex-direction: column; gap: 8px; }
+.blog-post-body li { line-height: 1.6; }
+.blog-post-body strong { color: var(--ink); font-weight: 600; }
+.blog-post-body a { color: var(--accent); border-bottom-color: color-mix(in srgb, var(--accent) 45%, transparent); }
+@media (max-width: 600px) { .blog-list { grid-template-columns: 1fr; } }
 
 /* ============================================================
    CAR LIGHTBOX (centered expand on click)

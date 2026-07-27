@@ -33,7 +33,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=19">
+<link rel="stylesheet" href="styles.css?v=20">
 
 <!-- Privacy-friendly analytics (GoatCounter). To activate: register the free
      subdomain "ishaansamantray" at https://www.goatcounter.com/ — once claimed,
@@ -477,12 +477,10 @@
       <span class="section-num">12 /</span>
       <h2 class="section-title">blog/</h2>
       <span class="section-rule"></span>
-      <span class="section-count">[coming soon]</span>
+      <span class="section-count" id="blogCount"></span>
     </div>
-    <div class="blog-empty">
-      <div class="blog-empty-prompt"><span class="prompt-dollar">$</span> <span class="blog-empty-cmd">cat blog/*.md</span><span class="caret">▍</span></div>
-      <div class="blog-empty-out">// no posts yet. writing on research, building, and cars is on the way.</div>
-    </div>
+    <div class="blog-list" id="blogList"></div>
+    <div class="blog-article" id="blogArticle" style="display:none"></div>
   </section>
 
   <!-- ============ CONTACT ============ -->
@@ -563,9 +561,9 @@
 <!-- ============ PROJECT HOVER PREVIEW ============ -->
 <div class="hover-preview" id="hoverPreview" aria-hidden="true"></div>
 
-<script defer src="data.js?v=22"></script>
+<script defer src="data.js?v=23"></script>
 <script defer src="cars-data.js?v=2"></script>
-<script defer src="app.js?v=19"></script>
+<script defer src="app.js?v=20"></script>
 <!-- Twitter/X embed widget for the Ditto video -->
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 <!-- space-game.js temporarily disabled — restore by re-adding Three.js + space-game.js scripts and game HTML section -->

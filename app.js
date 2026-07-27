@@ -687,6 +687,67 @@
     ag.appendChild(el);
   });
 
+  /* ---------- RENDER BLOG (cards + in-page reader, #blog/<slug>) ---------- */
+  const blogList = $('#blogList');
+  const blogArticle = $('#blogArticle');
+  if (blogList && blogArticle && window.BLOG && window.BLOG.length) {
+    const posts = window.BLOG.slice().sort((a, b) => (a.date < b.date ? 1 : -1)); // newest first
+    const bySlug = {};
+    posts.forEach(p => { bySlug[p.slug] = p; });
+
+    const blogCount = $('#blogCount');
+    if (blogCount) blogCount.textContent = `[${posts.length} post${posts.length === 1 ? '' : 's'}]`;
+
+    blogList.innerHTML = posts.map((p, i) => `
+      <a class="blog-card reveal-el" href="#blog/${p.slug}" style="--i:${i}" data-cursor="link">
+        <div class="blog-card-top">
+          <span class="blog-date">${p.dateLabel}</span>
+          <span class="blog-read">${p.read}</span>
+        </div>
+        <h3 class="blog-card-title">${p.title}</h3>
+        <p class="blog-card-excerpt">${p.excerpt}</p>
+        <div class="blog-card-foot">
+          <div class="blog-card-tags">${p.tags.map(t => `<span class="blog-tag">${t}</span>`).join('')}</div>
+          <span class="blog-card-arrow">read →</span>
+        </div>
+      </a>`).join('');
+
+    const renderArticle = (p) => {
+      const tags = p.tags.map(t => `<span class="blog-tag">${t}</span>`).join('');
+      blogArticle.innerHTML = `
+        <a class="blog-back" href="#blog" data-cursor="link">← all posts</a>
+        <article class="blog-post">
+          <div class="blog-post-meta">${p.dateLabel} · ${p.read}</div>
+          <h1 class="blog-post-title">${p.title}</h1>
+          <div class="blog-post-tags">${tags}</div>
+          <div class="blog-post-body">${p.body}</div>
+          <a class="blog-back blog-back-bottom" href="#blog" data-cursor="link">← all posts</a>
+        </article>`;
+    };
+
+    const routeBlog = (initial) => {
+      const m = location.hash.match(/^#blog\/(.+)$/);
+      const post = m && bySlug[decodeURIComponent(m[1])];
+      if (post) {
+        renderArticle(post);
+        blogList.style.display = 'none';
+        blogArticle.style.display = '';
+        // on a direct load of an article URL, scroll the blog section into view
+        // (setTimeout gives layout time to settle — matches the deep-link handler)
+        if (initial) setTimeout(() => $('#blog').scrollIntoView({ behavior: 'auto', block: 'start' }), 60);
+        else blogArticle.scrollIntoView({ behavior: 'auto', block: 'start' });
+      } else {
+        blogArticle.style.display = 'none';
+        blogList.style.display = '';
+        // returning from an article: make sure cards are visible even if the
+        // reveal observer never fired while they were hidden
+        if (!initial) blogList.querySelectorAll('.blog-card').forEach(c => c.classList.add('reveal'));
+      }
+    };
+    addEventListener('hashchange', () => routeBlog(false));
+    routeBlog(true);
+  }
+
   /* ---------- SCROLL REVEAL (with staggered entrance) ---------- */
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => {
