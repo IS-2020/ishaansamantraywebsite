@@ -382,9 +382,24 @@ window.HACKATHONS = [
    ============================================================ */
 window.CONTRIBUTIONS = [
   {
+    "org": "Docling",
+    "badge": "",
+    "stars": "65k",
+    "desc": "IBM's document parser that gets PDFs, Word, and PowerPoint ready for gen AI",
+    "repo": "docling-project/docling",
+    "site": "https://docling-project.github.io/docling",
+    "siteLabel": "docling docs",
+    "prs": [
+      {
+        "num": "3990",
+        "fix": "The PPTX backend's <code>_generate_prov</code> used <code>if shape.left:</code> to test for a known position, but <code>shape.left</code> is an <code>Emu</code> (an <code>int</code> subclass), so any shape flush against the left slide edge (<code>left == 0</code>) fell into the position-unknown fallback and its bounding box became the whole slide. This collapsed every left-flush shape on a slide to the same box."
+      }
+    ]
+  },
+  {
     "org": "Agno",
     "badge": "",
-    "stars": "41k",
+    "stars": "42k",
     "desc": "High-performance Python framework for multi-modal AI agents",
     "repo": "agno-agi/agno",
     "site": "https://www.agno.com",
@@ -426,7 +441,7 @@ window.CONTRIBUTIONS = [
   {
     "org": "Hono",
     "badge": "",
-    "stars": "31k",
+    "stars": "32k",
     "desc": "Ultrafast web framework for the edge",
     "repo": "honojs/hono",
     "site": "https://hono.dev",
@@ -441,7 +456,7 @@ window.CONTRIBUTIONS = [
   {
     "org": "Supermemory",
     "badge": "",
-    "stars": "28k",
+    "stars": "29k",
     "desc": "Memory infrastructure layer for AI apps",
     "repo": "supermemoryai/supermemory",
     "site": "https://supermemory.ai",
@@ -450,6 +465,29 @@ window.CONTRIBUTIONS = [
       {
         "num": "999",
         "fix": "Empty system prompt injected into every LLM call when memory lookup returned nothing \u2014 corrupted model context and wasted tokens on blank system messages."
+      }
+    ]
+  },
+  {
+    "org": "MLX",
+    "badge": "",
+    "stars": "28k",
+    "desc": "Apple's array framework for machine learning on Apple silicon",
+    "repo": "ml-explore/mlx",
+    "site": "https://ml-explore.github.io/mlx/",
+    "siteLabel": "mlx docs",
+    "prs": [
+      {
+        "num": "4165",
+        "fix": "<code>mx.diag</code> raised an internal <code>[scatter]</code> error on a zero-size 1-D input instead of returning a <code>(0, 0)</code> array like NumPy. Only the default <code>k = 0</code> was affected, since any other offset makes <code>n \u2265 |k|</code>."
+      },
+      {
+        "num": "4166",
+        "fix": "<code>mx.linalg.norm(x, keepdims=True)</code> collapsed the result to one dimension instead of keeping the input rank when <code>axis</code> and <code>ord</code> were left at their defaults. A <code>(2, 3, 4)</code> input returned <code>(1,)</code> where NumPy gives <code>(1, 1, 1)</code>."
+      },
+      {
+        "num": "4167",
+        "fix": "Two CPU linalg error messages named a LAPACK routine that never ran. A <code>float64</code> LU failure reported <code>sgetrf_</code> instead of <code>dgetrf_</code>, and the SVD message named <code>gesvdx</code>, which the code never calls (it runs <code>gesdd</code>). Corrected both, with a consistent prefix."
       }
     ]
   },
@@ -471,7 +509,7 @@ window.CONTRIBUTIONS = [
   {
     "org": "Prefect",
     "badge": "",
-    "stars": "23k",
+    "stars": "24k",
     "desc": "Workflow orchestration platform",
     "repo": "PrefectHQ/prefect",
     "site": "https://www.prefect.io",
@@ -520,7 +558,7 @@ window.CONTRIBUTIONS = [
   {
     "org": "Outlines",
     "badge": "",
-    "stars": "15k",
+    "stars": "16k",
     "desc": "Structured LLM generation \u2014 guaranteed-valid model outputs",
     "repo": "dottxt-ai/outlines",
     "site": "https://dottxt.ai",
@@ -529,21 +567,6 @@ window.CONTRIBUTIONS = [
       {
         "num": "1869",
         "fix": "<code>python_types_to_terms</code> raised <code>TypeError</code> on <code>Literal[True]</code>, <code>Literal[False]</code>, or <code>Literal[True, False]</code> \u2014 bool args fell through every branch since <code>is_int_instance</code> explicitly excludes bool and no bool branch existed. Added explicit handling so boolean literals compile to valid structured-generation terms."
-      }
-    ]
-  },
-  {
-    "org": "OpenAI Node SDK",
-    "badge": "",
-    "stars": "11k",
-    "desc": "Official OpenAI SDK for TypeScript / JavaScript",
-    "repo": "openai/openai-node",
-    "site": "https://github.com/openai/openai-node",
-    "siteLabel": "openai-node",
-    "prs": [
-      {
-        "num": "1892",
-        "fix": "Removed a \"the the\" duplicate-word typo from the <code>AbstractChatCompletionRunner</code> JSDoc."
       }
     ]
   },
@@ -575,9 +598,24 @@ window.CONTRIBUTIONS = [
     ]
   },
   {
+    "org": "OpenAI Node SDK",
+    "badge": "",
+    "stars": "11k",
+    "desc": "Official OpenAI SDK for TypeScript / JavaScript",
+    "repo": "openai/openai-node",
+    "site": "https://github.com/openai/openai-node",
+    "siteLabel": "openai-node",
+    "prs": [
+      {
+        "num": "1892",
+        "fix": "Removed a \"the the\" duplicate-word typo from the <code>AbstractChatCompletionRunner</code> JSDoc."
+      }
+    ]
+  },
+  {
     "org": "SkyPilot",
     "badge": "",
-    "stars": "10k",
+    "stars": "11k",
     "desc": "Cloud-agnostic AI/ML compute framework",
     "repo": "skypilot-org/skypilot",
     "site": "https://skypilot.co",
@@ -592,7 +630,7 @@ window.CONTRIBUTIONS = [
   {
     "org": "Stanford NLP \u00b7 Stanza",
     "badge": "",
-    "stars": "7.8k",
+    "stars": "7.9k",
     "desc": "Stanford's NLP toolkit for 70+ human languages",
     "repo": "stanfordnlp/stanza",
     "site": "https://stanfordnlp.github.io/stanza/",
@@ -607,7 +645,7 @@ window.CONTRIBUTIONS = [
   {
     "org": "docTR",
     "badge": "",
-    "stars": "6.2k",
+    "stars": "6.3k",
     "desc": "Document text recognition / OCR deep-learning library",
     "repo": "mindee/doctr",
     "site": "https://mindee.github.io/doctr/",
@@ -616,6 +654,21 @@ window.CONTRIBUTIONS = [
       {
         "num": "2071",
         "fix": "<code>extract_crops</code> added its inclusive <code>+1</code> to the wrong axis \u2014 <code>_boxes[2:] += 1</code> shifted all four coordinates of every box from index 2 onward instead of nudging the xmax/ymax columns. With 3+ boxes per page, every crop from index 2 on was cut one pixel off in both x and y, silently misaligning the detection\u2192recognition pipeline."
+      }
+    ]
+  },
+  {
+    "org": "SWE-bench",
+    "badge": "",
+    "stars": "5.7k",
+    "desc": "Princeton benchmark for evaluating LLMs on real-world GitHub issues",
+    "repo": "SWE-bench/SWE-bench",
+    "site": "https://www.swebench.com",
+    "siteLabel": "swebench.com",
+    "prs": [
+      {
+        "num": "611",
+        "fix": "<code>parse_log_seaborn</code> indexed <code>line.split()[1]</code> with no length guard, so a bare status word on its own line like <code>PASSED</code> raised <code>IndexError</code> and crashed grading for that instance. The sibling <code>parse_log_pytest</code> already guards the same case."
       }
     ]
   },
@@ -650,6 +703,21 @@ window.CONTRIBUTIONS = [
     ]
   },
   {
+    "org": "Sourcebot",
+    "badge": "",
+    "stars": "3.9k",
+    "desc": "Self-hosted code search for humans and AI agents",
+    "repo": "sourcebot-dev/sourcebot",
+    "site": "https://sourcebot.dev",
+    "siteLabel": "sourcebot.dev",
+    "prs": [
+      {
+        "num": "1301",
+        "fix": "A search like <code>-foo:bar</code> or <code>-http://example.com</code> crashed the query parser and returned a <code>FAILED_TO_PARSE_QUERY</code> 400 for the whole search. The tokenizer emitted the <code>negate</code> token for any dash-led word, but the grammar only allows negation before a real prefix, so a dash before a non-prefix colon word broke parsing. Real prefix negation like <code>-file:bar</code> still works."
+      }
+    ]
+  },
+  {
     "org": "Lightly",
     "badge": "",
     "stars": "3.8k",
@@ -667,7 +735,7 @@ window.CONTRIBUTIONS = [
   {
     "org": "Svix",
     "badge": "",
-    "stars": "3.3k",
+    "stars": "3.4k",
     "desc": "Enterprise webhook infrastructure",
     "repo": "svix/svix-webhooks",
     "site": "https://www.svix.com",
@@ -720,7 +788,7 @@ window.CONTRIBUTIONS = [
   {
     "org": "Ditto (ion.design)",
     "badge": "",
-    "stars": "525",
+    "stars": "1.5k",
     "desc": "ion.design's open-source (MIT) AI website cloner \u2014 also my internship",
     "repo": "ion-design/ditto.site",
     "site": "https://www.ditto.site",
@@ -735,7 +803,7 @@ window.CONTRIBUTIONS = [
   {
     "org": "Opentrons",
     "badge": "",
-    "stars": "512",
+    "stars": "516",
     "desc": "Lab automation robotics",
     "repo": "Opentrons/opentrons",
     "site": "https://opentrons.com",
@@ -750,7 +818,7 @@ window.CONTRIBUTIONS = [
   {
     "org": "Langfuse",
     "badge": "",
-    "stars": "437",
+    "stars": "453",
     "desc": "Open-source LLM engineering & observability platform",
     "repo": "langfuse/langfuse-python",
     "site": "https://langfuse.com",
@@ -765,7 +833,7 @@ window.CONTRIBUTIONS = [
   {
     "org": "Cohere",
     "badge": "",
-    "stars": "394",
+    "stars": "395",
     "desc": "Enterprise AI platform",
     "repo": "cohere-ai/cohere-python",
     "site": "https://cohere.com",
@@ -782,6 +850,21 @@ window.CONTRIBUTIONS = [
       {
         "num": "773",
         "fix": "<code>sum_fields_if_not_none</code> called <code>getattr(None, 'input_tokens')</code> \u2014 <code>billed_units</code> is Optional and can be None, but the guard only checked field values, not the object itself."
+      }
+    ]
+  },
+  {
+    "org": "Qiskit",
+    "badge": "",
+    "stars": "100",
+    "desc": "IBM Quantum's official documentation",
+    "repo": "Qiskit/documentation",
+    "site": "https://quantum.cloud.ibm.com/docs",
+    "siteLabel": "qiskit docs",
+    "prs": [
+      {
+        "num": "5513",
+        "fix": "The Python sample in the REST API setup guide set the header to <code>application/x-www-form-urlendcoded</code>, with an extra <code>d</code>, instead of <code>application/x-www-form-urlencoded</code>, so copying it sends an invalid Content-Type. Fixed the header and removed the <code>cspell:ignore</code> entry that existed only to hide the typo."
       }
     ]
   }
