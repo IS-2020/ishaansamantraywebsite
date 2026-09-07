@@ -133,6 +133,20 @@ window.EXPERIENCE = [
 window.PROJECTS = [
   {
     index: "P.00",
+    title: "Verity",
+    org: "DNHacks 2026 · Health & Public Service track · Washington D.C.",
+    tags: ["AI", "fraud detection", "featured", "hackathon"],
+    featured: true,
+    desc: "Pre-payment fraud tripwire for Medicare and Medicaid, built only from public federal data. My team joined 14 public datasets (238M Medicaid payment rows among them) into one DuckDB warehouse and ran three detectors: an ownership graph that surfaces clinic networks behind shared owners, an impossible-day test that turns billing codes into hours per clinician, and a dated match of exclusion lists against the payments that followed. It surfaced $55.9M paid to 391 providers after they were barred from the program, every payment cited to its source record. I led the pitch, the deck, and the technical documentation, and independently reproduced the pipeline to verify the numbers.",
+    links: [
+      { label: "live site ↗",  href: "https://veritydn.vercel.app" },
+      { label: "github ↗",     href: "https://github.com/ssatanis/verity" },
+      { label: "pitch deck ↗", href: "https://github.com/ssatanis/verity/blob/main/Verity_Pitch_Deck.pdf" }
+    ],
+    preview: { label: "built in 2 days · dc 2026", meta: "Python · DuckDB · FastAPI · Next.js · Claude" }
+  },
+  {
+    index: "P.00",
     title: "Kairos",
     org: "YC Call My Agent Hackathon · San Francisco",
     tags: ["AI", "featured", "hackathon"],
