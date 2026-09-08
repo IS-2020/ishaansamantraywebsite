@@ -333,6 +333,31 @@ window.NEWS = [];
 
 window.HACKATHONS = [
   {
+    id: "dnhacks-verity",
+    event: "DNHacks 2026",
+    organizer: "The David Network",
+    date: "September 5-6, 2026",
+    location: "Washington, D.C.",
+    eventHref: "https://portal.dnhacks.org/e/2026/showcase/verity",
+    footer: "built in 2 days · dc 2026",
+    project: "Verity",
+    tagline: "Pre-payment fraud tripwire for Medicare and Medicaid, built only from public federal data.",
+    desc: "Built <strong>Verity</strong> at DNHacks in the Health &amp; Public Service track (judged by the CTO of the White House Office of Anti-Fraud Initiatives). Our team of four joined 14 public federal datasets, 238M Medicaid payment rows among them, into one DuckDB warehouse and ran three detectors: an ownership graph that surfaces clinic networks behind shared owners (Fellegi-Sunter record linkage plus Leiden clustering), an impossible-day test that converts time-coded billing into hours per clinician with robust z-scores, and a dated match of exclusion lists against the payments that followed. A FastAPI backend uses Claude to draft cited referral packets, and a Next.js console serves it all. It surfaced <strong>$55.9M paid to 391 providers after they were barred from the program</strong>, every payment cited to its source record. I led the pitch, the deck, and the technical docs, and independently reproduced the full pipeline to verify the numbers.",
+    metrics: [
+      { val: "$55.9M", label: "paid after exclusion" },
+      { val: "238M",   label: "Medicaid payment rows" },
+      { val: "14",     label: "public datasets" },
+      { val: "2 days", label: "built in" }
+    ],
+    stack: ["Python", "DuckDB", "FastAPI", "Claude (claude-sonnet-5)", "Next.js 15", "TypeScript", "Supabase", "Vercel"],
+    links: [
+      { label: "live site ↗",  href: "https://veritydn.vercel.app" },
+      { label: "github ↗",     href: "https://github.com/ssatanis/verity" },
+      { label: "pitch deck ↗", href: "https://github.com/ssatanis/verity/blob/main/Verity_Pitch_Deck.pdf" }
+    ],
+    photos: []
+  },
+  {
     id: "ara-ai-computer",
     event: "Ara.so (YC P26) × DayDreamers — Build Your AI Computer Hackathon",
     organizer: "Ara.so (YC P26) × DayDreamers",
