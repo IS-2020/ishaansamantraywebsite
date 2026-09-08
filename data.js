@@ -355,7 +355,11 @@ window.HACKATHONS = [
       { label: "github ↗",     href: "https://github.com/ssatanis/verity" },
       { label: "pitch deck ↗", href: "https://github.com/ssatanis/verity/blob/main/Verity_Pitch_Deck.pdf" }
     ],
-    photos: []
+    badgeImg: "assets/hackathon/dnhacks-logo.png",
+    photos: [
+      { src: "assets/hackathon/dnhacks-screen.jpg", caption: "DNHacks 2026 · The David Network · Station DC, Washington D.C." },
+      { src: "assets/hackathon/dnhacks-team.jpg",   caption: "Team Verity at DNHacks 2026 (Sahaj Satani, Rachel Lee, Ajay Sharma, and me)" }
+    ]
   },
   {
     id: "ara-ai-computer",

@@ -285,7 +285,7 @@
       card.innerHTML = `
         <div class="hk-header">
           <div class="hk-badge-wrap">
-            <span class="hk-yc-badge">Y</span>
+            ${h.badgeImg ? `<span class="hk-yc-badge hk-badge-img"><img src="${h.badgeImg}" alt="${h.organizer}"></span>` : `<span class="hk-yc-badge">Y</span>`}
             <div class="hk-event-info">
               <div class="hk-event-name">${h.event}</div>
               <div class="hk-event-meta">

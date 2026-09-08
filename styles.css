@@ -1342,6 +1342,8 @@ main {
   flex-shrink: 0;
   letter-spacing: -.02em;
 }
+.hk-yc-badge.hk-badge-img { background: linear-gradient(160deg, #5a93f0, #1b4fb0); padding: 3px; overflow: hidden; }
+.hk-yc-badge.hk-badge-img img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .hk-event-name {
   font-size: 13px;
   font-weight: 600;
