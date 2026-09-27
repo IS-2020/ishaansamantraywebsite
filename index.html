@@ -27,11 +27,18 @@
     padding:8vh 22px 12vh;
     transition:background .18s, color .18s;
   }
-  .wrap{ width:100%; max-width:640px; }
+  body.noscroll{ overflow:hidden; }
+  .wrap{ width:100%; max-width:640px; transition:opacity .45s ease, transform .55s ease; }
+  .wrap.exit-left{ opacity:0; transform:translateX(-46px); }
   a{ color:var(--link); text-underline-offset:2px; }
 
-  /* top-right dot motif */
-  #motif{ position:fixed; top:20px; right:18px; left:auto; width:190px; height:80px; z-index:5; }
+  /* top-right dotted 911 = Photography button */
+  #photo-trigger{ position:fixed; top:20px; right:18px; z-index:5; cursor:pointer; text-align:right; }
+  #motif{ width:190px; height:80px; display:block; transition:transform .8s cubic-bezier(.34,.62,.29,1), filter .5s; }
+  #motif.drive-right{ transform:translateX(134vw) scale(1.06); filter:blur(1.3px); transition:transform .82s cubic-bezier(.5,.02,.8,.25), filter .82s; }
+  #photo-hint{ font:12px ui-monospace,"SF Mono",Menlo,monospace; color:var(--muted); margin-top:1px; opacity:0; transition:opacity .2s; letter-spacing:.04em; }
+  #photo-trigger:hover #photo-hint{ opacity:1; }
+
   /* light/dark toggle (top-left) */
   #toggle{ position:fixed; top:16px; left:18px; right:auto; z-index:6; cursor:pointer; width:34px; height:34px;
     border:1px solid var(--line); border-radius:8px; background:var(--chip); color:var(--fg);
@@ -76,13 +83,52 @@
   .chips{ display:flex; flex-wrap:wrap; gap:7px; }
   .chip{ font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size:12.5px; border:1px solid var(--line); border-radius:6px; padding:4px 9px; background:var(--chip); white-space:nowrap; }
 
-  .gallery{ column-count:3; column-gap:8px; }
-  .gallery img{ width:100%; margin:0 0 8px; border-radius:6px; display:block; }
-  @media (max-width:640px){ .gallery{ column-count:2; } .skill-row{ flex-direction:column; gap:6px; } .skill-label{ min-width:0; } #motif{ display:none; } }
+  /* photography page overlay */
+  #photo-view{ position:fixed; inset:0; z-index:40; background:var(--bg); overflow-y:auto;
+    transform:translateX(100%); transition:transform .7s cubic-bezier(.22,.61,.36,1); }
+  #photo-view.open{ transform:translateX(0); }
+  .pv-inner{ max-width:1120px; margin:0 auto; padding:26px 22px 80px; }
+  #pv-back{ display:inline-flex; align-items:center; gap:9px; cursor:pointer; margin-bottom:6px; transition:transform .7s cubic-bezier(.5,.02,.8,.25); }
+  #pv-back.drive-left{ transform:translateX(-140vw); }
+  #backcar{ width:112px; height:48px; display:block; }
+  .pv-back-label{ font:13px ui-monospace,"SF Mono",Menlo,monospace; color:var(--muted); letter-spacing:.03em; }
+  #pv-back:hover .pv-back-label{ color:var(--fg); }
+  .pv-title{ font-size:22px; font-weight:600; margin:8px 0 2px; }
+  .pv-sub{ color:var(--muted); margin:0 0 20px; }
+  .pgrid{ column-count:4; column-gap:10px; }
+  .pgrid img{ width:100%; margin:0 0 10px; border-radius:7px; display:block; cursor:zoom-in;
+    transition:transform .2s ease, filter .2s ease; }
+  .pgrid img:hover{ transform:translateY(-2px) scale(1.006); filter:brightness(1.04); }
+
+  /* lightbox */
+  #lightbox{ position:fixed; inset:0; z-index:60; background:rgba(0,0,0,.94); display:none; }
+  #lightbox.open{ display:block; }
+  #lb-img{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); max-width:92vw; max-height:88vh;
+    object-fit:contain; border-radius:4px; cursor:zoom-in; transition:transform .25s ease; user-select:none; }
+  #lb-img.zoomed{ transform:translate(-50%,-50%) scale(2.3); cursor:zoom-out; }
+  .lb-nav{ position:absolute; top:0; bottom:0; width:34%; display:flex; align-items:center; color:#fff;
+    font-size:44px; cursor:pointer; opacity:0; transition:opacity .2s; user-select:none; z-index:2; }
+  #lightbox:hover .lb-nav{ opacity:.45; }
+  .lb-nav:hover{ opacity:.9 !important; }
+  #lb-prev{ left:0; justify-content:flex-start; padding-left:20px; }
+  #lb-next{ right:0; justify-content:flex-end; padding-right:20px; }
+  #lb-close{ position:absolute; top:12px; right:20px; color:#fff; font-size:30px; line-height:1; cursor:pointer; opacity:.8; z-index:3; }
+  #lb-count{ position:absolute; bottom:16px; left:0; right:0; text-align:center; color:#ffffffcc;
+    font:13px ui-monospace,Menlo,monospace; z-index:3; }
+
+  @media (max-width:900px){ .pgrid{ column-count:3; } }
+  @media (max-width:640px){
+    .skill-row{ flex-direction:column; gap:6px; } .skill-label{ min-width:0; }
+    #motif{ width:120px; height:52px; } #photo-hint{ opacity:.75; font-size:10px; }
+    .pgrid{ column-count:2; }
+  }
 </style>
 </head>
 <body>
-  <canvas id="motif" title="Porsche 911"></canvas>
+  <div id="photo-trigger" title="Photography" role="button" aria-label="Open photography">
+    <canvas id="motif"></canvas>
+    <div id="photo-hint">photos &rarr;</div>
+  </div>
   <button id="toggle" title="Toggle light/dark" aria-label="Toggle light or dark mode">☾</button>
 
   <main class="wrap">
@@ -107,8 +153,7 @@
     <nav class="tabs">
       <a id="nav-experience" href="#experience">Experience</a><span class="sep">·</span>
       <a id="nav-more" href="#more">More stuff</a><span class="sep">·</span>
-      <a id="nav-skills" href="#skills">Skills</a><span class="sep">·</span>
-      <a id="nav-photography" href="#photography">Photography</a>
+      <a id="nav-skills" href="#skills">Skills</a>
     </nav>
 
     <section id="tab-experience">
@@ -165,38 +210,57 @@
       <div class="skill-row"><div class="skill-label">BIZ</div><div class="chips"><span class="chip">DCF Modeling</span><span class="chip">HubSpot CRM</span><span class="chip">Excel</span><span class="chip">Financial Analysis</span></div></div>
       <div class="skill-row"><div class="skill-label">OFF_HOURS</div><div class="chips"><span class="chip">tennis</span><span class="chip">skiing</span><span class="chip">boxing</span><span class="chip">restaurants</span><span class="chip">urban exploring</span><span class="chip">spanish</span><span class="chip">car photography</span><span class="chip">building with raspberry pi</span></div></div>
     </section>
-
-    <section id="tab-photography" hidden>
-      <h2>Photography</h2>
-      <p class="sub" style="margin-bottom:16px">Cars, mostly. Shot by me.</p>
-      <div class="gallery" id="gallery"></div>
-    </section>
   </main>
+
+  <!-- photography page (swipes in) -->
+  <div id="photo-view" aria-hidden="true">
+    <div class="pv-inner">
+      <div id="pv-back" title="Back home" role="button" aria-label="Back to home">
+        <canvas id="backcar"></canvas>
+        <span class="pv-back-label">&larr; back</span>
+      </div>
+      <h2 class="pv-title">Photography</h2>
+      <p class="pv-sub">Cars, mostly. Shot by me. Click any photo to zoom, arrow through them all.</p>
+      <div class="pgrid" id="pgrid"></div>
+    </div>
+  </div>
+
+  <!-- lightbox -->
+  <div id="lightbox" aria-hidden="true">
+    <div class="lb-nav" id="lb-prev">&#8249;</div>
+    <div class="lb-nav" id="lb-next">&#8250;</div>
+    <div id="lb-close">&times;</div>
+    <img id="lb-img" src="" alt="">
+    <div id="lb-count"></div>
+  </div>
 
   <script src="cars-data.js"></script>
   <script>
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     // ---- light / dark toggle ----
     var root = document.documentElement, tbtn = document.getElementById('toggle');
     function applyTheme(t){ root.setAttribute('data-theme', t); tbtn.textContent = (t === 'dark' ? '☀' : '☾'); try{ localStorage.setItem('theme', t); }catch(e){} }
     (function(){ var s; try{ s = localStorage.getItem('theme'); }catch(e){} applyTheme(s || 'light'); })();
     tbtn.addEventListener('click', function(){ applyTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'); });
 
-    // ---- corner dot motif: dotted Porsche 911 side profile ----
-    (function(){
-      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      var cv = document.getElementById('motif'), ctx = cv.getContext('2d');
-      var dpr = Math.min(window.devicePixelRatio || 1, 2), W, H, pts = [], mouse = {x:-9999,y:-9999}, ready = false;
+    // ---- reusable dotted car (faceRight for the button, faceLeft for back) ----
+    function makeCar(cv, opts){
+      opts = opts || {};
+      var faceRight = !!opts.faceRight, repel = !!opts.repel;
+      var ctx = cv.getContext('2d'), dpr = Math.min(window.devicePixelRatio || 1, 2);
+      var W, H, pts = [], mouse = {x:-9999,y:-9999}, ready = false;
       var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 96">'
         + '<path fill="#000" d="M10,62 Q10,47 26,44 Q50,41 74,40 Q92,25 112,19 Q130,15 148,18 Q178,24 196,41 L207,41 Q213,44 214,51 L216,62 L198,63 Q176,40 154,63 L104,65 Q58,40 36,63 Z"/>'
         + '<circle fill="#000" cx="58" cy="66" r="16"/><circle fill="#000" cx="176" cy="66" r="16"/></svg>';
       var img = new Image();
       function build(){
-        W = cv.clientWidth; H = cv.clientHeight;
+        W = cv.clientWidth; H = cv.clientHeight; if(!W || !H) return;
         cv.width = W*dpr; cv.height = H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
-        var off = document.createElement('canvas'); off.width = W; off.height = H;
-        var o = off.getContext('2d');
-        var s = Math.min(W/230, H/96), dw = 230*s, dh = 96*s;
-        o.drawImage(img, (W-dw)/2, (H-dh)/2, dw, dh);
+        var off = document.createElement('canvas'); off.width = W; off.height = H; var o = off.getContext('2d');
+        var s = Math.min(W/230, H/96), dw = 230*s, dh = 96*s, ox = (W-dw)/2, oy = (H-dh)/2;
+        if(faceRight){ o.save(); o.translate(W,0); o.scale(-1,1); o.drawImage(img,ox,oy,dw,dh); o.restore(); }
+        else { o.drawImage(img,ox,oy,dw,dh); }
         var data = o.getImageData(0,0,W,H).data, gap = 3, targets = [];
         for(var y=0;y<H;y+=gap){ for(var x=0;x<W;x+=gap){ if(data[(y*W+x)*4+3] > 128) targets.push({x:x,y:y}); } }
         pts = targets.map(function(t){ return {x: reduce ? t.x : Math.random()*W, y: reduce ? t.y : Math.random()*H, tx:t.x, ty:t.y, vx:0, vy:0, ph:Math.random()*6.28}; });
@@ -204,41 +268,100 @@
       }
       function draw(t){
         if(!ready) return;
-        ctx.clearRect(0,0,W,H);
-        ctx.fillStyle = getComputedStyle(document.body).color;
+        ctx.clearRect(0,0,W,H); ctx.fillStyle = getComputedStyle(document.body).color;
         for(var i=0;i<pts.length;i++){ var p = pts[i];
           if(!reduce){
             var jx = Math.sin(t*0.001+p.ph)*0.5, jy = Math.cos(t*0.0013+p.ph)*0.5;
             p.vx = p.vx*0.86 + ((p.tx+jx)-p.x)*0.05; p.vy = p.vy*0.86 + ((p.ty+jy)-p.y)*0.05;
-            var mdx = p.x-mouse.x, mdy = p.y-mouse.y, d2 = mdx*mdx+mdy*mdy;
-            if(d2 < 1200){ var d = Math.sqrt(d2)||1, f = (34-d)/34*2.6; p.vx += mdx/d*f; p.vy += mdy/d*f; }
+            if(repel){ var mdx = p.x-mouse.x, mdy = p.y-mouse.y, d2 = mdx*mdx+mdy*mdy;
+              if(d2 < 1200){ var d = Math.sqrt(d2)||1, f = (34-d)/34*2.6; p.vx += mdx/d*f; p.vy += mdy/d*f; } }
             p.x += p.vx; p.y += p.vy;
           }
           ctx.beginPath(); ctx.arc(p.x, p.y, 1.0, 0, 6.29); ctx.fill();
         }
       }
       function loop(t){ draw(t); requestAnimationFrame(loop); }
-      cv.addEventListener('mousemove', function(e){ var r = cv.getBoundingClientRect(); mouse.x = e.clientX-r.left; mouse.y = e.clientY-r.top; });
-      cv.addEventListener('mouseleave', function(){ mouse.x = mouse.y = -9999; });
+      if(repel){
+        cv.addEventListener('mousemove', function(e){ var r = cv.getBoundingClientRect(); mouse.x = e.clientX-r.left; mouse.y = e.clientY-r.top; });
+        cv.addEventListener('mouseleave', function(){ mouse.x = mouse.y = -9999; });
+      }
       window.addEventListener('resize', build);
       img.onload = function(){ build(); if(reduce){ draw(0); } else { requestAnimationFrame(loop); } };
       img.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
-    })();
+    }
+    makeCar(document.getElementById('motif'), { faceRight:true, repel:true });
+    makeCar(document.getElementById('backcar'), { faceRight:false });
 
-    // ---- tabs ----
-    var tabs = ['experience','more','skills','photography'];
+    // ---- photography page: drive-off transition ----
+    var motif = document.getElementById('motif');
+    var trigger = document.getElementById('photo-trigger');
+    var pv = document.getElementById('photo-view');
+    var pvBack = document.getElementById('pv-back');
+    var mainEl = document.querySelector('main');
+    var animating = false, galleryBuilt = false;
+
+    function buildGallery(){
+      if(galleryBuilt || !window.CARS) return; galleryBuilt = true;
+      var g = document.getElementById('pgrid');
+      window.CARS.forEach(function(c, i){
+        var im = document.createElement('img');
+        im.src = c.src; im.loading = 'lazy'; im.alt = c.caption || 'car photo';
+        im.addEventListener('click', function(){ openLightbox(i); });
+        g.appendChild(im);
+      });
+    }
+    function openPhotos(){
+      if(animating || pv.classList.contains('open')) return;
+      animating = true; buildGallery();
+      if(reduce){ pv.classList.add('open'); document.body.classList.add('noscroll'); pv.setAttribute('aria-hidden','false'); animating = false; return; }
+      motif.classList.add('drive-right');
+      mainEl.classList.add('exit-left');
+      setTimeout(function(){ pv.classList.add('open'); pv.setAttribute('aria-hidden','false'); document.body.classList.add('noscroll'); }, 360);
+      setTimeout(function(){ animating = false; }, 1150);
+    }
+    function closePhotos(){
+      if(animating || !pv.classList.contains('open')) return;
+      animating = true;
+      if(reduce){ pv.classList.remove('open'); pv.setAttribute('aria-hidden','true'); document.body.classList.remove('noscroll'); mainEl.classList.remove('exit-left'); motif.classList.remove('drive-right'); animating = false; return; }
+      pvBack.classList.add('drive-left');
+      pv.classList.remove('open'); pv.setAttribute('aria-hidden','true');
+      mainEl.classList.remove('exit-left');
+      setTimeout(function(){ motif.classList.remove('drive-right'); }, 120);
+      setTimeout(function(){ pvBack.classList.remove('drive-left'); document.body.classList.remove('noscroll'); animating = false; }, 720);
+    }
+    trigger.addEventListener('click', openPhotos);
+    pvBack.addEventListener('click', closePhotos);
+
+    // ---- lightbox ----
+    var LB = document.getElementById('lightbox'), lbImg = document.getElementById('lb-img'), lbCount = document.getElementById('lb-count');
+    var lbIndex = 0;
+    function imgsArr(){ return window.CARS || []; }
+    function openLightbox(i){ lbIndex = i; showLb(); LB.classList.add('open'); LB.setAttribute('aria-hidden','false'); }
+    function showLb(){ var a = imgsArr(); if(!a.length) return; var c = a[lbIndex]; lbImg.classList.remove('zoomed'); lbImg.src = c.src; lbImg.alt = c.caption || 'car photo'; lbCount.textContent = (lbIndex+1) + ' / ' + a.length; }
+    function lbStep(d){ var a = imgsArr(); lbIndex = (lbIndex + d + a.length) % a.length; showLb(); }
+    function closeLb(){ LB.classList.remove('open'); LB.setAttribute('aria-hidden','true'); lbImg.classList.remove('zoomed'); }
+    lbImg.addEventListener('click', function(e){ e.stopPropagation(); lbImg.classList.toggle('zoomed'); });
+    document.getElementById('lb-prev').addEventListener('click', function(e){ e.stopPropagation(); lbStep(-1); });
+    document.getElementById('lb-next').addEventListener('click', function(e){ e.stopPropagation(); lbStep(1); });
+    document.getElementById('lb-close').addEventListener('click', function(e){ e.stopPropagation(); closeLb(); });
+    LB.addEventListener('click', function(){ closeLb(); });
+    document.addEventListener('keydown', function(e){
+      if(LB.classList.contains('open')){
+        if(e.key === 'Escape') closeLb();
+        else if(e.key === 'ArrowRight') lbStep(1);
+        else if(e.key === 'ArrowLeft') lbStep(-1);
+        return;
+      }
+      if(e.key === 'Escape' && pv.classList.contains('open')) closePhotos();
+    });
+
+    // ---- tabs (experience / more / skills) ----
+    var tabs = ['experience','more','skills'];
     function show(id){
       if(tabs.indexOf(id) < 0) id = 'experience';
       tabs.forEach(function(t){ document.getElementById('tab-'+t).hidden = (t !== id); document.getElementById('nav-'+t).classList.toggle('active', t === id); });
-      if(id === 'photography') renderGallery();
     }
-    var galleryDone = false;
-    function renderGallery(){
-      if(galleryDone || !window.CARS) return; galleryDone = true;
-      var g = document.getElementById('gallery');
-      window.CARS.forEach(function(c){ var img = document.createElement('img'); img.src = c.src; img.loading = 'lazy'; img.alt = c.caption || 'car photo'; g.appendChild(img); });
-    }
-    window.addEventListener('hashchange', function(){ show(location.hash.slice(1)); });
+    window.addEventListener('hashchange', function(){ if(tabs.indexOf(location.hash.slice(1)) >= 0) show(location.hash.slice(1)); });
     show(location.hash.slice(1) || 'experience');
   </script>
 </body>
