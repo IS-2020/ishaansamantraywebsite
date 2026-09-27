@@ -12,7 +12,7 @@
 <meta property="og:image" content="https://ishaansamantray.com/assets/profile.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jacquard+24&family=Orbitron:wght@600;700&family=Space+Mono:wght@400;700&family=VT323&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
   html[data-theme="light"]{ --bg:#f7f3ea; --fg:#23201b; --muted:#8f897a; --line:#e4ddcd; --chip:#efe9dc; --link:#23201b; }
   html[data-theme="dark"] { --bg:#15120d; --fg:#ece6da; --muted:#8f8778; --line:#2a2419; --chip:#1f1a12; --link:#e8c98a; }
@@ -31,15 +31,13 @@
   a{ color:var(--link); text-underline-offset:2px; }
 
   /* top-right dot motif */
-  #motif{ position:fixed; top:20px; right:18px; left:auto; width:158px; height:66px; z-index:5; }
+  #motif{ position:fixed; top:20px; right:18px; left:auto; width:190px; height:80px; z-index:5; }
   /* light/dark toggle (top-left) */
   #toggle{ position:fixed; top:16px; left:18px; right:auto; z-index:6; cursor:pointer; width:34px; height:34px;
     border:1px solid var(--line); border-radius:8px; background:var(--chip); color:var(--fg);
     font-size:15px; line-height:1; display:flex; align-items:center; justify-content:center; }
 
   .avatar{ width:150px; border-radius:11px; display:block; margin:0 auto 22px; }
-  /* sticky multi-font hover: each character keeps whatever font it was last hovered into */
-  .fx{ cursor:default; }
 
   p{ margin:0 0 14px; }
   .intro{ margin-bottom:20px; }
@@ -182,39 +180,6 @@
     function applyTheme(t){ root.setAttribute('data-theme', t); tbtn.textContent = (t === 'dark' ? '☀' : '☾'); try{ localStorage.setItem('theme', t); }catch(e){} }
     (function(){ var s; try{ s = localStorage.getItem('theme'); }catch(e){} applyTheme(s || 'light'); })();
     tbtn.addEventListener('click', function(){ applyTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'); });
-
-    // ---- sticky multi-font hover: every character cycles through display fonts on re-hover and keeps it ----
-    var FX_FONTS = ["'Orbitron', sans-serif", "'Jacquard 24', serif", "'Space Mono', monospace", "'VT323', monospace"];
-    (function(){
-      var main = document.querySelector('main');
-      var walker = document.createTreeWalker(main, NodeFilter.SHOW_TEXT, null);
-      var nodes = [], n;
-      while(n = walker.nextNode()){
-        if(!n.nodeValue.trim()) continue;
-        var pn = n.parentNode.nodeName;
-        if(pn === 'SCRIPT' || pn === 'STYLE') continue;
-        nodes.push(n);
-      }
-      nodes.forEach(function(node){
-        var frag = document.createDocumentFragment();
-        node.nodeValue.split('').forEach(function(ch){
-          if(ch === ' ' || ch === '\n' || ch === '\t'){ frag.appendChild(document.createTextNode(ch)); return; }
-          var s = document.createElement('span'); s.className = 'fx'; s.textContent = ch; frag.appendChild(s);
-        });
-        node.parentNode.replaceChild(frag, node);
-      });
-      main.addEventListener('mouseover', function(e){
-        var t = e.target;
-        if(t && t.classList && t.classList.contains('fx')){
-          var i = (t._fx || 0) + 1; t._fx = i;
-          var idx = i % (FX_FONTS.length + 1);
-          t.style.fontFamily = idx === 0 ? '' : FX_FONTS[idx - 1];
-        }
-      });
-      if(document.fonts && document.fonts.load){
-        ["600 1em Orbitron", "1em 'Jacquard 24'", "1em 'Space Mono'", "1em VT323"].forEach(function(f){ try{ document.fonts.load(f); }catch(e){} });
-      }
-    })();
 
     // ---- corner dot motif: dotted Porsche 911 side profile ----
     (function(){
