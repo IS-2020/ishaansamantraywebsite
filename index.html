@@ -61,11 +61,14 @@
   nav.tabs a:hover{ color:var(--fg); }
   /* tiny car that zooms right along the tab bar = Photography */
   #photo-nav{ display:inline-flex; align-items:center; vertical-align:middle; cursor:pointer; outline:none; }
-  #navcar{ width:58px; height:26px; display:block; transition:transform .25s ease, filter .4s; }
+  #navcar{ width:58px; height:26px; display:block; transition:transform .25s ease; }
   #photo-nav:hover #navcar{ transform:translateX(6px); }
   #photo-nav:focus-visible #navcar{ transform:translateX(6px); }
-  #navcar.zoom-off{ transform:translateX(122vw) scale(1.05); filter:blur(1.1px);
-    transition:transform .8s cubic-bezier(.5,.02,.8,.25), filter .8s; }
+  /* the car that actually drives across the page, lives outside the fading content */
+  .flycar{ position:fixed; z-index:50; pointer-events:none; opacity:0; will-change:transform; }
+  .flycar.show{ opacity:1; }
+  #flycarR{ width:58px; height:26px; }
+  #flycarL{ width:112px; height:48px; }
 
   section h2{ font-size:17px; font-weight:600; margin:0 0 12px; }
   .tl{ list-style:none; margin:0; padding:0; }
@@ -133,6 +136,8 @@
 <body>
   <canvas id="motif" aria-hidden="true"></canvas>
   <button id="toggle" title="Toggle light/dark" aria-label="Toggle light or dark mode">☾</button>
+  <canvas id="flycarR" class="flycar" aria-hidden="true"></canvas>
+  <canvas id="flycarL" class="flycar" aria-hidden="true"></canvas>
 
   <main class="wrap">
     <div class="avatar" role="img" aria-label="Ishaan Samantray"></div>
@@ -303,6 +308,20 @@
     makeCar(document.getElementById('motif'), { faceRight:true, repel:true });          // decorative corner
     makeCar(document.getElementById('navcar'), { faceRight:true, gap:2, dot:0.85 });     // tiny nav button
     makeCar(document.getElementById('backcar'), { faceRight:false });                    // back control
+    makeCar(document.getElementById('flycarR'), { faceRight:true, gap:2, dot:0.85 });    // drives right on open
+    makeCar(document.getElementById('flycarL'), { faceRight:false });                    // drives left on back
+
+    // a car that drives across the whole page, on top of everything, then resets
+    var flycarR = document.getElementById('flycarR'), flycarL = document.getElementById('flycarL');
+    function flyCar(fc, fromRect, dir){
+      fc.style.transition = 'none'; fc.style.transform = 'translateX(0) scale(1)'; fc.style.filter = 'none';
+      fc.style.left = fromRect.left + 'px'; fc.style.top = fromRect.top + 'px';
+      fc.classList.add('show'); void fc.offsetWidth;
+      var dist = dir > 0 ? (window.innerWidth - fromRect.left + 160) : -(fromRect.left + fromRect.width + 160);
+      fc.style.transition = 'transform .72s cubic-bezier(.45,.02,.75,.12), filter .72s';
+      fc.style.transform = 'translateX(' + dist + 'px) scale(1.08)'; fc.style.filter = 'blur(1.1px)';
+    }
+    function flyHide(fc){ fc.classList.remove('show'); fc.style.transition = 'none'; fc.style.transform = 'translateX(0)'; fc.style.filter = 'none'; }
 
     // ---- photography page: nav car zooms right, page swipes in ----
     var navcar = document.getElementById('navcar');
@@ -326,20 +345,22 @@
       if(animating || pv.classList.contains('open')) return;
       animating = true; buildGallery();
       if(reduce){ pv.classList.add('open'); document.body.classList.add('noscroll'); pv.setAttribute('aria-hidden','false'); animating = false; return; }
-      navcar.classList.add('zoom-off');
-      mainEl.classList.add('exit-left');
-      setTimeout(function(){ pv.classList.add('open'); pv.setAttribute('aria-hidden','false'); document.body.classList.add('noscroll'); }, 360);
-      setTimeout(function(){ navcar.classList.remove('zoom-off'); }, 1000);
-      setTimeout(function(){ animating = false; }, 1150);
+      var rect = navcar.getBoundingClientRect();
+      navcar.style.visibility = 'hidden';          // the little car "leaves"
+      flyCar(flycarR, rect, 1);                     // and speeds off to the right across the page
+      setTimeout(function(){ mainEl.classList.add('exit-left'); }, 280);
+      setTimeout(function(){ pv.classList.add('open'); pv.setAttribute('aria-hidden','false'); document.body.classList.add('noscroll'); }, 440);
+      setTimeout(function(){ flyHide(flycarR); navcar.style.visibility = ''; animating = false; }, 950);
     }
     function closePhotos(){
       if(animating || !pv.classList.contains('open')) return;
       animating = true;
       if(reduce){ pv.classList.remove('open'); pv.setAttribute('aria-hidden','true'); document.body.classList.remove('noscroll'); mainEl.classList.remove('exit-left'); animating = false; return; }
-      pvBack.classList.add('drive-left');
-      pv.classList.remove('open'); pv.setAttribute('aria-hidden','true');
-      mainEl.classList.remove('exit-left');
-      setTimeout(function(){ pvBack.classList.remove('drive-left'); document.body.classList.remove('noscroll'); animating = false; }, 720);
+      var rect = document.getElementById('backcar').getBoundingClientRect();
+      pvBack.style.visibility = 'hidden';           // the back car "leaves"
+      flyCar(flycarL, rect, -1);                    // and drives left back to the home page
+      setTimeout(function(){ pv.classList.remove('open'); pv.setAttribute('aria-hidden','true'); mainEl.classList.remove('exit-left'); document.body.classList.remove('noscroll'); }, 200);
+      setTimeout(function(){ flyHide(flycarL); pvBack.style.visibility = ''; animating = false; }, 850);
     }
     photoNav.addEventListener('click', openPhotos);
     photoNav.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openPhotos(); } });
