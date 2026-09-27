@@ -32,19 +32,18 @@
   .wrap.exit-left{ opacity:0; transform:translateX(-46px); }
   a{ color:var(--link); text-underline-offset:2px; }
 
-  /* top-right dotted 911 = Photography button */
-  #photo-trigger{ position:fixed; top:20px; right:18px; z-index:5; cursor:pointer; text-align:right; }
-  #motif{ width:190px; height:80px; display:block; transition:transform .8s cubic-bezier(.34,.62,.29,1), filter .5s; }
-  #motif.drive-right{ transform:translateX(134vw) scale(1.06); filter:blur(1.3px); transition:transform .82s cubic-bezier(.5,.02,.8,.25), filter .82s; }
-  #photo-hint{ font:12px ui-monospace,"SF Mono",Menlo,monospace; color:var(--muted); margin-top:1px; opacity:0; transition:opacity .2s; letter-spacing:.04em; }
-  #photo-trigger:hover #photo-hint{ opacity:1; }
+  /* top-right decorative dotted 911 */
+  #motif{ position:fixed; top:20px; right:18px; width:190px; height:80px; z-index:5; }
 
   /* light/dark toggle (top-left) */
   #toggle{ position:fixed; top:16px; left:18px; right:auto; z-index:6; cursor:pointer; width:34px; height:34px;
     border:1px solid var(--line); border-radius:8px; background:var(--chip); color:var(--fg);
     font-size:15px; line-height:1; display:flex; align-items:center; justify-content:center; }
 
-  .avatar{ width:150px; border-radius:11px; display:block; margin:0 auto 22px; }
+  /* headshot: CSS background so it cannot be right-click-saved or dragged */
+  .avatar{ width:150px; aspect-ratio:872/1032; border-radius:11px; display:block; margin:0 auto 22px;
+    background:url('assets/profile.jpg') center/cover no-repeat;
+    -webkit-user-select:none; user-select:none; -webkit-user-drag:none; -webkit-touch-callout:none; pointer-events:none; }
 
   p{ margin:0 0 14px; }
   .intro{ margin-bottom:20px; }
@@ -60,6 +59,13 @@
   nav.tabs a{ text-decoration:none; color:var(--muted); }
   nav.tabs a.active{ color:var(--fg); font-style:italic; background:var(--chip); padding:2px 7px; border-radius:5px; }
   nav.tabs a:hover{ color:var(--fg); }
+  /* tiny car that zooms right along the tab bar = Photography */
+  #photo-nav{ display:inline-flex; align-items:center; vertical-align:middle; cursor:pointer; outline:none; }
+  #navcar{ width:58px; height:26px; display:block; transition:transform .25s ease, filter .4s; }
+  #photo-nav:hover #navcar{ transform:translateX(6px); }
+  #photo-nav:focus-visible #navcar{ transform:translateX(6px); }
+  #navcar.zoom-off{ transform:translateX(122vw) scale(1.05); filter:blur(1.1px);
+    transition:transform .8s cubic-bezier(.5,.02,.8,.25), filter .8s; }
 
   section h2{ font-size:17px; font-weight:600; margin:0 0 12px; }
   .tl{ list-style:none; margin:0; padding:0; }
@@ -119,20 +125,17 @@
   @media (max-width:900px){ .pgrid{ column-count:3; } }
   @media (max-width:640px){
     .skill-row{ flex-direction:column; gap:6px; } .skill-label{ min-width:0; }
-    #motif{ width:120px; height:52px; } #photo-hint{ opacity:.75; font-size:10px; }
+    #motif{ width:120px; height:52px; }
     .pgrid{ column-count:2; }
   }
 </style>
 </head>
 <body>
-  <div id="photo-trigger" title="Photography" role="button" aria-label="Open photography">
-    <canvas id="motif"></canvas>
-    <div id="photo-hint">photos &rarr;</div>
-  </div>
+  <canvas id="motif" aria-hidden="true"></canvas>
   <button id="toggle" title="Toggle light/dark" aria-label="Toggle light or dark mode">☾</button>
 
   <main class="wrap">
-    <img class="avatar" src="assets/profile.jpg" alt="Ishaan Samantray">
+    <div class="avatar" role="img" aria-label="Ishaan Samantray"></div>
     <div class="intro">
       <p>My name is Ishaan Samantray.</p>
       <p class="rn">Right now:</p>
@@ -153,7 +156,8 @@
     <nav class="tabs">
       <a id="nav-experience" href="#experience">Experience</a><span class="sep">·</span>
       <a id="nav-more" href="#more">More stuff</a><span class="sep">·</span>
-      <a id="nav-skills" href="#skills">Skills</a>
+      <a id="nav-skills" href="#skills">Skills</a><span class="sep">·</span>
+      <span id="photo-nav" title="Photography" role="button" aria-label="Open car photography" tabindex="0"><canvas id="navcar"></canvas></span>
     </nav>
 
     <section id="tab-experience">
@@ -215,7 +219,7 @@
   <!-- photography page (swipes in) -->
   <div id="photo-view" aria-hidden="true">
     <div class="pv-inner">
-      <div id="pv-back" title="Back home" role="button" aria-label="Back to home">
+      <div id="pv-back" title="Back home" role="button" aria-label="Back to home" tabindex="0">
         <canvas id="backcar"></canvas>
         <span class="pv-back-label">&larr; back</span>
       </div>
@@ -244,10 +248,17 @@
     (function(){ var s; try{ s = localStorage.getItem('theme'); }catch(e){} applyTheme(s || 'light'); })();
     tbtn.addEventListener('click', function(){ applyTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'); });
 
-    // ---- reusable dotted car (faceRight for the button, faceLeft for back) ----
+    // ---- deter casual downloading of the headshot ----
+    (function(){
+      var av = document.querySelector('.avatar');
+      if(!av) return;
+      ['contextmenu','dragstart'].forEach(function(ev){ av.addEventListener(ev, function(e){ e.preventDefault(); return false; }); });
+    })();
+
+    // ---- reusable dotted car (faceRight for buttons, faceLeft for back) ----
     function makeCar(cv, opts){
       opts = opts || {};
-      var faceRight = !!opts.faceRight, repel = !!opts.repel;
+      var faceRight = !!opts.faceRight, repel = !!opts.repel, gap = opts.gap || 3, dot = opts.dot || 1.0;
       var ctx = cv.getContext('2d'), dpr = Math.min(window.devicePixelRatio || 1, 2);
       var W, H, pts = [], mouse = {x:-9999,y:-9999}, ready = false;
       var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 96">'
@@ -261,7 +272,7 @@
         var s = Math.min(W/230, H/96), dw = 230*s, dh = 96*s, ox = (W-dw)/2, oy = (H-dh)/2;
         if(faceRight){ o.save(); o.translate(W,0); o.scale(-1,1); o.drawImage(img,ox,oy,dw,dh); o.restore(); }
         else { o.drawImage(img,ox,oy,dw,dh); }
-        var data = o.getImageData(0,0,W,H).data, gap = 3, targets = [];
+        var data = o.getImageData(0,0,W,H).data, targets = [];
         for(var y=0;y<H;y+=gap){ for(var x=0;x<W;x+=gap){ if(data[(y*W+x)*4+3] > 128) targets.push({x:x,y:y}); } }
         pts = targets.map(function(t){ return {x: reduce ? t.x : Math.random()*W, y: reduce ? t.y : Math.random()*H, tx:t.x, ty:t.y, vx:0, vy:0, ph:Math.random()*6.28}; });
         ready = true;
@@ -277,7 +288,7 @@
               if(d2 < 1200){ var d = Math.sqrt(d2)||1, f = (34-d)/34*2.6; p.vx += mdx/d*f; p.vy += mdy/d*f; } }
             p.x += p.vx; p.y += p.vy;
           }
-          ctx.beginPath(); ctx.arc(p.x, p.y, 1.0, 0, 6.29); ctx.fill();
+          ctx.beginPath(); ctx.arc(p.x, p.y, dot, 0, 6.29); ctx.fill();
         }
       }
       function loop(t){ draw(t); requestAnimationFrame(loop); }
@@ -289,12 +300,13 @@
       img.onload = function(){ build(); if(reduce){ draw(0); } else { requestAnimationFrame(loop); } };
       img.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
     }
-    makeCar(document.getElementById('motif'), { faceRight:true, repel:true });
-    makeCar(document.getElementById('backcar'), { faceRight:false });
+    makeCar(document.getElementById('motif'), { faceRight:true, repel:true });          // decorative corner
+    makeCar(document.getElementById('navcar'), { faceRight:true, gap:2, dot:0.85 });     // tiny nav button
+    makeCar(document.getElementById('backcar'), { faceRight:false });                    // back control
 
-    // ---- photography page: drive-off transition ----
-    var motif = document.getElementById('motif');
-    var trigger = document.getElementById('photo-trigger');
+    // ---- photography page: nav car zooms right, page swipes in ----
+    var navcar = document.getElementById('navcar');
+    var photoNav = document.getElementById('photo-nav');
     var pv = document.getElementById('photo-view');
     var pvBack = document.getElementById('pv-back');
     var mainEl = document.querySelector('main');
@@ -314,23 +326,25 @@
       if(animating || pv.classList.contains('open')) return;
       animating = true; buildGallery();
       if(reduce){ pv.classList.add('open'); document.body.classList.add('noscroll'); pv.setAttribute('aria-hidden','false'); animating = false; return; }
-      motif.classList.add('drive-right');
+      navcar.classList.add('zoom-off');
       mainEl.classList.add('exit-left');
       setTimeout(function(){ pv.classList.add('open'); pv.setAttribute('aria-hidden','false'); document.body.classList.add('noscroll'); }, 360);
+      setTimeout(function(){ navcar.classList.remove('zoom-off'); }, 1000);
       setTimeout(function(){ animating = false; }, 1150);
     }
     function closePhotos(){
       if(animating || !pv.classList.contains('open')) return;
       animating = true;
-      if(reduce){ pv.classList.remove('open'); pv.setAttribute('aria-hidden','true'); document.body.classList.remove('noscroll'); mainEl.classList.remove('exit-left'); motif.classList.remove('drive-right'); animating = false; return; }
+      if(reduce){ pv.classList.remove('open'); pv.setAttribute('aria-hidden','true'); document.body.classList.remove('noscroll'); mainEl.classList.remove('exit-left'); animating = false; return; }
       pvBack.classList.add('drive-left');
       pv.classList.remove('open'); pv.setAttribute('aria-hidden','true');
       mainEl.classList.remove('exit-left');
-      setTimeout(function(){ motif.classList.remove('drive-right'); }, 120);
       setTimeout(function(){ pvBack.classList.remove('drive-left'); document.body.classList.remove('noscroll'); animating = false; }, 720);
     }
-    trigger.addEventListener('click', openPhotos);
+    photoNav.addEventListener('click', openPhotos);
+    photoNav.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openPhotos(); } });
     pvBack.addEventListener('click', closePhotos);
+    pvBack.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); closePhotos(); } });
 
     // ---- lightbox ----
     var LB = document.getElementById('lightbox'), lbImg = document.getElementById('lb-img'), lbCount = document.getElementById('lb-count');
